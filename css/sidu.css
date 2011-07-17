@@ -22,14 +22,24 @@ body .header, body .footer, body .main {
 }
 
 .main .menu-item {
+  margin-top: 1.5em;
   font-size: 3em;
   cursor: pointer;
+  border-left: 1px dotted white;
+  border-bottom: 1px dotted white;
 }
 
 .main .menu-item:hover {
   font-size: 3em;
   border-left: 1px dotted red;
   border-bottom: 1px dotted red;
+}
+
+.main .menu-item a {
+  color: inherit;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .main .column-two {
