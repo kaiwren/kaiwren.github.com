@@ -13,6 +13,7 @@ body .header, body .footer, body .main {
 
 .main {
   height: 24em;
+  margin-top: 2em;
 }
 
 .main .colborder {
@@ -27,11 +28,17 @@ body .header, body .footer, body .main {
 
 .main .menu-item:hover {
   font-size: 3em;
-  background: #eeeeee;
+  border-left: 1px dotted red;
+  border-bottom: 1px dotted red;
+}
+
+.main .column-two {
+  height: 100%;
+  border-top: 1px dotted red;
 }
 
 .footer {
-  margin-top: 2em;
+  margin-top: 5em;
 }
 
 .reference img {
