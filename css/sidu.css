@@ -2,12 +2,15 @@ body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 
-body .header, body .footer, body .main {
+body .header, body .main {
   text-align: center;
 }
 
 .header {
   font-size: 9em;
+}
+
+.footer {
 }
 
 .reference img {
