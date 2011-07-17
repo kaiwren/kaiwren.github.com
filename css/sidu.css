@@ -1,8 +1,9 @@
 body {
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  background: white;
 }
 
-body .header, body .main {
+body .header, body .footer, body .main {
   text-align: center;
 }
 
@@ -10,13 +11,29 @@ body .header, body .main {
   font-size: 9em;
 }
 
+.main {
+  height: 24em;
+}
+
+.main .colborder {
+  height: 100%;
+  border-color: red;
+}
+
+.main .menu-item {
+  font-size: 3em;
+  cursor: pointer;
+}
+
+.main .menu-item:hover {
+  font-size: 3em;
+  background: #eeeeee;
+}
+
 .footer {
+  margin-top: 2em;
 }
 
 .reference img {
   width:  120px;
-}
-
-.main {
-  background: black;
 }
