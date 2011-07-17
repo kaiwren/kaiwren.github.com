@@ -1,0 +1,19 @@
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+
+body .header, body .footer, body .main {
+  text-align: center;
+}
+
+.header {
+  font-size: 9em;
+}
+
+.reference img {
+  width:  120px;
+}
+
+.main {
+  background: black;
+}
