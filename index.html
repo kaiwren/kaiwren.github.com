@@ -14,24 +14,24 @@
   <body>
     <div class="container">
       <div class="span-24 header">
-        Sidu Ponnappa
       </div>
 
-      <div class="span-18 prepend-4">
+      <div class="span-24">
         <div class="main">
-          <div class="span-3 colborder column-one">
-            <div class="menu-item work focus"><a href="#work">Work</a></div>
+          <div class="span-3 prepend-1 colborder column-one">
+            <div class="menu-item me focus"><a href="#me">Me</a></div>
+            <div class="menu-item work"><a href="#work">Work</a></div>
             <div class="menu-item code"><a href="#code">Code</a></div>
           </div>
-          <div class="span-12 column-two">
+          <div class="span-18 last column-two">
             <div class="span-3 bottom tab biz focus" title='biz'><a href="#work#biz">Biz</a></div>
             <div class="span-3 bottom tab ruby" title='ruby'><a href="#work#ruby">Ruby</a></div>
             <div class="span-3 bottom last tab agile" title='agile'><a href="#work#agile">Agile</a></div>
-            <div class="span-12 bottom content biz focus">
-              <p>I'm interested in entrepreneurship and businesses. I'm one of the founders of <a href="http://c42.in">C42 Engineering</a>, a boutique Ruby consultancy. C42 Engineering is my second business - the first was <a href="http://incativ.com">Active Mobs</a> a product for the SMS and microblogging space that a friend and I worked on back in '06.</p>
+            <div class="span-18 bottom content biz focus">
+              <p>I'm interested in entrepreneurship and businesses. I'm one of the founders of <a href="http://c42.in">C42 Engineering</a>, a boutique Ruby consultancy. C42 Engineering is my second business - the first was <a href="http://incativ.com">Activ Mobs</a> a group messaging service based on SMS that a friend and I worked on back in '06.</p>
             </div>
-            <div class="span-12 bottom content ruby">Agile</div>
-            <div class="span-12 bottom content agile">Agile</div>
+            <div class="span-18 bottom content ruby">Agile</div>
+            <div class="span-18 bottom content agile">Agile</div>
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@
             var tabTarget = targets[2];
             console.log(targets);
             console.log(menuTarget);
-            if(menuTarget == 'work' || menuTarget == 'code'){ 
+            if(menuTarget == 'me' || menuTarget == 'work' || menuTarget == 'code'){ 
               focusOn($('.container .main .menu-item.' + menuTarget), menuItems); 
             }
             if(tabTarget == 'biz' || tabTarget == 'ruby' || tabTarget == 'agile'){ 
