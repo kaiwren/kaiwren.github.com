@@ -3,7 +3,7 @@ body {
   background: white;
 }
 
-body .header, body .footer, body .main {
+body .header, body .footer {
   text-align: center;
 }
 
@@ -25,6 +25,7 @@ body .header, body .footer, body .main {
   margin-top: 1.5em;
   font-size: 3em;
   cursor: pointer;
+  text-align: center;
   border-left: 1px dotted white;
   border-bottom: 1px dotted white;
 }
@@ -49,29 +50,31 @@ body .header, body .footer, body .main {
   height: 100%;
 }
 
-.main .column-two { color: white; }
 .main .column-two .tab { 
   font-size: 2em;
   height: 2em; 
-  cursor: pointer;
+  padding-left: .5em;
+  color: white;
 }
+.main .column-two .tab a { text-decoration: none; color: inherit; width: 100%; display: block;}
 
-.main .column-two .biz.tab.focus, .main .column-two .biz.tab:hover { color: white; background: blue; }
+.main .column-two .biz.tab.focus, .main .column-two .biz.tab:hover { color: white; background: blue;}
 .main .column-two .biz.tab { color: black; border-width: 1px 1px 0 1px; border-color: blue; border-style: dotted;}
 .main .column-two .biz.content { border-top: 1px blue dotted; border-right: 1px blue dotted; display: none; }
 
-.main .column-two .ruby.tab.focus, .main .column-two .ruby.tab:hover { color: white; background: red; }
+.main .column-two .ruby.tab.focus, .main .column-two .ruby.tab:hover { color: white; background: red;}
 .main .column-two .ruby.tab { color: black; border-width: 1px 1px 0 1px; border-color: red; border-style: dotted;}
 .main .column-two .ruby.content { border-top: 1px red dotted; border-right: 1px red dotted; display: none; }
 
-.main .column-two .agile.tab.focus, .main .column-two .agile.tab:hover { color: white; background: green; }
+.main .column-two .agile.tab.focus, .main .column-two .agile.tab:hover { color: white; background: green;}
 .main .column-two .agile.tab { color: black; border-width: 1px 1px 0 1px; border-color: green; border-style: dotted;}
 .main .column-two .agile.content { border-top: 1px green dotted; border-right: 1px green dotted; display: none; }
 
 .main .column-two .tab{ cursor: pointer; }
 
-.main .column-two .content{ height: 85%; }
+.main .column-two .content{ height: 85%; font-size: 1.5em;}
 .main .column-two .content.focus{ display: block; }
+.main .column-two .content p{ line-height: 1.5em; }
 
 .footer {
   margin-top: 6.5em;
