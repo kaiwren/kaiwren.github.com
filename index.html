@@ -8,6 +8,7 @@
       <link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection"/>
     <![endif]-->
     <link rel="stylesheet" href="css/sidu.css" type="text/css"/>
+    <script type="text/javascript" src="javascript/jquery.js"></script> 
     <title>Sidu Ponnappa</title>
   </head>
   <body>
@@ -19,29 +20,56 @@
       <div class="span-18 prepend-4">
         <div class="main">
           <div class="span-3 colborder column-one">
-            <div class="menu-item"><a href="#Work">Work</a></div>
+            <div class="menu-item focus"><a href="#Work">Work</a></div>
             <div class="menu-item"><a href="#Code">Code</a></div>
           </div>
           <div class="span-12 column-two">
-            Right
+            <div class="span-3 bottom tab biz focus" title='biz'>Biz</div>
+            <div class="span-3 bottom tab ruby" title='ruby'>Ruby</div>
+            <div class="span-3 bottom last tab agile" title='agile'>Agile</div>
+            <div class="span-12 bottom content biz focus">Agile</div>
+            <div class="span-12 bottom content ruby">Agile</div>
+            <div class="span-12 bottom content agile">Agile</div>
           </div>
         </div>
       </div>
       
       <div class="span-24 footer">
-        <div class="span-4 prepend-4 reference" title="C42 Engineering">
+        <div class="span-4 prepend-2 reference" title="C42 Engineering">
           <a href="http://c42.in/people#sidu-ponnappa"><img src='images/c42-engineering.png' alt="C42 Engineering"/></a>
         </div>
-        <div class="span-4 reference" title="Github Profile">
+        <div class="span-4 prepend-2 reference" title="Github Profile">
           <a href="http://github.com/kaiwren"><img src='images/octocat.png' alt="Github Profile"/></a>
         </div>
-        <div class="span-4 reference" title="Twitter Account">
+        <div class="span-4 prepend-2 reference" title="Twitter Account">
           <a href="http://twitter.com/ponnappa"><img src='images/twitter-256.png' alt="Twitter Account"/></a>
         </div>
-        <div class="span-4 append-4 last reference" title="LinkedIn Profile">
+        <div class="span-4 prepend-2 last reference" title="LinkedIn Profile">
           <a href="http://linkedin.com/in/sidup"><img src='images/linkedin-256.png' alt="LinkedIn Profile"/></a>
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          var tabs = $('body .container .main .tab')
+          var contentBoxes = $('body .container .main .content')
+          var menuItems = $('body .container .main .menu-item')
+          
+          menuItems.click(function(){
+            focusOn(this, menuItems);
+          });
+          
+          tabs.click(function(){
+            focusOn(this, tabs);
+            var title = $(this).attr('title');
+            focusOn($('body .container .main .content.' + title), contentBoxes);
+          });
+          
+          function focusOn(element, collection){
+            collection.removeClass('focus');
+            $(element).addClass('focus');
+          }
+        });
+    </script>
   </body>
 </html>
