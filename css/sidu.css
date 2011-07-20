@@ -8,6 +8,12 @@ body .header, body .footer {
 }
 
 .header {
+  background: #FFF6BF;
+  color: #514721;
+  border-width: 0 2px 2px 2px;
+  border-color: #FFD324;
+  border-style: solid;
+  padding: .3em;
 }
 
 .main {
