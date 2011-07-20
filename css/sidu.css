@@ -58,6 +58,8 @@ body .header, body .footer {
 .main .content.focus { display: block; }
 
 .main .content.me { border-top: 1px black dotted; border-right: 1px black dotted; }
+.main .content.code { border-top: 1px #00aaaa dotted; border-right: 1px #00aaaa dotted; }
+.main .content.code .colborder { border-color: #00aaaa; }
 
 .main .column-two .tab { 
   font-size: 2em;
@@ -83,7 +85,7 @@ body .header, body .footer {
 
 .main .column-two .copy{ padding: .75em; }
 .main .column-two .copy.focus{ display: block; }
-.main .column-two .copy p{ line-height: 1.5em; }
+.main .column-two .copy p{ line-height: 1.5em; margin-bottom: .5em;}
 
 .footer {
   margin-top: 6.5em;
