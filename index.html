@@ -18,21 +18,32 @@
       </div>
 
       <div class="span-24">
-        <div class="main">
+        <div id="main" class="main">
           <div class="span-3 prepend-1 colborder column-one">
-            <div class="menu-item me focus"><a href="#me">Me</a></div>
-            <div class="menu-item work"><a href="#work">Work</a></div>
-            <div class="menu-item code"><a href="#code">Code</a></div>
+            <div class="menu-item me focus" title="me" name="me"><a href="#me">Me</a></div>
+            <div class="menu-item work" title="work" name="work"><a href="#work">Work</a></div>
+            <div class="menu-item code" title="code" name="code"><a href="#code">Code</a></div>
           </div>
           <div class="span-18 last column-two">
-            <div class="span-3 bottom tab biz focus" title='biz'><a href="#work#biz">Biz</a></div>
-            <div class="span-3 bottom tab ruby" title='ruby'><a href="#work#ruby">Ruby</a></div>
-            <div class="span-3 bottom last tab agile" title='agile'><a href="#work#agile">Agile</a></div>
-            <div class="span-18 bottom content biz focus">
-              <p>I'm interested in entrepreneurship and businesses. I'm one of the founders of <a href="http://c42.in">C42 Engineering</a>, a boutique Ruby consultancy. C42 Engineering is my second business - the first was <a href="http://incativ.com">Activ Mobs</a> a group messaging service based on SMS that a friend and I worked on back in '06.</p>
+            <div class="span-18 bottom content me focus">
+              <div class="copy">
+                <p>Hi, I'm Sidu Ponnappa. I live and work in Bangalore, India.</p>
+                <p>I'm something of a bibliophile and am interested in programming, entrepreneurship and motorcycling.</p>
+                <p>I'm one of the founders of <a href="http://c42.in">C42 Engineering</a>, a boutique Ruby consultancy. C42 Engineering is my second business - the first was <a href="http://incativ.com">Activ Mobs</a>, a group messaging service that a friend and I worked on back in '06.</p>
+              </div>
             </div>
-            <div class="span-18 bottom content ruby">Agile</div>
-            <div class="span-18 bottom content agile">Agile</div>
+            <div class="span-18 bottom content work">
+              <div class="span-3 bottom tab biz focus" title='biz'><a href="#work#biz">Biz</a></div>
+              <div class="span-3 bottom tab ruby" title='ruby'><a href="#work#ruby">Ruby</a></div>
+              <div class="span-3 bottom last tab agile" title='agile'><a href="#work#agile">Agile</a></div>
+              <div class="span-18 bottom copy biz focus">
+                <p>Work on ...stuff.</p>
+              </div>
+              <div class="span-18 bottom copy ruby">Ruby</div>
+              <div class="span-18 bottom copy agile">Agile</div>
+            </div>
+            <div class="span-18 bottom content code">
+            </div>
           </div>
         </div>
       </div>
@@ -54,24 +65,30 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function(){
-          var tabs = $('body .container .main .tab');
-          var contentBoxes = $('body .container .main .content');
-          var menuItems = $('body .container .main .menu-item');
+          var tabs = $('#main .tab');
+          var menuItems = $('#main .menu-item');
           var focusHash = window.location.hash;
-          
+          var contentBoxes = $('#main .content')
           
           menuItems.click(function(){
-            focusOn(this, menuItems);
+            focusOnMenuItem($(this));
           });
           
           tabs.click(function(){
-            focusOnTab(this);
+            focusOnTab($(this));
           });
           
+          function focusOnMenuItem(menuItem){
+            var title = menuItem.attr('title');
+            focusOn(menuItem, menuItems);
+            focusOn($('#main .content.' + title), contentBoxes);
+          }
+          
           function focusOnTab(tabElement){
+            var copyBoxes = $('#main .content.work .copy');
+            var title = tabElement.attr('title');
             focusOn(tabElement, tabs);
-            var title = $(tabElement).attr('title');
-            focusOn($('body .container .main .content.' + title), contentBoxes);
+            focusOn($('#main .copy.' + title), copyBoxes);
           };
           
           function focusOn(element, collection){
@@ -83,13 +100,11 @@
             var targets = focusHash.split('#');
             var menuTarget = targets[1];
             var tabTarget = targets[2];
-            console.log(targets);
-            console.log(menuTarget);
             if(menuTarget == 'me' || menuTarget == 'work' || menuTarget == 'code'){ 
-              focusOn($('.container .main .menu-item.' + menuTarget), menuItems); 
+              focusOnMenuItem($('#main .menu-item.' + menuTarget)); 
             }
             if(tabTarget == 'biz' || tabTarget == 'ruby' || tabTarget == 'agile'){ 
-              focusOnTab($('.container .main .tab.' + targets[2]), tabs); 
+              focusOnTab($('#main .tab.' + targets[2]), tabs); 
             }
           }
         });
