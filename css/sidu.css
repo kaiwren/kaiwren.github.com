@@ -51,41 +51,32 @@ body .header, body .footer {
   font-size: inherit;
 }
 
-.main .column-two {
-}
-
 .main .content{ height: 85%; font-size: 1.5em; display: none; padding: .5em .5em 0 0;}
 .main .content.focus { display: block; }
 
-.main .content.me { border-top: 1px black dotted; border-right: 1px black dotted; }
-.main .content.code { border-top: 1px #00aaaa dotted; border-right: 1px #00aaaa dotted; }
-.main .content.code .colborder { border-color: #00aaaa; }
+.main .column-two .tab { font-size: 2em; height: 2em; padding-left: .5em; border-width: 1px 1px 0 1px; border-style: dotted; cursor: pointer; }
+.main .column-two .tab.focus, .main .column-two .tab:hover { color: white; }
+.main .column-two .tab a { text-decoration: none; color: inherit; width: 100%; display: block; }
 
-.main .column-two .tab { 
-  font-size: 2em;
-  height: 2em; 
-  padding-left: .5em;
-  color: white;
-}
-.main .column-two .tab a { text-decoration: none; color: inherit; width: 100%; display: block;}
+.main .column-two .bio.tab.focus, .main .column-two .bio.tab:hover { background: blue; }
+.main .column-two .bio { border-color: blue; }
 
-.main .column-two .biz.tab.focus, .main .column-two .biz.tab:hover { color: white; background: blue;}
-.main .column-two .biz.tab { color: black; border-width: 1px 1px 0 1px; border-color: blue; border-style: dotted;}
-.main .column-two .biz.copy { border-top: 1px blue dotted; border-right: 1px blue dotted; display: none; }
+.main .column-two .biz.tab.focus, .main .column-two .biz.tab:hover { background: blue;}
+.main .column-two .biz { border-color: blue; }
 
-.main .column-two .ruby.tab.focus, .main .column-two .ruby.tab:hover { color: white; background: red;}
-.main .column-two .ruby.tab { color: black; border-width: 1px 1px 0 1px; border-color: red; border-style: dotted;}
-.main .column-two .ruby.copy { border-top: 1px red dotted; border-right: 1px red dotted; display: none; }
+.main .column-two .ruby.tab.focus, .main .column-two .ruby.tab:hover {  background: red;}
+.main .column-two .ruby { border-color: red; }
 
-.main .column-two .agile.tab.focus, .main .column-two .agile.tab:hover { color: white; background: green;}
-.main .column-two .agile.tab { color: black; border-width: 1px 1px 0 1px; border-color: green; border-style: dotted;}
-.main .column-two .agile.copy { border-top: 1px green dotted; border-right: 1px green dotted; display: none; }
+.main .column-two .agile.tab.focus, .main .column-two .agile.tab:hover {  background: green; }
+.main .column-two .agile { border-color: green; }
 
-.main .column-two .tab{ cursor: pointer; }
+.main .column-two .oss.tab.focus, .main .column-two .oss.tab:hover {  background: #00aaaa; }
+.main .column-two .oss, .main .column-two .oss .colborder { border-color: #00aaaa; }
+.main .column-two .oss .colborder { border-style: dotted; }
 
-.main .column-two .copy{ padding: .75em; }
-.main .column-two .copy.focus{ display: block; }
-.main .column-two .copy p{ line-height: 1.5em; margin-bottom: .5em;}
+.main .column-two .copy { border-width: 1px 1px 0 0; border-style: dotted; padding: .75em; display: none; }
+.main .column-two .copy.focus { display: block; }
+.main .column-two .copy p { line-height: 1.5em; margin-bottom: .5em;}
 
 .footer {
   margin-top: 6.5em;
