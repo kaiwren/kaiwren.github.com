@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print"/>
+    <!--[if lt IE 8]>
+      <link rel="stylesheet" href="css/blueprint/ie.css" type="text/css" media="screen, projection"/>
+    <![endif]-->
+    <link rel="stylesheet" href="css/sidu.css" type="text/css"/>
+    <script type="text/javascript" src="javascript/jquery.js"></script> 
+    <title>Sidu Ponnappa</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="news" class="span-24 header">
+        The bits of this site that do nothing aren't being stubborn; they're just still under construction is all.
+      </div>
+
+      <%= yield %>
+      
+      <div class="span-24 footer">
+        <div class="span-4 prepend-2 reference" title="C42 Engineering">
+          <a href="http://c42.in/people#sidu-ponnappa"><img src='images/c42-engineering.png' alt="C42 Engineering"/></a>
+        </div>
+        <div class="span-4 prepend-2 reference" title="Github Profile">
+          <a href="http://github.com/kaiwren"><img src='images/octocat.png' alt="Github Profile"/></a>
+        </div>
+        <div class="span-4 prepend-2 reference" title="Twitter Account">
+          <a href="http://twitter.com/ponnappa"><img src='images/twitter-256.png' alt="Twitter Account"/></a>
+        </div>
+        <div class="span-4 prepend-2 last reference" title="LinkedIn Profile">
+          <a href="http://linkedin.com/in/sidup"><img src='images/linkedin-256.png' alt="LinkedIn Profile"/></a>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          var tabs = $('#main .work .tab');
+          var menuItems = $('#main .menu-item');
+          var focusHash = window.location.hash;
+          var contentBoxes = $('#main .content')
+          
+          menuItems.click(function(){
+            focusOnMenuItem($(this));
+          });
+          
+          tabs.click(function(){
+            focusOnTab($(this));
+          });
+          
+          function focusOnMenuItem(menuItem){
+            var title = menuItem.attr('title');
+            focusOn(menuItem, menuItems);
+            focusOn($('#main .content.' + title), contentBoxes);
+          }
+          
+          function focusOnTab(tabElement){
+            var copyBoxes = $('#main .content.work .copy');
+            var title = tabElement.attr('title');
+            focusOn(tabElement, tabs);
+            focusOn($('#main .copy.' + title), copyBoxes);
+          };
+          
+          function focusOn(element, collection){
+            collection.removeClass('focus');
+            $(element).addClass('focus');
+          }
+          
+          if(focusHash != null && focusHash !=''){
+            var targets = focusHash.split('#');
+            var menuTarget = targets[1];
+            var tabTarget = targets[2];
+            if(menuTarget == 'me' || menuTarget == 'work' || menuTarget == 'code'){ 
+              focusOnMenuItem($('#main .menu-item.' + menuTarget)); 
+            }
+            if(tabTarget == 'biz' || tabTarget == 'ruby' || tabTarget == 'agile'){ 
+              focusOnTab($('#main .tab.' + targets[2]), tabs); 
+            }
+          }
+        });
+    </script>
+    
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24685691-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+    </body>
+</html>
