@@ -27,21 +27,24 @@
 
         <div class="span-18 last column-two">
                   <div class="span-18 bottom content work">
-                        <div class="span-3 bottom tab biz focus" title='biz'><a href="#work#biz">Biz</a></div>
-              <div class="span-3 bottom tab ruby" title='ruby'><a href="#work#ruby">Ruby</a></div>
-              <div class="span-3 bottom last tab agile" title='agile'><a href="#work#agile">Agile</a></div>
+                        <div class="span-3 bottom tab biz focus" title='biz'><a href="#biz">Biz</a></div>
+              <div class="span-3 bottom tab ruby" title='ruby'><a href="#ruby">Ruby</a></div>
+              <div class="span-3 bottom last tab agile" title='agile'><a href="#agile">Agile</a></div>
 
 
-          <div class="span-18 bottom copy biz focus">
-            <p><a href="http://c42.in">C42 Engineering</a> (April 2010 to present)</p>
-            <p>As part of the founding team of C42 Engineering, I've helped bootstrap an offshore boutique Ruby consulting business from nothing to a $250k runway in just eighteen months.</p>
-            <hr/>
-            <p><a href="http://inactiv.com">Inactiv Labs</a> (September 2006 to December 2008)</p>
-            <p>I was the minority partner in Inactiv Labs and was involved in building and managing two products, 'Activ Money' and 'Activ Mobs'. Activ Money never got very far, but Activ Mobs (which was basically Twitter, but in '06) was a tremendous success, growing to 60,000 registered users and 6,000 active users daily in just a couple of months.</p>
-            <p>Despite working our way through several VC meetings, we failed to raise funding and eventually shut the service down. Lessons? Raising funding is very hard, especially in India.</p>
-          </div>
-          <div class="span-18 bottom copy ruby">Ruby</div>
-          <div class="span-18 bottom copy agile">Agile</div>
+                      <div class="span-18 bottom copy biz focus">
+              <p><a href="http://c42.in">C42 Engineering</a> (April 2010 to present)</p>
+              <p>As part of the founding team of C42 Engineering, I've helped bootstrap an offshore boutique Ruby consulting business from nothing to a $250k runway in just eighteen months.</p>
+              <hr/>
+              <p><a href="http://inactiv.com">Inactiv Labs</a> (September 2006 to December 2008)</p>
+              <p>I was the minority partner in Inactiv Labs and was involved in building and managing two products, 'Activ Money' and 'Activ Mobs'. Activ Money never got very far, but Activ Mobs (which was basically Twitter, but in '06) was a tremendous success, growing to 60,000 registered users and 6,000 active users daily in just a couple of months.</p>
+              <p>Despite working our way through several VC meetings, we failed to raise funding and eventually shut the service down. Lessons? Raising funding is very hard, especially in India.</p>
+            </div>
+
+                    <div class="span-18 bottom copy ruby">Ruby</div>
+
+                    <div class="span-18 bottom copy agile">Agile</div>
+
         </div>
 
         </div>
@@ -64,26 +67,15 @@
       </div>
     </div>
     <script type="text/javascript">
-        function((function(){
+        $(document).ready(function(){
           var tabs = $('#main .work .tab');
-          var menuItems = $('#main .menu-item');
           var focusHash = window.location.hash;
           var contentBoxes = $('#main .content')
-          
-          menuItems.click(function(){
-            focusOnMenuItem($(this));
-          });
-          
+                    
           tabs.click(function(){
             focusOnTab($(this));
           });
-          
-          function focusOnMenuItem(menuItem){
-            var title = menuItem.attr('title');
-            focusOn(menuItem, menuItems);
-            focusOn($('#main .content.' + title), contentBoxes);
-          }
-          
+                    
           function focusOnTab(tabElement){
             var copyBoxes = $('#main .content.work .copy');
             var title = tabElement.attr('title');
@@ -98,14 +90,8 @@
           
           if(focusHash != null && focusHash !=''){
             var targets = focusHash.split('#');
-            var menuTarget = targets[1];
-            var tabTarget = targets[2];
-            if(menuTarget == 'me' || menuTarget == 'work' || menuTarget == 'code'){ 
-              focusOnMenuItem($('#main .menu-item.' + menuTarget)); 
-            }
-            if(tabTarget == 'biz' || tabTarget == 'ruby' || tabTarget == 'agile'){ 
-              focusOnTab($('#main .tab.' + targets[2]), tabs); 
-            }
+            var tabTarget = targets[1];
+            focusOnTab($('#main .tab.' + tabTarget), tabs); 
           }
         });
     </script>

@@ -51,8 +51,7 @@ body .header, body .footer {
   font-size: inherit;
 }
 
-.main .content{ height: 85%; font-size: 1.5em; display: none; padding: .5em .5em 0 0;}
-.main .content.focus { display: block; }
+.main .content{ height: 85%; font-size: 1.5em; padding: .5em .5em 0 0; }
 
 .main .column-two .tab { font-size: 2em; height: 2em; padding-left: .5em; border-width: 1px 1px 0 1px; border-style: dotted; cursor: pointer; }
 .main .column-two .tab.focus, .main .column-two .tab:hover { color: white; }
@@ -74,7 +73,7 @@ body .header, body .footer {
 .main .column-two .oss, .main .column-two .oss .colborder { border-color: #00aaaa; }
 .main .column-two .oss .colborder { border-style: dotted; }
 
-.main .column-two .copy { border-width: 1px 1px 0 0; border-style: dotted; padding: .75em; display: none; }
+.main .column-two .copy { border-width: 1px 1px 0 0; border-style: dotted; padding: .75em; display: none;}
 .main .column-two .copy.focus { display: block; }
 .main .column-two .copy p { line-height: 1.5em; margin-bottom: .5em;}
 

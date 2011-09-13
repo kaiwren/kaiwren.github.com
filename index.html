@@ -57,26 +57,15 @@
       </div>
     </div>
     <script type="text/javascript">
-        function((function(){
+        $(document).ready(function(){
           var tabs = $('#main .work .tab');
-          var menuItems = $('#main .menu-item');
           var focusHash = window.location.hash;
           var contentBoxes = $('#main .content')
-          
-          menuItems.click(function(){
-            focusOnMenuItem($(this));
-          });
-          
+                    
           tabs.click(function(){
             focusOnTab($(this));
           });
-          
-          function focusOnMenuItem(menuItem){
-            var title = menuItem.attr('title');
-            focusOn(menuItem, menuItems);
-            focusOn($('#main .content.' + title), contentBoxes);
-          }
-          
+                    
           function focusOnTab(tabElement){
             var copyBoxes = $('#main .content.work .copy');
             var title = tabElement.attr('title');
@@ -91,14 +80,8 @@
           
           if(focusHash != null && focusHash !=''){
             var targets = focusHash.split('#');
-            var menuTarget = targets[1];
-            var tabTarget = targets[2];
-            if(menuTarget == 'me' || menuTarget == 'work' || menuTarget == 'code'){ 
-              focusOnMenuItem($('#main .menu-item.' + menuTarget)); 
-            }
-            if(tabTarget == 'biz' || tabTarget == 'ruby' || tabTarget == 'agile'){ 
-              focusOnTab($('#main .tab.' + targets[2]), tabs); 
-            }
+            var tabTarget = targets[1];
+            focusOnTab($('#main .tab.' + tabTarget), tabs); 
           }
         });
     </script>
