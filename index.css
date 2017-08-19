@@ -33,6 +33,10 @@
 .kaiwren a.news:hover {
 }
 
+ul.items {
+  margin-right: 10%;
+  margin-left: 10%;	
+}
 
 .top1 {
   margin-top: 1%;
