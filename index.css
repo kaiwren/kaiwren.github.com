@@ -38,6 +38,10 @@ ul.items {
   margin-left: 10%;	
 }
 
+ul.items li {
+	margin-bottom: 10px;
+}
+
 .top1 {
   margin-top: 1%;
 }
