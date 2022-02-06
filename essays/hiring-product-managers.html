@@ -14,6 +14,32 @@
 		  font-family: 'Fira Sans', sans-serif;
 		  color: #000000;
 		}
+		
+		h2 {
+		  margin-bottom: 0.5em;
+		}
+		
+		.after-h1 {
+		  border-bottom: 1px solid #bbbbbb;
+		  margin-bottom: 1.5em;
+		}
+		
+		.footer {
+		  margin: 0.5em 0 1.5em 0;
+		}
+		
+		table {
+		  margin: 0.5em 0 0.5em 0.5em;
+		}
+		
+		table thead tr {
+		  background: #eeeeee;		  
+		}
+				
+		table td, table th {
+		  padding: 0.1em 1em 0.1em 1em;
+		  border: 1px solid #bbbbbb;
+		}
 	</style>
   <title>Hiring Product Managers</title>	
   </head>
@@ -21,12 +47,29 @@
 	<div class="body container">
 		<div class="content row justify-content-center">
 		  <div class="col-10">
-		  	  <h1 id="hiring-product-managers">Hiring Product Managers</h1>
-			  <a class="twitter-share-button" 
-			  href="https://twitter.com/intent/tweet?text=Hiring%20Product%20Managers&via=ponnappa">Tweet</a>
-		  	  <a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+		  	  <h1 class="no_toc" id="hiring-product-managers">Hiring Product Managers</h1>
+<div class="after-h1">
+<a class="twitter-share-button" 
+href="https://twitter.com/intent/tweet?text=Hiring%20Product%20Managers&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+</div>
+			  
+<ol id="markdown-toc">
+  <li><a href="#role" id="markdown-toc-role">Role</a>    <ol>
+      <li><a href="#control" id="markdown-toc-control">Control</a></li>
+      <li><a href="#direction" id="markdown-toc-direction">Direction</a></li>
+      <li><a href="#performance" id="markdown-toc-performance">Performance</a></li>
+      <li><a href="#non-fungible" id="markdown-toc-non-fungible">Non fungible</a></li>
+    </ol>
+  </li>
+  <li><a href="#thankless" id="markdown-toc-thankless">Thankless</a></li>
+  <li><a href="#kneecapped" id="markdown-toc-kneecapped">Kneecapped</a></li>
+  <li><a href="#are-you-the-problem" id="markdown-toc-are-you-the-problem">Are you the problem?</a></li>
+  <li><a href="#still-want-to-hire-a-product-manager" id="markdown-toc-still-want-to-hire-a-product-manager">Still want to hire a Product Manager?</a></li>
+  <li><a href="#reviewers" id="markdown-toc-reviewers">Reviewers</a></li>
+  <li><a href="#references" id="markdown-toc-references">References</a></li>
+</ol>
 
-<p></p>
 <p>It’s bloody hard to successfully hire Product Managers in tech startups.</p>
 
 <p>The low success rate of Product Manager hiring comes as a surprise to many. If you take industry advice at face value, hiring a Product Manager seems to be the de facto solution to 99% of startup problems.</p>
@@ -40,36 +83,66 @@
   <li>Senior PMs are too expensive? Just hire 2 junior PMs.</li>
 </ul>
 
-<p>Yet this advice is rarely paired with how damn hard it is to find a legit PM, and how difficult it is for PMs to actually crack these problems. So before we decide to hire a PM, we need to understand the kind of person who thrives in the role.</p>
+<p>Yet this advice is rarely paired with how damn hard it is to find a legit PM, and how difficult it is for PMs to actually crack these problems. So before we decide to hire a PM, we need to understand the the role, and the kind of person who thrives in it.</p>
 
-<h2 id="product-management-roles-are-not-fungible">Non fungible</h2>
-<p></p>
-<p>PM roles aren't fungible.</p>
+<h2 id="role">Role</h2>
+
+<p>A common answer in the popular narrative to “What does a Product Manager do?” is “The Product Manager is a mini-CEO.” I think this is a great jumping-off point for understanding the role.</p>
+
+<p>While the claim is true to some extent, it’s worth exploring the manner in which the CEO role is analogus to a Product Managers… and how it isn’t.</p>
+
+<h5 id="control">Control</h5>
+
+<p>One of the biggest differences is <em>everyone</em> in the organization reports into the CEO directly or indirectly. In contrast, <em>nobody</em> in the organization reports to a PM who is handling delivery as it is essentially an individual contributor role. Even when the PM working on delivery is in a non-IC role - often called <a href="https://svpg.com/the-gpm-role/">Group Product Manager</a> - a hybrid role focussed on coaching rather than control. Only when the PM moves into a functional role - something like a Director of Product - does the PM have reporting control over others. Even then, it’s only over the PMs reporting into them, never any of the numerous other functions that have to come together to ship a product.</p>
+
+<h5 id="direction">Direction</h5>
+
+<p>In a well run startup, the Product Manager, just like the CEO, is free to define objectives within a framework of constraints, and is accountable for their delivery. The CEO’s framework of constraints is defined by the board and the market, and the PM’s framework of constraints is defined by the CEO directly in smaller startups, or indirectly through the PM org in larger ones.</p>
+
+<p>In early stage startups, the scope of the product is usually too small for the CEO to delegate product direction. It just isn’t possible for the CEO to come up with a meaningful framework of constraints <em>that is a subset of their own framework of constraints</em> that they can use to delegate product goal-setting to prospective PMs. In this situation, it’s meaningless to hire Product Managers. If you do, you’ve either <a href="#kneecapped">kneecapped</a> them by preventing them from setting direction, or you’ve hired someone else to build your startup for you.</p>
+
+<p>If the CEO of an early stage startup is struggling to scale up execution, hiring Product Managers can even be harmful; it may be far more productive to explore hiring Project Managers, or setting an Office of the CEO under a Chief of Staff.</p>
+
+<h5 id="performance">Performance</h5>
+
+<p>The performance of a CEO is a complex beast, assessed through some part business metrics, some part market perception and some part stakeholder popularity contest.</p>
+
+<p>The performance of a PM is usually assessed through a trad HR perf review process.</p>
+
+<p>The CEO takes both upside and downside exposure to business performance as well as acts of god. The CEO can be rewarded and punished for things they had nothing to do with. The CEO performance assessment ‘process’ such as it is, is representative of the essentially highly random nature of the role - to use Taleb’s terminology, the CEO role is a classic <a href="https://people.wou.edu/~shawd/mediocristan--extremistan.html">extremistan</a> role, and typical CEO performance assessment reflects this.</p>
+
+<p>The PM takes no upside or downside exposure outside of what is normal for a startup employee, i.e stock options. However, since the nature of product is to fail, the PM statistically tends to have far more failures on their record than successes. This does not bode well when one is assessed in a trad HR perf review process. While the PMs role and responsibilities are similar, albeit scaled down, the performance assessment process that is common in the industry does not recognise this reality. Trad HR perf review assumes low external randomness and high correlation of impact to skill and effort. Again, using Taleb’s terminology, the PM role is an <a href="https://people.wou.edu/~shawd/mediocristan--extremistan.html">extremistan</a> role which is assessed like a <a href="https://people.wou.edu/~shawd/mediocristan--extremistan.html">mediocristan</a> role.</p>
+
+<h5 id="non-fungible">Non fungible</h5>
+
+<p>PM roles aren’t generally fungible, just like how CEO roles aren’t.</p>
 
 <p>Product Management is, in a way, what I like to call a negative-space role. There are all these different specialisations in a tech startup that are supposed to work together to delight customers… but don’t. They fail because of all these gaps between them, which means they don’t mesh well together. As the PM, you have to study and understand these gaps, this negative space between specialisations and teams - and then slide in and fill them so that everyone works smoothly together to get the product out of the door.</p>
 
-<p>The nature and shape of this negative space is different in different companies, indeed, even in the same company over time. While industry wisdom does distinguish between, for example, B2B and B2C PMs, the nuance stops there. The appreciation of the fluid, heterogenous nature of the role and what it means for successfully hiring and onboarding a PM is generally missing.</p>
+<p>There are strong craft connotations to this description, and as a consequence, strength in the craft is far more important to index on over domain experience. Strong PMs adapt like crazy to shifting conditions. Weak PMs are rigid in the face of change.</p>
+
+<p>The nature and shape of this negative space is different in different companies, indeed, even in the same company over time. While industry wisdom does distinguish between, for example, B2B and B2C PMs, the nuance in the popular narrative stops there. The appreciation of the fluid, heterogenous nature of the role and what it means for successfully hiring and onboarding a PM is generally missing.</p>
 
 <p>When the startups I advise bring this up, I generally advocate working backward from the hypothetical product manager’s performance reviews. “What does this person need to deliver to get a raise?” and “What, if not delivered in six months, will result in you letting this person go?” are the questions I ask to help sharpen the job description and set up the right expectations.</p>
 
 <p>No two product management roles are the same.</p>
 
-<h2 id="product-management-roles-are-thankless">Thankless</h2>
+<h2 id="thankless">Thankless</h2>
 
-<p></p>
-<p>Product Management is a bloody tough job, and thankless to boot.</p>
+<p>As you may have concluded by now, the PM role is a rather thankless one. No direct control,</p>
 
 <p>None of these people and teams that you’re bringing together through your negative-space-filling-magic report to you, so you can’t order them to do anything. You, the PM, definitely report to someone who definitely is ordering you to get shit done. Your performance reviews are thankless - if everything by some miracle comes together, you were just doing your job. If the numbers go up, it was the market, or marketing, or sales.</p>
 
 <p>Consistently scoring a ‘High Performer’ or equivalent rating over several review cycles is well nigh impossible.</p>
 
-<p>It takes a special kind of person to thrive in this kind of a role. The best PMs I’ve worked with are all masochists at some level - willing to deal with extreme levels of organisational ingratitude for the satisfaction of seeing a product make a difference to the customer. Many (though not all) were ex-entrepreneurs. PMs, especially in <a href="https://feld.com/archives/2019/05/wartime-ceo/">wartime</a> have to demonstrate extreme professional courage by routinely upsetting the powers that be in order to ensure the product succeeds. Many young MBA types these days say want to become PMs because they lack the courage to startup. I find this stance hilarious because unless you spend your career entirely in <a href="https://feld.com/archives/2019/05/wartime-ceo/">peacetime</a> - which would require tremendous amounts of luck - a core requirement of the role is routinely putting your next perf review or two on the line, indeed being willing to get fired.</p>
+<p>It takes a special kind of person to thrive in this kind of a role. The best PMs I’ve worked with are all masochists at some level - willing to deal with extreme levels of organisational ingratitude for the satisfaction of seeing a product make a difference to the customer. Many (though not all) were ex-entrepreneurs. PMs, especially in <a href="https://feld.com/archives/2019/05/wartime-ceo/">wartime</a>, have to demonstrate extreme professional courage by routinely upsetting the powers that be in order to ensure the product succeeds. Many young MBA types these days say want to become PMs because they lack the courage to startup. I find this stance hilarious because unless you spend your career entirely in <a href="https://feld.com/archives/2019/05/wartime-ceo/">peacetime</a> - which would require tremendous amounts of luck - a core requirement of the role is routinely putting your next perf review or two on the line, indeed being willing to get fired. That’s a significant amount of courage we’re talking about.</p>
+
+<p>Courage is at the heart of Product Management.</p>
 
 <p>The PMs you see on social media who act as though they’ve got this sexy job with a lot of power and freedom are either over-the-top employer branding types, or children playing at product management.</p>
 
-<h2 id="product-managers-are-kneecapped-on-day-1">Kneecapped</h2>
+<h2 id="kneecapped">Kneecapped</h2>
 
-<p></p>
 <p>So now that we know the kind of persona we’re looking for, let’s look to setting them up for success, haha. I love that phrase, so polished and business-y.</p>
 
 <p>Most PMs are hired to solve problems, but are never equipped and empowered with the resources and tools to solve them, leaving them kneecapped from the get go. This happens for structural reasons that are really quite messed up to address once you start to grok them.</p>
@@ -86,7 +159,6 @@
 
 <h2 id="are-you-the-problem">Are you the problem?</h2>
 
-<p></p>
 <p>I’ve left the tough one for last.  The most egregious failure to set-up-for-success is also the most painful to address. Sometimes, as an exec, when you’re advised to hire a Product Manager, the real problem that the PM is being hired to solve is… you.</p>
 
 <p>I’ve been that exec, and likely will be again. You could be also.</p>
@@ -99,7 +171,7 @@
 
 <p>Carve the vision out of the CPO role and you more-or-less get a Chief of Staff, which is a very different kind of person, role and problem statement. As you can probably imagine, this doesn’t end well.</p>
 
-<h2 id="so-you-still-want-to-hire-a-product-manager">So you still want to hire a Product Manager?</h2>
+<h2 id="still-want-to-hire-a-product-manager">Still want to hire a Product Manager?</h2>
 
 <p>Here’s your checklist:</p>
 
@@ -112,11 +184,31 @@
 
 <p>Yes to all? Go for it.</p>
 
+<h2 id="reviewers">Reviewers</h2>
+
+<p>Thanks to everyone here for taking the time to give me detailed, thoughtful feedback on this post.</p>
+
+<ol>
+  <li><a href="https://twitter.com/championswimmer">Arnav Gupta</a></li>
+  <li><a href="https://twitter.com/husainzgh">Husain Ghadially</a></li>
+  <li><a href="https://twitter.com/TheHolyKau">Kaushik Subramanian</a></li>
+  <li><a href="https://twitter.com/moving___ahead">Sagar Dubey</a></li>
+  <li><a href="https://twitter.com/vikramadhiman">Vikrama Dhiman</a></li>
+</ol>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>Inspired, Cagan</li>
+  <li>Hard Thing about Hard Things, Horowitz</li>
+  <li>Black Swan, Taleb</li>
+</ol>
+
 		  </div>
 		</div>
 	  	<div class="footer d-flex justify-content-center">
 			<div>
-				Powered by bhook © <a href="https://sidu.in">Sidu Ponnappa</a>
+				© <a href="https://sidu.in">Sidu Ponnappa</a>
 			</div>
 	  	</div>
 	</div>
