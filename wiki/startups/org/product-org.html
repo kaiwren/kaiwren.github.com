@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<style>
+		body {
+		  font-family: 'Fira Sans', sans-serif;
+		  color: #000000;
+		}
+		
+		h2, h5 {
+		  margin-bottom: 0.5em;
+		}
+		
+		.after-h1 {
+		  border-bottom: 1px solid #bbbbbb;
+		  margin-bottom: 1.5em;
+		}
+		
+		.footer {
+		  margin: 0.5em 0 1.5em 0;
+		}
+		
+		table {
+		  margin: 0.5em 0 0.5em 0.5em;
+		}
+		
+		table thead tr {
+		  background: #eeeeee;		  
+		}
+				
+		table td, table th {
+		  padding: 0.1em 1em 0.1em 1em;
+		  border: 1px solid #bbbbbb;
+		}
+	</style>
+  <title>[Draft] Product Org</title>	
+  </head>
+  <body>
+	<div class="body container">
+		<div class="content row justify-content-center">
+		  <div class="col-10">
+		  	  <h1 id="draft-product-org">[Draft] Product Org</h1>
+<div class="after-h1">
+<a class="twitter-share-button" 
+href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+</div>
+			  
+<p><a href="../index.html">Home</a></p>
+
+<p>YMMV. Caveat emptor.</p>
+
+<p>What is a product org? A mental model I favour is that it is a system that accepts capital, skilled executors, management input and market information and uses these to create value by putting software in the hands of customers.</p>
+
+<h3 id="key-considerations">Key considerations</h3>
+
+<ol>
+  <li>Budget (How much can we pay?)</li>
+  <li>Acquisition (How do we find and hire people?)</li>
+  <li>Skills (What skills do we need, and how do we get them?)</li>
+  <li>Processes (What workflows that will be followed by the people we hire in order to create value for the customer? How do we <em>do</em> work, in essence?)</li>
+</ol>
+
+<h3 id="broad-problem-areas">Broad problem areas</h3>
+
+<p>Value for end users and customers almost always translates into one or more of status, information, money, convenience and time. A software product company aims to use software as a key means of delivering this value.</p>
+
+<p>Based on this mental model of value, one way to organize a product org is on the basis of the customer being served, and the nature of the value created for them.</p>
+
+<p>3 common groups that emerge:</p>
+
+<ol>
+  <li>End-user teams</li>
+  <li>Platform teams</li>
+  <li>Skill teams (or skill functions)</li>
+  <li>Customer success teams</li>
+</ol>
+
+<p>It’s important to note that in early stage businesses, <em>the same team may cover all three bases</em>. Specialization becomes necessary as the business scales.</p>
+
+<ol>
+  <li><strong>End-user teams</strong> - Teams that create value for (internal or external) end users by shipping products
+    <ol>
+      <li>Usually focused on improving end-user driven metrics like revenue, successful txns</li>
+      <li>End users could be external consumers or internal ones like operations, sales, marketing, HR etc.
+        <ol>
+          <li>Teams that serve internal end users have strong analogues to B2B saas businesses (see next section on Platform Teams)</li>
+        </ol>
+      </li>
+      <li>Need to iterate faster than the competition</li>
+      <li>Usually led by a product manager and staffed with a mix of folks with appropriate skills (aka cross-functional team aka squad aka pod aka 2-pizza team)</li>
+    </ol>
+  </li>
+  <li><strong>Platform teams</strong> - Teams that create value for the product org itself by shipping products
+    <ol>
+      <li>Centralize ownership of problems shared by several end-user teams
+        <ol>
+          <li>Consequently also accountable for establishing and driving standardization</li>
+        </ol>
+      </li>
+      <li>Usually focused on improving productivity metrics (eg. rate of deployments) and quality metrics (eg. uptime, adoption of a new standard)</li>
+      <li>Same as end-user teams - PM + x-fn squad, though often require higher technical focus</li>
+      <li>Have strong analogues to B2B SaaS businesses
+        <ol>
+          <li>Helpful to think of them as a B2B SaaS vendor that’s been acquired to focus exclusively on the parent</li>
+          <li>End-user teams acquire tooling/infra/etc budgets that they spend with platform teams.</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li><strong>Skill teams</strong> (aka functions) - Teams that create value for end-user and platform teams by providing skills as a service
+    <ol>
+      <li>Focused on providing necessary skills to end-user and platform teams through
+        <ol>
+          <li>hiring</li>
+          <li>training</li>
+          <li>feedback</li>
+          <li>incentives</li>
+          <li>pricing</li>
+          <li>best practices</li>
+        </ol>
+      </li>
+      <li>Skill teams have strong analogues to consulting firms</li>
+      <li>End-user and Platform teams acquire staffing budgets, and spend those budgets with skill teams to get their projects staffed</li>
+      <li>Do not own business goals (though would have critical input to both consumer and platform teams in deciding them)</li>
+      <li>Have to work with other skill functions to figure out and implement the answer to “How do we best build software?”</li>
+    </ol>
+  </li>
+  <li><strong>Customer success teams</strong> - Teams that do technical (often repedititve) work in support of customer requests or internal processes
+    <ol>
+      <li>Triaging incoming requests</li>
+      <li>Ad-hoc and semi-automated processes (cow paths which eventually become features - highways)</li>
+      <li>Knowledge base management and information sharing</li>
+      <li>Pre-sales (in B2B) and L2 support (in B2B and B2C)</li>
+      <li>Not always considered “part” of product, but in customer centrics orgs are vanguard and shield for product engineering</li>
+    </ol>
+  </li>
+</ol>
+
+<h3 id="risks-and-problem-areas">Risks and problem areas</h3>
+
+<p>The two most frequent risks with this setup is not-enough-skin-in-the-game/solipsism and us-vs-them.</p>
+
+<h4 id="end-user-teams">End-user teams</h4>
+
+<p>They are closest to end users. End-user teams tend to focus on direct impact to the user, and are less liable to think about improving overall productivity, quality and impact of the wider org.</p>
+
+<p>In situations of rapid growth, their targets and incentives push them toward short term thinking and piling on technical debt in the process of moving numbers.</p>
+
+<h5 id="relationships">Relationships</h5>
+
+<p>They will tend to feel that platform teams don’t care enough about the customer or are outright wasting time building shitty products that they are forced to use.</p>
+
+<p>They will tend to feel that skill teams are either too academic/not hands-on, especially in the matter of performance evaluation. They will also almost always feel that skill functions are failing to supply them with adequate numbers of people.</p>
+
+<h4 id="platform-teams">Platform teams</h4>
+
+<p>They are one step removed from end users. Platform teams are liable to focus on long term efficiency and productivity while losing focus on benefitting the end user <em>today</em>. They also risk low accountability because their impact is harder to quantify unless focussed on. This lack of direct feedback loops means they could become increasingly solipsistic, pursuing goals that do not actually benefit the wider business.</p>
+
+<p>Failures on a platform team will usually hurt multiple consumer teams and their work.</p>
+
+<h5 id="relationships-1">Relationships</h5>
+
+<p>They will tend to feel that consumer teams are selfish and don’t think of the greater good. They will also tend to believe that they possess superior technical skills. If the team is successful, then this may even be true, in which case they can cause a brain drain from other teams.</p>
+
+<p>Platform teams will almost always have key segments in the company that question their value and impact.</p>
+
+<h4 id="skill-teams">Skill teams</h4>
+
+<p>Of the three, they are furthest removed from the end user, indeed, from the core business, and consequently have the least skin in the game. The most common issue with skill teams is that they tend to not formally exist at all, or be delegated to HR.</p>
+
+<p>Because of their distance from and lack of accountability for core business metrics, skill teams run the highest risk of solipsism, churning out reams of documentation and best practices that the other two groups don’t care about and don’t adopt.</p>
+
+<p>Another risk is that they fail to balance quantity and quality of of the folks they provide to the other group and end up either severely shorthanded, or severely underskilled.</p>
+
+<p>Finally folks on skill teams may suffer from poor morale after a while because most of their work is administration, rather than the exercise of the skill which got them into this position and role.</p>
+
+<h5 id="relationships-2">Relationships</h5>
+
+<p>They will tend to feel that everyone else lacks process, and do not follow best practices.</p>
+
+<h4 id="mitigation">Mitigation</h4>
+
+<ol>
+  <li>us-vs-them and no-skin-in-the-game/solipsism
+    <ol>
+      <li>lots of face time between teams that need to collaborate</li>
+      <li>regular staffing rotations across end-user, platform and skill so that folks build up a better empathy for all three points of view</li>
+      <li>all skill team members also work end-user or platform pieces (in non-critical roles and/or part time) so that they remain hands-on</li>
+    </ol>
+  </li>
+  <li>Early warning
+    <ol>
+      <li>Unlimited sick leave
+        <ol>
+          <li>fantastic early warning mechanism - teams that are starting to go south will inevitably record a spike in sick leaves weeks or months in advance of any externally visible symptoms</li>
+        </ol>
+      </li>
+      <li>Lightly regulated internal tranfers
+        <ol>
+          <li>the teams everyone wants to leave and nobody wants to transfer to are the ones with problems</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+
+		  </div>
+		</div>
+	  	<div class="footer d-flex justify-content-center">
+			<div>
+				v. 237c09b © <a href="https://sidu.in">Sidu Ponnappa</a>
+			</div>
+	  	</div>
+	</div>
+	<script type='text/javascript'>
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-24685691-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </body>
+</html>
