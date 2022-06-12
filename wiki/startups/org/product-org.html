@@ -1,69 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet' type='text/css'>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet' type='text/css'>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-	<style>
-		body {
-		  font-family: 'Fira Sans', sans-serif;
-		  color: #000000;
-		}
-		
-		h2, h5 {
-		  margin-bottom: 0.5em;
-		}
-		
-		.after-h1 {
-		  border-bottom: 1px solid #bbbbbb;
-		  margin-bottom: 1.5em;
-		}
-		
-		.footer {
-		  margin: 0.5em 0 1.5em 0;
-		}
-		
-		table {
-		  margin: 0.5em 0 0.5em 0.5em;
-		}
-		
-		table thead tr {
-		  background: #eeeeee;		  
-		}
-				
-		table td, table th {
-		  padding: 0.1em 1em 0.1em 1em;
-		  border: 1px solid #bbbbbb;
-		}
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+      body {
+          font-family: 'Fira Sans', sans-serif;
+          color: #000000;
+      }
 
-		blockquote {
+      h2, h3, h4, h5 {
+          margin-bottom: 0.5em;
+          margin-top: 0.5em;
+      }
+
+      h2 {
+          border-bottom: 1px solid #eaeaea;
+      }
+
+      h2 a.header-anchor, h3 a.header-anchor, h4 a.header-anchor, h5 a.header-anchor {
+          float: left;
+          margin-left: -20px;
+          text-decoration: none;
+          outline: none;
+          position: relative;
+      }
+
+      h2 a.header-anchor:after, h3 a.header-anchor:after, h4 a.header-anchor:after, h5 a.header-anchor:after {
+          content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' fill-rule='evenodd' d='M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z'/%3E%3C/svg%3E");
+          box-sizing: border-box;
+          font-size: medium;
+          visibility: hidden;
+      }
+
+      h2:hover a.header-anchor:after, h3:hover a.header-anchor:after,
+      h4:hover a.header-anchor:after, h5:hover a.header-anchor:after {
+          visibility: visible;
+      }
+
+      div.after-h1 {
+          border-bottom: 1px solid #bbbbbb;
+          margin-bottom: 1.5em;
+      }
+
+      div.footer {
+          margin: 0.5em 0 1.5em 0;
+      }
+
+      table {
+          margin: 0.5em 0 1em 0.5em;
+      }
+
+      table thead tr {
+          background: #eeeeee;
+      }
+
+      table td, table th {
+          padding: 0.1em 1em 0.1em 1em;
+          border: 1px solid #bbbbbb;
+      }
+
+      blockquote {
           border-left: 10px solid #cccccc;
           background: #eeeeee;
           display: inline-block;
           padding: 1em;
-		}
-	</style>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-
-	  gtag('config', 'G-CT9TWBW0WR');
-	</script>
-  	<title>[Draft] Product Org</title>
-  </head>
-  <body>
-	<div class="body container">
-		<div class="content row justify-content-center">
-		  <div class="col-10">
-		  	  <h1 id="draft-product-org">[Draft] Product Org</h1>
+      }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-CT9TWBW0WR');
+  </script>
+  <title>[Draft] Product Org</title>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <path fill="#333" fill-rule="evenodd" d="M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z"/>
+</svg>
+<div class="body container">
+  <div class="content row justify-content-center">
+    <div class="col-10">
+      <h1 id="draft-product-org">[Draft] Product Org</h1>
 <div class="after-h1">
 <a class="twitter-share-button" 
 href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa">Tweet</a>
@@ -77,7 +104,7 @@ href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa
 
 <p>What is a product org? A mental model I favour is that it is a system that accepts capital, skilled executors, management input and market information and uses these to create value by putting software in the hands of customers.</p>
 
-<h3 id="key-considerations">Key considerations</h3>
+<h3 id="key-considerations">Key considerations<a href="#key-considerations" class="header-anchor"></a></h3>
 
 <ol>
   <li>Budget (How much can we pay?)</li>
@@ -86,7 +113,7 @@ href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa
   <li>Processes (What workflows that will be followed by the people we hire in order to create value for the customer? How do we <em>do</em> work, in essence?)</li>
 </ol>
 
-<h3 id="broad-problem-areas">Broad problem areas</h3>
+<h3 id="broad-problem-areas">Broad problem areas<a href="#broad-problem-areas" class="header-anchor"></a></h3>
 
 <p>Value for end users and customers almost always translates into one or more of status, information, money, convenience and time. A software product company aims to use software as a key means of delivering this value.</p>
 
@@ -162,35 +189,35 @@ href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa
   </li>
 </ol>
 
-<h3 id="risks-and-problem-areas">Risks and problem areas</h3>
+<h3 id="risks-and-problem-areas">Risks and problem areas<a href="#risks-and-problem-areas" class="header-anchor"></a></h3>
 
 <p>The two most frequent risks with this setup is not-enough-skin-in-the-game/solipsism and us-vs-them.</p>
 
-<h4 id="end-user-teams">End-user teams</h4>
+<h4 id="end-user-teams">End-user teams<a href="#end-user-teams" class="header-anchor"></a></h4>
 
 <p>They are closest to end users. End-user teams tend to focus on direct impact to the user, and are less liable to think about improving overall productivity, quality and impact of the wider org.</p>
 
 <p>In situations of rapid growth, their targets and incentives push them toward short term thinking and piling on technical debt in the process of moving numbers.</p>
 
-<h5 id="relationships">Relationships</h5>
+<h5 id="relationships">Relationships<a href="#relationships" class="header-anchor"></a></h5>
 
 <p>They will tend to feel that platform teams don’t care enough about the customer or are outright wasting time building shitty products that they are forced to use.</p>
 
 <p>They will tend to feel that skill teams are either too academic/not hands-on, especially in the matter of performance evaluation. They will also almost always feel that skill functions are failing to supply them with adequate numbers of people.</p>
 
-<h4 id="platform-teams">Platform teams</h4>
+<h4 id="platform-teams">Platform teams<a href="#platform-teams" class="header-anchor"></a></h4>
 
 <p>They are one step removed from end users. Platform teams are liable to focus on long term efficiency and productivity while losing focus on benefitting the end user <em>today</em>. They also risk low accountability because their impact is harder to quantify unless focussed on. This lack of direct feedback loops means they could become increasingly solipsistic, pursuing goals that do not actually benefit the wider business.</p>
 
 <p>Failures on a platform team will usually hurt multiple consumer teams and their work.</p>
 
-<h5 id="relationships-1">Relationships</h5>
+<h5 id="relationships-1">Relationships<a href="#relationships-1" class="header-anchor"></a></h5>
 
 <p>They will tend to feel that consumer teams are selfish and don’t think of the greater good. They will also tend to believe that they possess superior technical skills. If the team is successful, then this may even be true, in which case they can cause a brain drain from other teams.</p>
 
 <p>Platform teams will almost always have key segments in the company that question their value and impact.</p>
 
-<h4 id="skill-teams">Skill teams</h4>
+<h4 id="skill-teams">Skill teams<a href="#skill-teams" class="header-anchor"></a></h4>
 
 <p>Of the three, they are furthest removed from the end user, indeed, from the core business, and consequently have the least skin in the game. The most common issue with skill teams is that they tend to not formally exist at all, or be delegated to HR.</p>
 
@@ -200,11 +227,11 @@ href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa
 
 <p>Finally folks on skill teams may suffer from poor morale after a while because most of their work is administration, rather than the exercise of the skill which got them into this position and role.</p>
 
-<h5 id="relationships-2">Relationships</h5>
+<h5 id="relationships-2">Relationships<a href="#relationships-2" class="header-anchor"></a></h5>
 
 <p>They will tend to feel that everyone else lacks process, and do not follow best practices.</p>
 
-<h4 id="mitigation">Mitigation</h4>
+<h4 id="mitigation">Mitigation<a href="#mitigation" class="header-anchor"></a></h4>
 
 <ol>
   <li>us-vs-them and no-skin-in-the-game/solipsism
@@ -231,14 +258,14 @@ href="https://twitter.com/intent/tweet?text=%5BDraft%5D+Product+Org&via=ponnappa
 </ol>
 
 
-		  </div>
-		</div>
-	  	<div class="footer d-flex justify-content-center">
-			<div>
-				v. <a href="https://gitlab.com/india-startups/wiki/-/blob/237c09b4e3bda3a354f2416e39e23b697d52ff34/org/product-org.md">237c09b4</a>,
-				2022-02-10 © <a href="https://sidu.in">Sidu Ponnappa</a>
-			</div>
-	  	</div>
-	</div>
-  </body>
+    </div>
+  </div>
+  <div class="footer d-flex justify-content-center">
+    <div>
+                    v. <a href="https://gitlab.com/india-startups/wiki/-/blob/237c09b4e3bda3a354f2416e39e23b697d52ff34/org/product-org.md">237c09b4</a>,
+            2022-02-10 © <a href="https://sidu.in">Sidu Ponnappa</a>
+    </div>
+  </div>
+</div>
+</body>
 </html>
