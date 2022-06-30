@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <link href='https://fonts.googleapis.com/css?family=Fira+Sans' rel='stylesheet' type='text/css'>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+      body {
+          font-family: 'Fira Sans', sans-serif;
+          color: #000000;
+      }
+
+      h2, h3, h4, h5 {
+          margin-bottom: 0.5em;
+          margin-top: 0.5em;
+      }
+
+      h2 {
+          border-bottom: 1px solid #eaeaea;
+      }
+
+      h2 a.header-anchor, h3 a.header-anchor,
+      h4 a.header-anchor, h5 a.header-anchor {
+          float: left;
+          margin-left: -20px;
+          text-decoration: none;
+          outline: none;
+          position: relative;
+      }
+
+      h2 a.header-anchor:after, h3 a.header-anchor:after,
+      h4 a.header-anchor:after, h5 a.header-anchor:after {
+          content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' fill-rule='evenodd' d='M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z'/%3E%3C/svg%3E");
+          box-sizing: border-box;
+          font-size: medium;
+          visibility: hidden;
+      }
+
+      h2:hover a.header-anchor:after, h3:hover a.header-anchor:after,
+      h4:hover a.header-anchor:after, h5:hover a.header-anchor:after {
+          visibility: visible;
+      }
+
+      div.after-h1 {
+          border-bottom: 1px solid #bbbbbb;
+          margin-bottom: 1.5em;
+      }
+
+      div.youtube-video {
+          margin: 1em 0 1em 0;
+          width: 100%;
+          justify-content: center;
+          display: flex;
+      }
+
+      div.content {
+      }
+
+      div.footer {
+          margin: 0.5em 0 0.5em 0;
+      }
+
+      div.bhook-cta a {
+          font-size: x-small;
+          text-decoration: none;
+          margin-bottom: 1.5em;
+          color: #bbbbbb;
+      }
+
+      table {
+          margin: 0.5em 0 1em 0.5em;
+      }
+
+      table thead tr {
+          background: #eeeeee;
+      }
+
+      table td, table th {
+          padding: 0.1em 1em 0.1em 1em;
+          border: 1px solid #bbbbbb;
+      }
+
+      blockquote {
+          border-left: 10px solid #cccccc;
+          background: #eeeeee;
+          display: inline-block;
+          padding: 1em;
+      }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-CT9TWBW0WR');
+  </script>
+  <title>Running Recruiting</title>
+</head>
+<body>
+<div class="body container">
+  <div class="content row justify-content-center">
+    <div class="col-10">
+      <h1 class="no_toc" id="running-recruiting">Running Recruiting</h1>
+<div class="after-h1">
+<a class="twitter-share-button" 
+href="https://twitter.com/intent/tweet?text=Running+Recruiting&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p><a href="../../index.html">Home</a></p>
+
+<p>If you are a founder who has recently started hiring in tech, this page aims to share the
+mental models that are relevant to <em>operationally</em> running recruiting that I’ve developed over the years that I’ve been doing this.</p>
+
+<p>I’m staying focused on concepts relevant to the day-to-day <em>running</em> of a recruiting team and pipeline, and am going to minimise digressions into strategy.
+This means I’m going to provide little or no explanation of <em>why</em> I see things this way. Trying to do so has left me spinning my wheels these last few months as
+I write page after page of theory. I figure it’s better I unblock myself and ship this operational playbook, and the rest will get done when it gets done.</p>
+
+<p>As always, YMMV.</p>
+
+<h2 id="audience">Audience<a href="#audience" class="header-anchor"></a></h2>
+
+<p>The advice in this post isn’t for everyone, so I’m going to strive to clarify the segments to which any given piece of
+advice applies. This advice only applies to companies that are:</p>
+
+<ol>
+  <li>hiring for <a href="https://en.wikipedia.org/wiki/Craft">Craft</a> positions - programmers, product managers, designers, data
+scientists etc.</li>
+  <li>hiring for their “product division”, not their “IT department” if you know what I mean</li>
+  <li>hiring the <a href="https://twitter.com/ponnappa/status/1534058703451607040">best talent</a> they can afford</li>
+</ol>
+
+<p>A direct implication of these criteria is that so-called volume hiring, which I define roughly as <code>&gt; 20 hires per month</code> is operationally intractable under <a href="https://sidu.in/wiki/startups/recruiting/market.html">current hiring market conditions</a> unless you are paying obscenely above-market salaries.</p>
+
+<p>If you are looking to do <code>&lt; 1 hire per month</code> on average then I don’t believe that the RoI on building and running a hiring pipeline is justified.
+At volumes <code>&lt; 1 per month</code>, it’s more pragmatic to invest in low-cost social media driven content marketing and to use this to drive serendipitous hiring rather than take on the CapEx of building a pipeline.</p>
+
+<h2 id="lifecycle">Lifecycle<a href="#lifecycle" class="header-anchor"></a></h2>
+
+<p>Whoever runs Recruiting owns an operational funnel which I’ve described below. The labels used for the stages vary in the industry - these are the ones that I favour.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th> </th>
+      <th>Stage</th>
+      <th>Outcome</th>
+      <th>Quantity Metrics</th>
+      <th>Quality Metrics</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><a href="#sourcing">Sourcing</a></td>
+      <td>Generates Leads</td>
+      <td>CAC: <br />- $/Lead <br /><br />#/Cycle Time: <br />- Leads/Day <br />- Leads/Week <br />- etc.</td>
+      <td>Conversion ratios: <br />- Contact:Lead <br />- Lead:Prospective Employee <br />- Lead:Employee</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><a href="#lead-qualification">Lead qualification</a></td>
+      <td>Converts Leads to Prospects</td>
+      <td>CAC: <br />- $/Prospect <br /><br />- #/Cycle Time</td>
+      <td>Conversion ratios: <br />- Lead:Prospect <br />- Prospect:Prospective Employee <br />- Prospect:Employee</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><a href="#candidature">Candidature</a></td>
+      <td>Converts Prospects into Candidates</td>
+      <td>- #/Cycle Time</td>
+      <td>Conversion ratios: <br />- Prospect:Candidate <br />- Prospect:Prospective Employee <br />- Prospect:Employee</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><a href="#interview">Interview</a></td>
+      <td>Converts Candidates into Qualified Candidates</td>
+      <td>- #/Cycle Time <br />- # of panellists</td>
+      <td>- Interview Panel Utilisation <br />- Candidate Reschedules <br />- Interviewer Reschedules <br />- P50 &amp; P90 wait time for next interview <br /><br />Conversion ratio: <br />- Prospect:Prospective Employee</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><a href="#offer">Offer</a></td>
+      <td>Converts Qualified Candidates into Prospective Employees</td>
+      <td>#/Cycle Time</td>
+      <td>- P50 &amp; P90 candidate wait time for offer <br /><br />Conversion ratio: <br />- Candidate:Prospective Employee</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><a href="#join">Join</a></td>
+      <td>Converts Prospective Employees into Employees</td>
+      <td>#/Cycle Time</td>
+      <td>Conversion ratio: <br />- Prospective Employee:Employee</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="sourcing">Sourcing<a href="#sourcing" class="header-anchor"></a></h2>
+
+<p>Sourcing is a <em>discovery</em> and <em>identification</em> problem. It requires designing and running a process that can</p>
+
+<ol>
+  <li>find people (<code>Contacts</code>) in the market who broadly match the open positions we have</li>
+  <li>establish that reliable means of communication with them exist</li>
+  <li>create an up-to-date profile of the person</li>
+</ol>
+
+<p>A <code>Contact</code> isn’t a <code>Lead</code> until all three steps have been completed.</p>
+
+<h3 id="channels">Channels<a href="#channels" class="header-anchor"></a></h3>
+
+<p>The first rule of sourcing in tech is “whenever we want to hire, the people we want to hire are seldom actively looking for a
+change.” As a consequence, there is no one proven channel through which we can source.</p>
+
+<p>Identifying, prioritising and investing into developing channels is at the heart of sourcing. Most of the <code>Sourcing</code> metrics in the table above can (and should) be broken down per channel.</p>
+
+<p>At the highest level of abstraction, channels can be classified into <em>outbound</em> and <em>inbound</em> channels. In terms of activities, outbound channels involve sales-type activities while inbound channels involve marketing-type activities.</p>
+
+<h4 id="outbound-sourcing">Outbound sourcing<a href="#outbound-sourcing" class="header-anchor"></a></h4>
+
+<p>Outbound sourcing involves using offline and online networks to generate <code>Leads</code>. It will involve a lot of selling of the role because most of the folks identified this way won’t be looking out.
+At the time of writing, the single most popular outbound sourcing channel is LinkedIn Recruiter, which turns LinkedIn’s social graph into a searchable database of candidates.
+In my experience, however, the single most <em>valuable</em> channel is employee referrals. It’s worth making investments into employee referrals with the objective of making the process easy, pleasant and worthwhile for all participants.</p>
+
+<p>Other, high-quality channels exist like Twitter, Open Source networks, StackOverflow etc. - but they require relatively higher effort on the part of the person doing the sourcing.
+LinkedIn Recruiter reduces the problem to mindless keyword matching which is what makes it popular.</p>
+
+<p>The <code>Lead:Prospect</code> conversion ratio for outbound channels should be relatively high because those doing the sourcing have a clear set of signals to look for when sourcing.
+It should also improve over time as feedback from subsequent stages of the funnel drives the tuning of sourcing signals.</p>
+
+<h4 id="inbound-sourcing">Inbound sourcing<a href="#inbound-sourcing" class="header-anchor"></a></h4>
+
+<p>Inbound sourcing involves using a combination of content marketing, traditional advertising and performance marketing to attract the right kind of folks to apply. The precise mix depends on your budget and the marketing skills of your team.</p>
+
+<p>Here’s an example of a content marketing video we used to build up Gojek’s inbound hiring pipeline for PM, Design and Engineering positions back in 2018. ‘The Hard Copy’ did a <a href="https://thehardcopy.co/how-gojek-attracted-talent-in-india/">case study</a> on Gojek’s inbound strategy if you’re interested in more detail.</p>
+
+<div class="youtube-video">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/9p-wZG3RXqs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+</div>
+
+<p>Inbound channels suffer from a lot of noise at the top of the funnel. Most incoming <code>Contacts</code> will be junk applicants, and filtering out the noise to identify <code>Leads</code> is a largely manual process that can be quite painful to run.
+The advantage, however, is that inbound channels scale extremely well, and are highly complementary to outbound channels.</p>
+
+<p>The <code>Lead:Prospect</code> conversion ratio for inbound channels will always be extremely high simply because everyone applying is actually looking out for a change.
+Spinning up an inbound channel can dramatically improve <code>Lead:Prospect</code> and <code>Prospect:Candidate</code> conversion on existing outbound channels simply because folks can find out more about both the company and the role.</p>
+
+<p>If the brand built through inbound is sufficiently strong, you will find converting <code>Prospects</code> into <code>Candidates</code> becomes effortless. You should also experience a dramatic reduction in <code>Prospect -&gt; Candidate Cycle Time</code>.</p>
+
+<h4 id="accountability">Accountability<a href="#accountability" class="header-anchor"></a></h4>
+
+<p>Individuals doing outbound sourcing are accountable for their personal <code>Leads/Day</code>, <code>Leads/Week</code> etc. metrics and the health of the <code>Lead:Prospect</code> and <code>Lead:Employee</code> ratios for the <code>Leads</code> they source.</p>
+
+<p>The inbound team is accountable for <code>Leads/Day</code>, <code>Leads/Week</code> etc. metrics for each inbound channel, and the health of the <code>Lead:Prospect</code> and <code>Lead:Employee</code> ratios for those channels.</p>
+
+<p>The Head of Recruiting is accountable for these cumulatively across all channels, as well as the <code>$/Lead</code> and <code>$/Prospect</code> CAC metrics. These metrics should be broken down and tracked per recruiter involved in sourcing.</p>
+
+<h2 id="lead-qualification">Lead Qualification<a href="#lead-qualification" class="header-anchor"></a></h2>
+
+<p>This stage of the process converts <code>Leads</code> into <code>Prospects</code>. The simplest way to do this is to create a checklist of signals to look for across a combination of the person’s resume,
+online footprint and most importantly for craft hiring, any work they have in the public domain such as open source.</p>
+
+<p>It’s important to note that at small scales, the qualification process is owned by the hiring manager because they have an intuitive, tacit understanding of the relevant signals for a given open position.
+But as the system is scaled up, qualification will need to be handled by in-house or contract recruiters who may not share that tacit knowledge, and will need the checklist to ensure that <code>Lead:Prospect</code> ratios stay healthy.</p>
+
+<p>If <code>Lead:Prospect</code> ratios become unhealthy, it will result in a increase in <code>Interview Panel Utilisation</code> without a commensurate improvement in <code># of Employees/Cycle time</code>.</p>
+
+<h4 id="accountability-1">Accountability<a href="#accountability-1" class="header-anchor"></a></h4>
+
+<p>Anyone who qualifies leads - usually recruiters or hiring managers - is accountable for their personal <code>Lead:Prospect</code> and <code>Prospect:Employee</code> ratio.</p>
+
+<p>The Head of Recruiting is accountable for the overall <code>Lead:Prospect</code> and <code>Prospect:Employee</code> ratios.</p>
+
+<h2 id="candidature">Candidature<a href="#candidature" class="header-anchor"></a></h2>
+
+<p>This stage of the process converts <code>Prospects</code> into <code>Candidates</code>.
+It involves recruiters and hiring managers reaching out to <code>Prospects</code> and convincing them to participate in the interview process for a particular open position.</p>
+
+<p>The conversion metrics for this stage are heavily influenced by the company’s employer brand in general and the hiring manager’s personal brand in particular.
+The <code>Prospect:Candidate</code> ratio of one’s outbound channels is one of the best proxy metrics to judge one’s employer brand.</p>
+
+<p>The level of warmth and hospitality delivered to <code>Leads</code> and <code>Prospects</code> when recruiters and hiring managers engage with them also is a significant factor.</p>
+
+<p>A coherent narrative for the company, the function and for specific open positions is crucial to improving this metric. Every open position should have the recruiting equivalent of
+a pre-sales toolkit - a document that defines these narratives, and acts as a knowledge base for recruiters and hiring managers to help them sell the role better.</p>
+
+<h3 id="accountability-2">Accountability<a href="#accountability-2" class="header-anchor"></a></h3>
+
+<p>The hiring manager is accountable for developing the parts of the pre-sales toolkit relevant for a specific open position.
+The Head of Function (typically a VP or CXO) is accountable for developing the narrative for their function.
+The Founder/CEO is accountable for developing the company narrative.</p>
+
+<p>The Head of Recruiting is accountable for ensuring that all pre-sales toolkit narratives are coherent across the abstractions of position, function and company, and for the health of the conversion ratio.</p>
+
+<h2 id="interview">Interview<a href="#interview" class="header-anchor"></a></h2>
+
+<p>Interview stages convert <code>Candidates</code> into <code>Qualified Candidates</code>. Designing and running interview loops requires a sharp focus on developing a pool of interviewers and ensuring that they are not overloaded, or worse,
+wasting their time rejecting low quality <code>Leads</code> who should never have made it to the <code>Candidate</code> stage.</p>
+
+<p>It requires a fair bit of operational muscle to coordinate, schedule and reschedule interviews as the availability of candidates and panellists changes.
+Having specialists - usually called <em>Recruiting Coordinators</em> on the recruiting team whose focus is scheduling and coordination can help with this.</p>
+
+<p>Avoid <a href="https://sidu.in/wiki/startups/recruiting/interviews.html">artisanal interviewing</a>, coach panellists to focus on assessing candidates rather than asserting status and ensure high levels of hospitality
+from recruiters and panellists to candidates both while scheduling as well as during interviews.</p>
+
+<p>Any candidate worth hiring always has options, so being courteous and friendly at every stage of the process is table stakes.</p>
+
+<p>A key metric to track here is <code># of referrals from rejected candidates</code>. This is a referral channel that is the simplest, surest proxy for a great hiring process.</p>
+
+<p>The stages of the interview loop should be split into <em>filtration</em> stages and <em>selection</em> stages.</p>
+
+<h3 id="filtering">Filtering<a href="#filtering" class="header-anchor"></a></h3>
+
+<p>Filtration stages exist to ensure that low-quality candidates are detected and rejected with the aim of minimising panel load. They should be simple to schedule, and take very little time and effort from panellists.</p>
+
+<p>In markets with very high fraud rates, i.e where candidates routinely exaggerate or misrepresent their capabilities, filtration stages are critical to ensuring that legitimate candidates get the attention they deserve without panels burning out.</p>
+
+<p>Filtration stages should be laser focused on <a href="https://wiki.c2.com/?FizzBuzzTest">fizz-buzz evaluations</a>. The idea is to assess in the cheapest, quickest manner possible if a particular candidate exceeds the <em>lower bar</em> for an open position.
+These stages should also be tuned to ensure that viable candidates aren’t being filtered due to a tendency to naively and quickly judge for upper-bound criteria. That should be the focus of the selection stages.</p>
+
+<h3 id="selecting">Selecting<a href="#selecting" class="header-anchor"></a></h3>
+
+<p>Selection stages exist to ensure that candidates meet or exceed the <em>upper bar</em> for an open position.
+The upper bar can never be objectively defined for craft hiring, but it should be subjectively defined using interview templates that include <a href="https://socraticowl.com/post/hire-like-the-israeli-military/">standardised question-banks and scoring</a>.</p>
+
+<p>Creating a <a href="https://www.gojek.io/blog/from-subjective-interviews-to-binary-hires-a-story">shared understanding among panellists of the upper bar</a> and intentionally evolving that definition is crucial to getting this right.</p>
+
+<h3 id="accountability-3">Accountability<a href="#accountability-3" class="header-anchor"></a></h3>
+
+<p>The design of interview loops and the development of a pool of panellists is the responsibility of the Head of function, usually a VP or CXO.</p>
+
+<p>The operational aspects of scheduling and coordinating interviews is the responsibility of the Head of Recruiting.</p>
+
+<h2 id="offer">Offer<a href="#offer" class="header-anchor"></a></h2>
+
+<p>The offer stage converts <code>Qualified Candidates</code> into <code>Prospective Employees</code>. This usually involves zeroing in on a compensation package that is acceptable to a <code>Qualified Candidate</code>, and will lead to them signing an offer letter.</p>
+
+<p>Compensation guidelines for recruiters and hiring managers to use when making offers are essential to speeding up the process.</p>
+
+<h3 id="accountability-4">Accountability<a href="#accountability-4" class="header-anchor"></a></h3>
+
+<p>Finance and the Head of Function are jointly responsible for desiging a compensation framework.
+The hiring manager is accountable for negotiating and making offers.</p>
+
+<h2 id="join">Join<a href="#join" class="header-anchor"></a></h2>
+
+<p>The process reaches its conclusion when a <code>Prospective Employee</code> actually shows up for work, converting them into <code>Employees</code>. In hot markets, it’s not unusual for <code>Prospective Employees</code> who have
+already signed an offer letter to renege on it because they subsequently receive another offer that they consider superior.</p>
+
+<p>Engaging <code>Prospective Employees</code> right up to their joining dates is crucial to the health of the relevant conversion metrics.</p>
+
+<h3 id="accountability-5">Accountability<a href="#accountability-5" class="header-anchor"></a></h3>
+
+<p>The hiring manager is accountable for engaging <code>Prospective Candidates</code> from the time they accept an offer until they join.</p>
+
+
+    </div>
+  </div>
+  <div class="footer d-flex justify-content-center">
+    <div>
+                    v. <a href="https://gitlab.com/india-startups/wiki/-/blob/1bb715f2aad245b276a2e8158856b0d5359866da/recruiting/operations/running-recruiting.md">1bb715f2</a>,
+            2022-07-01 © <a href="https://sidu.in">Sidu Ponnappa</a>
+    </div>
+  </div>
+  <div class="bhook-cta d-flex justify-content-center">
+    <a href="https://gitlab.com/kaiwren/bhook" target="_blank">powered by bhook</a>
+  </div>
+</div>
+</body>
+</html>
