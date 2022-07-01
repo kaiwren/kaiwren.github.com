@@ -1,0 +1,7 @@
+mount:
+  essays:
+    from: ../essays
+    to: ./essays
+  startups:
+    from: ../india-startups/startups
+    to: ./wiki/startups
