@@ -3,5 +3,5 @@ mount:
     from: ../essays
     to: ./essays
   startups:
-    from: ../india-startups/startups
+    from: ../india-startups/wiki
     to: ./wiki/startups
