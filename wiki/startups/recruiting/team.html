@@ -19,11 +19,18 @@
           --title-font-weight: 500;
           --header-font-family: 'Fira Sans';
           --header-font-weight: 500;
+          --content-width-large-screen: 45em;
           --content-font-family: 'Fira Sans';
           --content-line-height: 1.7rem;
           --content-font-weight: 400;
           --paragraph-spacing: 1rem;
           --toc-font-weight: 400;
+      }
+
+      @media only screen and (min-width: 64em) {
+          div.content {
+              width: var(--content-width-large-screen);
+          }
       }
 
       body {
