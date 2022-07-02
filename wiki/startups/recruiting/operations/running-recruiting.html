@@ -125,6 +125,49 @@ I write page after page of theory. I figure it’s better I unblock myself and s
 
 <p>As always, YMMV.</p>
 
+<h2 class="no_toc" id="index">Index<a href="#index" class="header-anchor"></a></h2>
+
+<ol id="markdown-toc">
+  <li><a href="#audience" id="markdown-toc-audience">Audience</a></li>
+  <li><a href="#lifecycle" id="markdown-toc-lifecycle">Lifecycle</a></li>
+  <li><a href="#sourcing" id="markdown-toc-sourcing">Sourcing</a>    <ol>
+      <li><a href="#channels" id="markdown-toc-channels">Channels</a>        <ol>
+          <li><a href="#outbound-sourcing" id="markdown-toc-outbound-sourcing">Outbound sourcing</a></li>
+          <li><a href="#inbound-sourcing" id="markdown-toc-inbound-sourcing">Inbound sourcing</a></li>
+          <li><a href="#accountability" id="markdown-toc-accountability">Accountability</a></li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+  <li><a href="#lead-qualification" id="markdown-toc-lead-qualification">Lead Qualification</a>    <ol>
+      <li><a href="#accountability-1" id="markdown-toc-accountability-1">Accountability</a></li>
+    </ol>
+  </li>
+  <li><a href="#candidature" id="markdown-toc-candidature">Candidature</a>    <ol>
+      <li><a href="#accountability-2" id="markdown-toc-accountability-2">Accountability</a></li>
+    </ol>
+  </li>
+  <li><a href="#interview" id="markdown-toc-interview">Interview</a>    <ol>
+      <li><a href="#filtering" id="markdown-toc-filtering">Filtering</a></li>
+      <li><a href="#selecting" id="markdown-toc-selecting">Selecting</a></li>
+      <li><a href="#accountability-3" id="markdown-toc-accountability-3">Accountability</a></li>
+    </ol>
+  </li>
+  <li><a href="#offer" id="markdown-toc-offer">Offer</a>    <ol>
+      <li><a href="#accountability-4" id="markdown-toc-accountability-4">Accountability</a></li>
+    </ol>
+  </li>
+  <li><a href="#join" id="markdown-toc-join">Join</a>    <ol>
+      <li><a href="#accountability-5" id="markdown-toc-accountability-5">Accountability</a></li>
+    </ol>
+  </li>
+  <li><a href="#onboard" id="markdown-toc-onboard">Onboard</a>    <ol>
+      <li><a href="#accountability-6" id="markdown-toc-accountability-6">Accountability</a></li>
+    </ol>
+  </li>
+  <li><a href="#optimizing" id="markdown-toc-optimizing">Optimizing</a></li>
+</ol>
+
 <h2 id="audience">Audience<a href="#audience" class="header-anchor"></a></h2>
 
 <p>The advice in this post isn’t for everyone, so I’m going to strive to clarify the segments to which any given piece of
@@ -199,8 +242,21 @@ At volumes <code>&lt; 1 per month</code>, it’s more pragmatic to invest in low
       <td>#/Cycle Time</td>
       <td>Conversion ratio: <br />- Prospective Employee:Employee</td>
     </tr>
+    <tr>
+      <td>7</td>
+      <td><a href="#onboard">Onboard</a></td>
+      <td>Converts Employees into Tenured Employees</td>
+      <td>#/Cycle Time</td>
+      <td>Conversion ratio: <br />- Employees: Tenured Employees</td>
+    </tr>
   </tbody>
 </table>
+
+<p>Overall metrics:
+- End-to-end cycle time
+- End-to-end throughput
+- Number of referrals from rejected candidates
+- Number of +ve and -ve posts on Glassdoor related to interviews</p>
 
 <h2 id="sourcing">Sourcing<a href="#sourcing" class="header-anchor"></a></h2>
 
@@ -359,13 +415,47 @@ already signed an offer letter to renege on it because they subsequently receive
 
 <p>The hiring manager is accountable for engaging <code>Prospective Candidates</code> from the time they accept an offer until they join.</p>
 
+<h2 id="onboard">Onboard<a href="#onboard" class="header-anchor"></a></h2>
+
+<p>An ugly truth that we all hide from in recruiting is that the process isn’t done when a candidate joins - it’s done only when the candidate is proven to be a good fit in practice.</p>
+
+<p>We can define this milestone in many ways, but I prefer the operational simplicity of defining it as <code>Completes Two Consecutive Half-Yearly Review Cycles</code> without being categorised as an underperformer.</p>
+
+<h3 id="accountability-6">Accountability<a href="#accountability-6" class="header-anchor"></a></h3>
+
+<p>The reporting manager is accountable for ensuring <code>Employees</code> convert into <code>Tenured Employees</code> and to also ensure that the recruiting database is kept up-to-date in this regard.</p>
+
+<h2 id="optimizing">Optimizing<a href="#optimizing" class="header-anchor"></a></h2>
+
+<p>Improving these numbers requires careful instrumentation of recruiting processes, both online and offline. The challenge here cannot be overstated. 
+Simply ensuring that all participants log events and updates statuses in a timely manner is a non-trivial problem.</p>
+
+<p>You should choose an ATS that supports the logging of all these events and is capabable of reporting of all of these metrics on a daily, weekly, monthly and quarterly basis. 
+You should also be able to attribute specific metrics to channels or individuals where appropriate. 
+Personally, I have not had much success with commercial ATS software - none of them seem to be designed with an <a href="https://en.wikipedia.org/wiki/Operations_research">operations research</a> point-of-view
+and, to me, have always proven to be very painful bottlenecks in scaling up my hiring.</p>
+
+<p>I would recommend designing your system on top of a combination of</p>
+
+<ul>
+  <li>a tabular system like Google Sheets</li>
+  <li>a kanban process flow system like JIRA</li>
+  <li>a documentation system like Google Docs</li>
+</ul>
+
+<p>The fizzbuzz for a competent Head of Recruiting is the ability to describe their ideal design for such a system in considerable detail. 
+They will also have a long list of complaints regarding the limitations of the ATS software they have used in the past.</p>
+
+<p>Lastly, the performance assessments of folks doing sourcing should be strongly driven by the health of their individually attributed sourcing metrics, and they should have access
+to the reports that will drive this assessment. The approach here should be similar to how a sales team is run.</p>
+
 
     </div>
   </div>
   <div class="footer d-flex justify-content-center">
     <div>
-                    v. <a href="https://gitlab.com/india-startups/wiki/-/blob/1bb715f2aad245b276a2e8158856b0d5359866da/recruiting/operations/running-recruiting.md">1bb715f2</a>,
-            2022-07-01 © <a href="https://sidu.in">Sidu Ponnappa</a>
+                    v. <a href="https://gitlab.com/india-startups/wiki/-/blob/46c020dfd63b5526f3739a587b2a07bc52acb3cd/recruiting/operations/running-recruiting.md">46c020df</a>,
+            2022-07-02 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
   <div class="bhook-cta d-flex justify-content-center">
