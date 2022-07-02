@@ -545,13 +545,16 @@ Simply ensuring that all participants log events and update statuses in a timely
 Personally, I have not had much success with commercial ATS software - none of them seems to be designed with an <a href="https://en.wikipedia.org/wiki/Operations_research">operations research</a> point-of-view
 and, to me, have always proven to be very painful bottlenecks in scaling up my hiring.</p>
 
-<p>I would recommend designing your system on top of a combination of</p>
+<p>Given that no ATS I know of can do what is necessary, I would recommend designing your system on top of a combination of</p>
 
 <ul>
+  <li>an off-the-shelf ATS with strong data export capabilities</li>
   <li>a tabular system like Google Sheets</li>
-  <li>a kanban process flow system like JIRA</li>
+  <li>a metrics capable kanban process flow system like Jira</li>
   <li>a documentation system like Google Docs</li>
 </ul>
+
+<p>Yes, this will be an ugly kludge of a system, but I don’t see any alternative on the horizon.</p>
 
 <p>This system has to be backed by a rigorous, cadenced audit loop and a religious focus on stage-wise cycle-time and conversion ratios. 
 Recruiters, hiring managers and panellists involved in the process should have easy access to up-to-date metrics that are relevant to them.</p>
@@ -560,7 +563,7 @@ Recruiters, hiring managers and panellists involved in the process should have e
   </div>
   <div class="footer d-flex justify-content-center">
     <div>
-                    v. <a href="https://gitlab.com/india-startups/wiki/-/blob/d3bb69be5f00c00b4b624190c4fe42b2c4793dbc/recruiting/operations/running-recruiting.md">d3bb69be</a>,
+                    v. <a href="https://gitlab.com/india-startups/wiki/-/blob/a4e453011e903239d55a4895232bbd75babd9b4c/recruiting/operations/running-recruiting.md">a4e45301</a>,
             2022-07-03 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
