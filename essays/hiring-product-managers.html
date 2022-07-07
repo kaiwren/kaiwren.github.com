@@ -5,25 +5,30 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-  <link href='https://fonts.googleapis.com/css?family=Fira+Sans:500,400&display=swap' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400|Roboto+Condensed:400|Palanquin:400&display=swap' rel='stylesheet' type='text/css'>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
   <style>
       :root {
-          --header-margin-top: 0.5em;
+          --body-font-size: 1em;
+          --title-font-family: 'Palanquin';
+          --title-font-size: 3rem;
+          --title-font-weight: 400;
+          --header-font-family: 'Roboto Condensed';
+          --header-font-weight: 400;
+          --header-2-font-size: 2rem;
+          --header-3-font-size: 1.6818rem;
+          --header-4-font-size: 1.4142rem;
+          --header-5-font-size: 1.1892rem;
+          --header-margin-top: 1.7em;
           --header-margin-bottom: 0.5em;
-          --body-font-size: 1rem;
-          --title-font-family: 'Fira Sans';
-          --title-font-size: 2.5rem;
-          --title-font-weight: 500;
-          --header-font-family: 'Fira Sans';
-          --header-font-weight: 500;
-          --content-width-large-screen: 45em;
-          --content-font-family: 'Fira Sans';
+          --content-width-large-screen: 45rem;
+          --content-font-family: 'Roboto';
           --content-line-height: 1.7rem;
           --content-font-weight: 400;
           --paragraph-spacing: 1rem;
+          --paragaph-font-size: 1rem;
           --toc-font-weight: 400;
       }
 
@@ -31,6 +36,25 @@
           div.content {
               width: var(--content-width-large-screen);
           }
+      }
+
+      div.x-comparison {
+          font-size: 32px;
+      }
+
+      div.x-comparison span.x-comparison-title {
+          font-family: var(--title-font-family);
+          font-weight: var(--title-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-header {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-body {
+          font-family: var(--content-font-family);
+          font-weight: var(--content-font-weight);
       }
 
       body {
@@ -55,14 +79,27 @@
       }
 
       h2 {
+          font-size: var(--header-2-font-size);
           border-bottom: 1px solid #eaeaea;
+      }
+
+      h3 {
+          font-size: var(--header-3-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-4-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-5-font-size);
       }
 
       h2, h3, h4, h5 {
           font-family: var(--header-font-family);
           font-weight: var(--header-font-weight);
-          margin-bottom: var(--header-margin-top);
-          margin-top: var(--header-margin-bottom);
+          margin-top: var(--header-margin-top);
+          margin-bottom: var(--header-margin-bottom);
       }
 
       h2 a.header-anchor, h3 a.header-anchor,
@@ -88,6 +125,7 @@
       }
 
       div.content p {
+          font-size: var(--paragaph-font-size);
           margin-bottom: var(--paragraph-spacing);
       }
 
@@ -199,7 +237,7 @@ href="https://twitter.com/intent/tweet?text=Hiring+Product+Managers&via=ponnappa
 
 <p>While the claim is true to some extent, it’s worth exploring the manner in which the CEO role is analogous to a Product Management role… and how it isn’t.</p>
 
-<h5 id="direction">Direction<a href="#direction" class="header-anchor"></a></h5>
+<h3 id="direction">Direction<a href="#direction" class="header-anchor"></a></h3>
 
 <p>In a well run startup, the Product Manager, just like the CEO, is free to define objectives within a framework of constraints. The PM is also accountable for their delivery, again just like the CEO. The CEO’s framework of constraints is defined by the board and the market; the PM’s framework of constraints is in turn defined by the CEO to be a subset of their own. The CEO defines this framework directly in smaller startups, or indirectly through the PM org in larger ones.</p>
 
@@ -211,7 +249,7 @@ href="https://twitter.com/intent/tweet?text=Hiring+Product+Managers&via=ponnappa
 
 <p>If the CEO of an early stage startup is struggling with scaling up execution, hiring Product Managers for the wrong reasons can be extremely harmful; it may be more useful to explore hiring Project Managers, or setting up an Office of the CEO under a Chief of Staff.</p>
 
-<h5 id="performance">Performance<a href="#performance" class="header-anchor"></a></h5>
+<h3 id="performance">Performance<a href="#performance" class="header-anchor"></a></h3>
 
 <p>The performance of a CEO is a complex beast, assessed through some part business metrics, some part market perception, some part media narrative and some part stakeholder popularity contest.</p>
 
@@ -227,7 +265,7 @@ href="https://twitter.com/intent/tweet?text=Hiring+Product+Managers&via=ponnappa
 
 <p>Before you hire a PM, ask yourself how you will review their performance. Like, formally. This can be much harder than one would think at first glance, so if you don’t have a good answer, I would suggest you pause your hiring until you do.</p>
 
-<h5 id="control">Control<a href="#control" class="header-anchor"></a></h5>
+<h3 id="control">Control<a href="#control" class="header-anchor"></a></h3>
 
 <p>One of the biggest differences between a CEO and a PM is that <em>everyone</em> in the organisation reports directly or indirectly into the CEO. In contrast, <em>nobody</em> in the organisation reports to a PM, as it is essentially an individual contributor role. Even when the PM is in a non-IC role - often called <a href="https://svpg.com/the-gpm-role/">Group Product Manager</a> - it is with a focus on coaching other PMs rather than controlling them. Only when the PM moves into a functional leadership role - something like a Director of Product - does the PM have reporting control over others. Even then, it’s only over the PMs reporting into them, never any of the numerous other functions that have to come together to ship a product.</p>
 
@@ -246,7 +284,7 @@ href="https://twitter.com/intent/tweet?text=Hiring+Product+Managers&via=ponnappa
 
 <p>When hiring a PM, it’s easy for an exec level hiring manager to forget that the incoming PM will not have an aura to lean on. If the incoming PM was a CEO in their previous role - common when large companies acquire smaller ones - it can take them a long time to adapt to their new reality, and they will need support and guidance through the transition.</p>
 
-<h5 id="non-fungibility">Non fungibility<a href="#non-fungibility" class="header-anchor"></a></h5>
+<h3 id="non-fungibility">Non fungibility<a href="#non-fungibility" class="header-anchor"></a></h3>
 
 <p>PM roles generally aren’t fungible, just like how CEO roles aren’t. No two product management roles are the same.</p>
 
@@ -262,7 +300,7 @@ href="https://twitter.com/intent/tweet?text=Hiring+Product+Managers&via=ponnappa
 
 <p>When the startups I advise bring this up, I generally advocate working backward from the hypothetical product manager’s performance reviews. “What does this person need to deliver to get a raise?” and “What, if not delivered in six months, will result in you letting this person go?” are the questions I ask to help sharpen the job description and set up the right expectations.</p>
 
-<h5 id="skills">Skills<a href="#skills" class="header-anchor"></a></h5>
+<h3 id="skills">Skills<a href="#skills" class="header-anchor"></a></h3>
 
 <p>The non fungibility of PM roles means identifying the skills you need in a PM for a specific open position can be challenging.</p>
 
@@ -444,8 +482,8 @@ href="https://twitter.com/intent/tweet?text=Hiring+Product+Managers&via=ponnappa
   </div>
   <div class="footer d-flex justify-content-center">
     <div>
-                    v. 3d8a5f9d,
-            2022-02-15 © <a href="https://sidu.in">Sidu Ponnappa</a>
+                    v. f2d17428,
+            2022-07-08 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
   <div class="bhook-cta d-flex justify-content-center">
