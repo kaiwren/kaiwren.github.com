@@ -1,6 +1,11 @@
 # kaiwren.github.com
 
-Personal website at [sidu.in](https://sidu.in), generated with [bhook](https://gitlab.com/kaiwren/bhook).
+Source for [sidu.in](https://sidu.in), generated with [bhook](https://gitlab.com/kaiwren/bhook) and deployed via GitHub Pages.
+
+**Live site:**
+- [sidu.in](https://sidu.in) - Homepage
+- [sidu.in/essays/](https://sidu.in/essays/) - Essays
+- [sidu.in/wiki/startups/](https://sidu.in/wiki/startups/) - India Startup Wiki
 
 ## Structure
 
