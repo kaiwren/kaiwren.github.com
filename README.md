@@ -21,11 +21,13 @@ website/
    git clone git@github.com:kaiwren/kaiwren.github.com.git website
    git clone git@gitlab.com:kaiwren/essays.git
    git clone git@gitlab.com:india-startups/wiki.git india-startups-wiki
+   git clone --recursive git@gitlab.com:kaiwren/bhook.git
    ```
 
-2. Install bhook:
+2. Install bhook dependencies:
    ```bash
-   gem install bhook
+   cd bhook
+   bundle install
    ```
 
 ## Usage
@@ -33,7 +35,7 @@ website/
 **Regenerate all content:**
 ```bash
 cd website
-bhook -w -v
+../bhook/bin/bhook -w -v
 ```
 
 This reads `.bhook.yml` and mounts:
