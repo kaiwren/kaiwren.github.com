@@ -49,8 +49,9 @@
           --cta-color: #bbbbbb;
       }
 
+      /* Auto dark mode based on system preference */
       @media (prefers-color-scheme: dark) {
-          :root {
+          :root:not([data-theme="light"]) {
               /* Dark mode colors */
               --bg-color: #1a1a1a;
               --text-color: #e0e0e0;
@@ -62,6 +63,19 @@
               --link-color: #7aa3e0;
               --cta-color: #666666;
           }
+      }
+
+      /* Manual dark mode toggle */
+      :root[data-theme="dark"] {
+          --bg-color: #1a1a1a;
+          --text-color: #e0e0e0;
+          --border-color: #404040;
+          --border-color-light: #555555;
+          --table-header-bg: #2a2a2a;
+          --blockquote-bg: #2a2a2a;
+          --blockquote-border: #505050;
+          --link-color: #7aa3e0;
+          --cta-color: #666666;
       }
 
       @media only screen and (min-width: 64em) {
@@ -93,10 +107,15 @@
           font-size: var(--html-font-size);
       }
 
+      html {
+          background-color: var(--bg-color);
+      }
+
       body {
           font-family: sans-serif;
-          background-color: var(--bg-color);
-          color: var(--text-color);
+          background-color: var(--bg-color) !important;
+          color: var(--text-color) !important;
+          transition: background-color 0.3s ease, color 0.3s ease;
       }
 
       div.content-wrapper {
@@ -223,6 +242,32 @@
           display: inline-block;
           padding: 1em;
       }
+
+      /* Dark mode toggle button */
+      .theme-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: var(--border-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          transition: background-color 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+          opacity: 0.8;
+      }
+
+      .theme-icon {
+          font-size: 24px;
+          color: var(--bg-color);
+      }
   </style>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
@@ -235,6 +280,9 @@
   <title>Interviews</title>
 </head>
 <body>
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+  <span class="theme-icon">◐</span>
+</div>
 <div class="body container">
   <div class="content-wrapper row justify-content-center">
     <div class="content col-10">
@@ -327,5 +375,19 @@ href="https://twitter.com/intent/tweet?text=Interviews&via=ponnappa">Tweet</a>
     <a href="https://gitlab.com/kaiwren/bhook" target="_blank">powered by bhook</a>
   </div>
 </div>
+<script>
+  // Check for saved theme preference or default to system preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  }
+</script>
 </body>
 </html>
