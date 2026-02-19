@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&family=Montserrat:ital,wght@1,700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+      :root {
+          --html-font-size: 18px;
+          --title-font-family: 'Playfair Display';
+          --title-font-style: italic;
+          --title-font-size: 3rem;
+          --title-font-weight: 400;
+          --header-font-family: 'Montserrat';
+          --header-font-weight: 700;
+          --header-font-style: italic;
+          --header-2-padding-bottom: 0.25em;
+          --header-2-font-size: 2rem;
+          --header-3-font-size: 1.6818rem;
+          --header-4-font-size: 1.4142rem;
+          --header-5-font-size: 1.1892rem;
+          --header-margin-top: 1.7em;
+          --header-margin-bottom: 0.8em;
+          --header-margin-left: -2px;
+          --content-width-large-screen: 720px;
+          --content-font-family: 'Fira Sans';
+          --content-line-height: 1.5em;
+          --content-font-weight: 400;
+          --paragraph-spacing: 1.5rem;
+          --paragaph-font-size: 1rem;
+          --toc-font-weight: 400;
+
+          /* Light mode colors */
+          --bg-color: #ffffff;
+          --text-color: #000000;
+          --border-color: #eaeaea;
+          --border-color-light: #bbbbbb;
+          --table-header-bg: #eeeeee;
+          --blockquote-bg: #eeeeee;
+          --blockquote-border: #cccccc;
+          --link-color: #0066cc;
+          --cta-color: #bbbbbb;
+      }
+
+      /* Auto dark mode based on system preference */
+      @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+              /* Dark mode colors */
+              --bg-color: #1a1a1a;
+              --text-color: #e0e0e0;
+              --border-color: #404040;
+              --border-color-light: #555555;
+              --table-header-bg: #2a2a2a;
+              --blockquote-bg: #2a2a2a;
+              --blockquote-border: #505050;
+              --link-color: #7aa3e0;
+              --cta-color: #666666;
+          }
+      }
+
+      /* Manual dark mode toggle */
+      :root[data-theme="dark"] {
+          --bg-color: #1a1a1a;
+          --text-color: #e0e0e0;
+          --border-color: #404040;
+          --border-color-light: #555555;
+          --table-header-bg: #2a2a2a;
+          --blockquote-bg: #2a2a2a;
+          --blockquote-border: #505050;
+          --link-color: #7aa3e0;
+          --cta-color: #666666;
+      }
+
+      @media only screen and (min-width: 64em) {
+          div.content {
+              width: var(--content-width-large-screen);
+          }
+      }
+
+      div.x-comparison {
+          font-size: 32px;
+      }
+
+      div.x-comparison span.x-comparison-title {
+          font-family: var(--title-font-family);
+          font-weight: var(--title-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-header {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-body {
+          font-family: var(--content-font-family);
+          font-weight: var(--content-font-weight);
+      }
+
+      html {
+          font-size: var(--html-font-size);
+      }
+
+      html {
+          background-color: var(--bg-color);
+      }
+
+      body {
+          font-family: sans-serif;
+          background-color: var(--bg-color) !important;
+          color: var(--text-color) !important;
+          transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      div.content-wrapper {
+      }
+
+      div.content {
+          line-height: var(--content-line-height);
+          font-weight: var(--content-font-weight);
+          font-family: var(--content-font-family);
+      }
+
+      a {
+          color: var(--link-color);
+      }
+
+      h1 {
+          font-family: var(--title-font-family);
+          font-style: var(--title-font-style);
+          font-size: var(--title-font-size);
+          font-weight: var(--title-font-weight);
+      }
+
+      h2 {
+          font-size: var(--header-2-font-size);
+          padding-bottom: var(--header-2-padding-bottom);
+          border-bottom: 1px solid var(--border-color);
+      }
+
+      h3 {
+          font-size: var(--header-3-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-4-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-5-font-size);
+      }
+
+      h2, h3, h4, h5 {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+          font-style: var(--header-font-style);
+          margin-top: var(--header-margin-top);
+          margin-left: var(--header-margin-left);
+          margin-bottom: var(--header-margin-bottom);
+      }
+
+      h2 a.header-anchor, h3 a.header-anchor,
+      h4 a.header-anchor, h5 a.header-anchor {
+          float: left;
+          margin-left: -20px;
+          text-decoration: none;
+          outline: none;
+          position: relative;
+      }
+
+      h2 a.header-anchor:after, h3 a.header-anchor:after,
+      h4 a.header-anchor:after, h5 a.header-anchor:after {
+          content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' fill-rule='evenodd' d='M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z'/%3E%3C/svg%3E");
+          box-sizing: border-box;
+          font-size: medium;
+          visibility: hidden;
+      }
+
+      h2:hover a.header-anchor:after, h3:hover a.header-anchor:after,
+      h4:hover a.header-anchor:after, h5:hover a.header-anchor:after {
+          visibility: visible;
+      }
+
+      div.content p, div.content ul, div.content ol {
+          font-size: var(--paragaph-font-size);
+      }
+
+      div.content p {
+          margin-bottom: var(--paragraph-spacing);
+      }
+
+      ol#markdown-toc {
+          font-weight: var(--toc-font-weight);
+      }
+
+      div.after-h1 {
+          border-bottom: 1px solid var(--border-color-light);
+          margin-bottom: 1.5em;
+      }
+
+      div.embed {
+          margin-top: 2.5rem;
+          margin-bottom: 2.5rem;
+          width: 100%;
+          justify-content: center;
+          display: flex;
+      }
+
+      div.footer {
+          margin: 0.5em 0 0.5em 0;
+      }
+
+      div.bhook-cta a {
+          font-size: x-small;
+          text-decoration: none;
+          margin-bottom: 1.5em;
+          color: var(--cta-color);
+      }
+
+      table {
+          margin: 0.5em 0 1em 0.5em;
+      }
+
+      table thead tr {
+          background: var(--table-header-bg);
+      }
+
+      table td, table th {
+          padding: 0.1em 1em 0.1em 1em;
+          border: 1px solid var(--border-color-light);
+      }
+
+      blockquote {
+          border-left: 10px solid var(--blockquote-border);
+          background: var(--blockquote-bg);
+          display: inline-block;
+          padding: 1em;
+      }
+
+      /* Dark mode toggle button */
+      .theme-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: var(--border-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          transition: background-color 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+          opacity: 0.8;
+      }
+
+      .theme-icon {
+          font-size: 24px;
+          color: var(--bg-color);
+      }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-CT9TWBW0WR');
+  </script>
+  <title>There Is No Product</title>
+</head>
+<body>
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+  <span class="theme-icon">◐</span>
+</div>
+<div class="body container">
+  <div class="content-wrapper row justify-content-center">
+    <div class="content col-10">
+      <h1 class="no_toc" id="there-is-no-product">There Is No Product</h1>
+<div class="after-h1">
+<a class="twitter-share-button" 
+href="https://twitter.com/intent/tweet?text=There+Is+No+Product&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p>If you’ve been anywhere near tech Twitter in the last few weeks, you’ve heard it:</p>
+
+<ul>
+  <li>SaaS is dead. Nadella said so.</li>
+  <li>Software stocks are cratering. Salesforce down 6%, Adobe down 5%, the index down 15% YTD.</li>
+  <li>AI agents will replace every SaaS tool. Just vibe-code your own HRMS.</li>
+  <li>Seat-based pricing is finished. It’s all about outcomes now.</li>
+  <li>VCs won’t touch a pure SaaS pitch anymore.</li>
+</ul>
+
+<p>Everyone has an explanation. Nadella declared SaaS dead on the <a href="https://www.youtube.com/watch?v=FWbBYmgWJps">BG2 podcast</a>. Lemkin calls it <a href="https://www.saastr.com/the-2026-saas-crash-its-not-what-you-think/">“the end of easy SaaS.”</a> Ghodsi says SaaS will become <a href="https://techcrunch.com/2026/02/09/databricks-ceo-says-saas-isnt-dead-but-ai-will-soon-make-it-irrelevant/">“invisible like plumbing.”</a> Shahar at DTCP says the <a href="https://www.calcalistech.com/ctechnews/article/hjlvyl7lze">entire business category is dying</a>. The a16z folks push back, arguing vibe-coded apps aren’t real products. The stock market, meanwhile, is having its worst start since 2022 and doesn’t care about anyone’s take.</p>
+
+<p>On the ground, startups are watching their SaaS vendors try to <a href="https://x.com/codyschneiderxx/status/2011105976921813032">double prices from $70k to $170k a year</a> - while AI-built custom software already costs <em>less</em> than the SaaS subscription. We’ve been saying this since our seed deck in 2023: the SaaS model of amortising development cost will be obsolete. Customers’ iteration cycles will be in hours, not years.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">From our seed deck <a href="https://t.co/placeholder">pic.twitter.com/placeholder</a></p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2011293773528252903">January 14, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p>They’re all focused on the symptom. Software valuations are falling, and the discourse is about <em>why software valuations are falling</em>.</p>
+
+<p>The deeper thing is this: the traditional economics of software - the idea that building software creates an <em>asset</em> - is breaking.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">lots of inbound convos on AI Native the last few days. a consistent pattern: we are still not realising that amortizing software inventory (which makes it an asset) is no longer the game. if software is cheap to build, inventory is a liability.<br /><br />&#39;building a product&#39; no longer means &#39;building an asset&#39;. it means building an inventory that anyone can trivially replicate and therefore something that cannot be amortized due to a more efficient alternative.</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2021513872973459728">February 11, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<!-- [AUTHOR: the seed deck tweet embed uses a placeholder image URL (https://t.co/placeholder). Do you have the actual t.co link, or should we let the embed render from the tweet ID?] -->
+
+<!-- [AUTHOR: name-check realfast.ai explicitly when referencing "our seed deck", or keep implicit?] -->
+
+<!-- EDITOR CHANGE LOG (Section 1)
+- Tightened bullet list: removed "the whole", "The", "going to"
+- Cut "Meanwhile" filler
+- "amortizing" → "amortising" (British spelling)
+- "The deeper thing that's wrong is this" → "The deeper thing is this"
+- Cut "Dean" from "Dean Shahar" on second reference
+- "are pushing back" → "push back"
+- "doesn't seem to care" → "doesn't care"
+-->
+
+<h2 id="the-wrong-question">The Wrong Question<a href="#the-wrong-question" class="header-anchor"></a></h2>
+
+<p>Let’s ask a different question.</p>
+
+<p>“Is SaaS dead?” is what everyone’s debating. But SaaS is a <em>delivery model</em>. Software hosted in the cloud, sold on a subscription. That’s not dying. Nobody’s going back to shrink-wrapped boxes and perpetual licences. The cloud is plumbing now.</p>
+
+<blockquote>
+  <p>The question nobody’s asking is: <em>is the economics of software as an asset dying?</em></p>
+</blockquote>
+
+<p>Here’s how traditional product thinking works. You invest a large amount of money and time building software. This is expensive and risky - most software projects fail, and the ones that succeed take years and millions of dollars. Because it’s expensive and risky, the output is <em>valuable</em>. It’s hard to replicate. You’ve built something your competitors can’t easily copy and your customers can’t easily build themselves. So you amortise that investment across as many customers as possible, for as many years as possible. The software is an <em>asset</em>, and the subscription revenue is the return on that asset.</p>
+
+<p>Build something <em>difficult</em>. Amortise it widely. Collect rent. That’s the economic engine of every software product company.</p>
+
+<p>The entire “SaaS is dead” discourse is about the <em>rent collection</em> part - pricing models, seat counts, AI agents replacing UIs. But rent collection is downstream of a far more important question: is the thing you built still <em>difficult</em>?</p>
+
+<p>If it isn’t difficult to build anymore, it isn’t an asset. It’s idle inventory - software sitting on a shelf that anyone can manufacture on demand. You don’t amortise inventory. You <em>liquidate</em> it. And if it isn’t an asset, there’s nothing to amortise. The engine falls apart - not because of how you price the software, but because of what the software <em>is</em>.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">oversimplified: trad product thinking creates software liabilities, not software assets<br /><br />the line between the two is shifting up with model capabilities. from auto complete in 2024 to full CRUD apps in 2026.<br /><br />compilers, sota models, operating systems, cross border taxation etc remain above the line. for now.</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2021513872973459728">February 11, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<!-- [AUTHOR: the "build difficult, amortise widely, collect rent" formulation -- callback to this in later sections?] -->
+<!-- [AUTHOR: is this the right tweet URL for the reply? the reply and the parent share the same thread URL -- confirm the reply has its own status ID or if this embed will render the parent instead] -->
+
+<h2 id="inventory-vs-asset">Inventory vs. Asset<a href="#inventory-vs-asset" class="header-anchor"></a></h2>
+
+<p>Let’s make the distinction precise.</p>
+
+<p>When you build software that’s expensive and risky to create, the output is scarce. Scarcity is what makes it an asset. You can amortise the development cost over its useful life and generate returns by licensing access to it. This is how every enterprise software company from Oracle to Salesforce to the smallest vertical SaaS startup has worked for decades. The upfront investment is the moat. The difficulty of replication is what keeps the moat full.</p>
+
+<p>Inventory is the opposite. Inventory is something you <em>manufacture</em>. It sits in a warehouse - or on a server - waiting to be sold or deployed. The economics of inventory are fundamentally different from the economics of assets. Inventory <em>depreciates</em>. It has carrying costs. It becomes obsolete. And critically, inventory has no moat - someone else can manufacture the same thing.</p>
+
+<p>Here’s the question every software company needs to answer: is the software you’re building an <em>asset</em> or <em>inventory</em>?</p>
+
+<p>If building an HRMS takes a team of engineers six months and costs half a million dollars, the output is an asset. It’s scarce. It’s hard to replicate. You can amortise it.</p>
+
+<p>If building the same HRMS takes an AI agent a weekend and costs a few hundred dollars in compute, the output is inventory. It’s abundant. It’s trivially replicable. You <em>can’t</em> amortise it - because your customer can just manufacture their own. Why would they rent yours?</p>
+
+<p>It’s actually worse than that. A centralised SaaS product has to architect for diversity - every customer’s feature permutations, every edge case, every conflicting workflow, all coexisting in a single multi-tenant system. That architectural complexity is <em>enormous</em>. A custom build for a single customer doesn’t carry any of it. One set of features, one workflow, one tenant. Orders of magnitude less complex to build, and orders of magnitude less complex to maintain and run in production.</p>
+
+<p>The economics get worse the more you look at them. SaaS pricing bakes maintenance into the per-seat licence cost. You pay per user, per month, and the vendor handles hosting, updates, support. Sounds reasonable until your headcount grows and your licence bill balloons with it. The vendor’s costs don’t scale linearly with your seat count - but your bill does. You’re subsidising their margins with your growth.</p>
+
+<p>Now consider the alternative. For anything below the line, a customer can hire a services company to build the software and maintain it on an annual contract. The build is cheap - we’ve established that. The maintenance contract is a fixed annual cost. And as headcount rises, the TCO per employee <em>drops</em> - because adding users to your own software costs you nothing. No new seats. No per-user fees. The SaaS bill scales with your headcount. The maintenance contract doesn’t. At some point the curves cross, and after that they diverge fast.</p>
+
+<p>I’ve lived this. At Gojek, our HRMS vendor quoted $400k <em>additional</em> annually for 2,000 licences to add their performance review module. The module was clunky and would’ve taken months of customisation to match our actual perf process. Our CHRO asked me: can we build and run this for less than $400k a year? I said yes. We did. Eight months - including rolling it out and running a full review cycle on it. This was pre-AI, in 2021.</p>
+
+<p>Today, the same build would take weeks, cost a fifth of what we spent, and be <em>far</em> cheaper to maintain - because you don’t have to lock in a team to retain context. Agents document everything as they build. The institutional knowledge lives in the project, not in someone’s head. The vendor’s moat wasn’t the software. It was the <em>assumption</em> that building your own would be harder. That assumption is gone.</p>
+
+<p>For fifty years, traditional product thinking assumed that building software creates assets. That assumption held because building software was genuinely difficult. It’s now failing - not everywhere, not all at once, but steadily and accelerating - because AI is converting one class of software after another from asset to inventory. If you’re still building below the line, you’re not creating assets. You’re accumulating liabilities.</p>
+
+<h2 id="the-line">The Line<a href="#the-line" class="header-anchor"></a></h2>
+
+<p>If some software is still an asset and some has become inventory, the natural question is: which is which? Model capabilities define the answer - what the current generation of AI can trivially replicate versus what it can’t.</p>
+
+<p>And the line is moving. In 2024, AI could autocomplete your code and generate boilerplate - useful, but it wasn’t replacing anyone’s product. Anything that required architectural judgment, domain expertise, or multi-system integration was still firmly an asset.</p>
+
+<p>By 2025, AI was building entire components. Standard integrations, common workflows, authentication systems, admin dashboards. The line moved up. If your product was essentially a well-built integration layer or a workflow automation tool, you were below the line. Your moat was draining.</p>
+
+<p>In 2026, AI builds full CRUD applications. Standard business logic, internal tools, reporting systems - the stuff that makes up the vast majority of enterprise software. An HRMS. A project tracker. A basic analytics dashboard. A customer portal. All below the line. Any competent services company with agentic tooling can build a customer-specific version in weeks.</p>
+
+<p>What’s still above the line? Compilers. State-of-the-art models. Operating systems. Software that encodes genuinely novel algorithms or requires years of accumulated domain data - cross-border taxation engines, real-time trading systems, climate modelling platforms. These remain assets because AI can’t trivially replicate the <em>knowledge</em> embedded in them. The difficulty isn’t in the code. It’s in the understanding the code encodes.</p>
+
+<p>You can watch the line move in real time. When Anthropic shipped a legal plugin for Claude in February, Thomson Reuters, RELX, and Wolters Kluwer <a href="https://fortune.com/2026/02/09/anthropic-isnt-done-spooking-saas-investors/">lost billions in market cap overnight</a>. Legal research software - a category that seemed safely above the line - crossed below it in a single product launch.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">JPMorgan: Anthropic is eating SaaS model collapsing the Software Model with no where to Hide !</p>&mdash; Navroop Singh (@TheNavroopSingh) <a href="https://twitter.com/TheNavroopSingh/status/2018882925463544151">February 4, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<!-- [AUTHOR: "the understanding the code encodes" -- this is a strong formulation. Callback candidate for section 6 (So What)?] -->
+
+<p>But here’s what should keep software founders up at night: the line only moves in one direction. Every model generation pushes it higher. What’s above the line today will be below it in eighteen months. You can’t build a business on the assumption that your moat is permanent when the water level is rising on a schedule.</p>
+
+<p>Most SaaS products live below the line. Not some. Not the weaker ones. <em>Most</em>. The uncomfortable truth isn’t that SaaS is dying - it’s that the majority of software products have already crossed from asset to inventory, and their vendors haven’t noticed yet.</p>
+
+<h2 id="there-is-no-product-1">There Is No Product<a href="#there-is-no-product-1" class="header-anchor"></a></h2>
+
+<p>We’ve been talking about assets and inventory and lines, but we haven’t asked the fundamental question: what <em>is</em> a product?</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Right now there&#39;s a massive gap between &quot;projects&quot; and real products. People vibe-build something, then say &quot;look! I built this!&quot; but honestly 99% of these are just projects, not products.</p>&mdash; Yingjun Wu (@YingjunWu) <a href="https://twitter.com/YingjunWu/status/2024116199886602661">February 18, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p>A product is an expensive or risky project whose output - because it’s consequently valuable - is amortised across multiple customers. The expense and the risk are the point. They’re what makes the output worth productising. Customers pay you because building it themselves would be harder, slower, and riskier than buying access to yours. The product is the crystallised output of difficulty.</p>
+
+<p>Remove the difficulty and you remove the product.</p>
+
+<p>If the project isn’t expensive and isn’t risky, its output can’t be amortised - because anyone can produce the same output for less than your subscription costs. Your customers can build it. Their consultants can build it. Given another year of model improvements, their interns can build it. Nothing to sell because there’s nothing scarce.</p>
+
+<p>The vibe-coding crowd is proving this without realising it. Every weekend project posted on Twitter with “look what I built!” is a demonstration that the output has no product economics. The built-in-a-weekend flex is also the confession - if it took you a weekend, it’ll take your competitor a weekend too. The fact that <em>anyone</em> can build it is precisely <em>why</em> it can’t be productised. They’re not building products. They’re manufacturing disposable inventory and calling it a startup.</p>
+
+<p>Don’t try to fix your pricing model. Don’t pivot to outcome-based billing. Don’t add AI features to your existing product and hope the market comes back. Those are all attempts to bend the spoon.</p>
+
+<p><em>There is no spoon.</em></p>
+
+<p>If the software you’ve built sits below the line, there is no product. The thing you thought was an asset - the thing your valuation is built on, the thing your investors are pricing, the thing your roadmap is organised around - doesn’t exist in the way you assumed it did. It’s inventory. Inventory doesn’t have a pricing problem. It has an <em>existence</em> problem.</p>
+
+<p>Below the line, <em>there is no product.</em></p>
+
+<!-- [AUTHOR: "The product is the crystallised output of difficulty" -- this is a strong coinage. Callback candidate for section 6, alongside "the understanding the code encodes" from section 4?] -->
+
+<!-- [AUTHOR: the three-beat escalation "Your customers can build it. Their consultants can build it. Their interns can build it." -- do you want a fourth beat? e.g. "A teenager with Claude can build it." Or does three land harder?] -->
+
+<!-- EDITOR CHANGE LOG (Section 5)
+- "In this context, a product is" → "A product is" -- "In this context" is a topic-sentence throat-clear; we've been building this context for four sections, the reader is already there
+- "proving this point without realising it" → "proving this without realising it" -- "point" is filler
+- "There's nothing to sell because there's nothing scarce" → "Nothing to sell because there's nothing scarce" -- cut "There's"; the fragment is punchier
+- "It's inventory. And inventory doesn't have" → "It's inventory. Inventory doesn't have" -- cut "And"; the period already provides the connection, "And" softens the punch
+- "There is no product." → "_There is no product._" -- italics. This is the title, the punchline, the whole essay. It needs to hit visually as hard as it hits rhetorically. Matches the PM essay's climax formatting at `hiring-product-managers.md:80`.
+- The Matrix "there is no spoon" payoff works -- it earns its place because the title set it up and four sections of argument have built to it. The reader doesn't need to know the reference for it to land, but those who do get the resonance.
+- "calling it a startup" -- good punch. Sharper than "calling it a product" would be -- "startup" implies fundraising, valuation, the whole apparatus built on a fiction.
+- Voice is at correct Freytag climax pitch -- confrontational, direct, no hedging. The build-build-build-punch rhythm operates at section scale here: four sections of build, then "There is no product."
+- The three "Don't" sentences are effective anaphora -- matches the voice's instruction-giving register ("Before you hire a PM, ask yourself...")
+-->
+
+<!-- EDITOR CHANGE LOG (Section 4)
+- "the obvious question is: which is which?" → "the question is: which is which?" -- "obvious" is filler; if it were obvious the reader wouldn't need the section
+- "specifically, what the current generation" → "what the current generation" -- "specifically" is a throat-clearing word
+- "The software above the line -- anything that required" → "Anything that required" -- cut the redundant framing; the reader knows what "above the line" means by now
+- "you were now below the line" → "you were below the line" -- "now" is filler in past tense narration
+- "These are all below the line now" → "All below the line" -- tighter; the preceding list already establishes "these"
+- "the IGV software ETF down 5%" → "IGV software ETF down 5%" -- cut "the" before ticker-style list for punchier cadence
+- "The market priced in the shift within hours." → cut -- the JPMorgan note and the stock drops already demonstrate this; the sentence was telling the reader what the evidence just showed
+- "The software that's still an asset in 2026 may be inventory by 2028." → cut -- restates the sentence before it ("What's above the line today will be below it in eighteen months"). One is enough.
+- "The uncomfortable truth of the current market isn't that SaaS is dying" → "The uncomfortable truth isn't that SaaS is dying" -- "of the current market" is filler
+- [AUTHOR: "the understanding the code encodes" -- callback candidate?]
+- Section voice escalates correctly: analytical opening, concrete middle (2024/25/26 beats), concrete-dramatic close (Anthropic). Right Freytag position for late rising action.
+- The 2024 → 2025 → 2026 chronological structure is effective; mirrors the build-build-build-punch rhythm at section scale
+-->
+
+<!-- EDITOR CHANGE LOG (Section 3)
+- "And the economics get worse" → "The economics get worse" -- cut "And" sentence opener; the paragraph break provides the transition
+- "That's the deal: you pay per user" → "You pay per user" -- cut "That's the deal:" -- the colon construction is filler; the sentence is stronger starting with the direct claim
+- "The SaaS vendor's costs" → "The vendor's costs" -- "SaaS" is redundant, we're already talking about SaaS vendors
+- "And here's the kicker:" → "And the TCO" -- "here's the kicker" is a filler transition that pre-announces the punch; let the fact land on its own
+- "customisation effort to match" → "customisation to match" -- "effort" is filler
+- "It took eight months" → "Eight months" -- tighter; the "I said yes. We did." already carries the narrative momentum
+- "The HRMS vendor's moat" → "The vendor's moat" -- "HRMS" redundant in context
+- Added italics to "_assumption_" -- this is the operative hinge word; it's the word you'd stress aloud
+- [AUTHOR: "Agents document everything as they build" -- strong claim, flag for author judgment]
+- Pharma analogy AUTHOR flag preserved -- tightened wording ("e.g., the difference between" → "e.g.,")
+- HRMS paired contrast is clean and parallel -- left untouched
+- "Why would they rent yours?" -- strong punch, left as-is
+- Gojek anecdote voice is correct: brief authority citation, experiential, gets in and gets out. Matches `hiring-product-managers.md:88` pattern ("When the startups I advise bring this up...")
+- Closing paragraph ("carrying costs and no buyer") callbacks to section 2's "collect rent" formulation -- good internal consistency
+- Section voice is analytical with a personal-experiential spike (correct for Freytag rising action position)
+-->
+
+<!-- EDITOR CHANGE LOG (Section 2)
+- "licenses" → "licences" (British spelling)
+- "into building a piece of software" → "building software" -- tighter, "piece of" is filler
+- "something that your competitors" → "something your competitors" -- cut "that"
+- "on your balance sheet, and the subscription" → removed "on your balance sheet" -- the balance sheet detail is an aside that slows the punch; "asset" already carries the meaning
+- Reordered punch: moved "Build something hard. Amortise it widely. Collect rent." before the explanation sentence, not after -- punch lands harder when it leads
+- "This is the fundamental economic engine of every software product company" → "That's the economic engine of every software product company" -- tighter, "fundamental" is redundant when the sentence already says "every"
+- "Because if it isn't" → "If it isn't" -- the "Because" was a false start; the paragraph break already provides the causal connection
+- "The whole economic engine falls apart" → "The engine falls apart" -- "whole economic" is redundant, we just defined the engine two paragraphs ago
+- Converted TODO (section 3 transition) to AUTHOR flag about callback potential
+-->
+
+    </div>
+  </div>
+  <div class="footer d-flex justify-content-center">
+    <div>
+                    v. 34cc20c0,
+            2026-02-19 © <a href="https://sidu.in">Sidu Ponnappa</a>
+    </div>
+  </div>
+  <div class="bhook-cta d-flex justify-content-center">
+    <a href="https://gitlab.com/kaiwren/bhook" target="_blank">powered by bhook</a>
+  </div>
+</div>
+<script>
+  // Check for saved theme preference or default to system preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  }
+</script>
+</body>
+</html>
