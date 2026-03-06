@@ -78,9 +78,40 @@ open essays/index.html
 
 Edit `../essays/.bhook.yml` to add files or directories to the `exclude` list. Excluded files won't appear in the generated site.
 
+### Images and Static Assets
+
+Bhook only processes `.md` files — it does not copy images or other static assets. Place images directly in this repo under `essays/images/` and reference them from markdown with relative paths (e.g. `![alt](images/my-image.png)`).
+
+Compress PNGs before committing: `pngquant --quality=65-80 --force --output file.png file.png`
+
+## Testing with Playwright
+
+Start a local server and use Playwright MCP to verify rendered pages, OG meta tags, layout, and links.
+
+```bash
+# Start local server from website/
+python3 -m http.server 8080
+```
+
+Then via Playwright:
+- **Navigate**: `browser_navigate` to `http://localhost:8080/essays/after-ai-there-is-no-product.html`
+- **Inspect structure**: `browser_snapshot` returns the full accessibility tree (headings, links, images, text)
+- **Verify OG tags**: `browser_evaluate` with JS to extract meta tags:
+  ```js
+  () => {
+    const metas = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
+    return Array.from(metas).map(m =>
+      `${m.getAttribute('property') || m.getAttribute('name')}: ${m.getAttribute('content')}`
+    ).join('\n');
+  }
+  ```
+- **Screenshot**: `browser_take_screenshot` for visual verification
+
+This is faster than deploying to GitHub Pages and checking manually. Use it to verify OG images are absolute URLs, descriptions are populated, and page structure is correct before pushing.
+
 ## What to Commit
 
-**This repo (website)**: `index.html`, `index.css`, generated `.html` files in `essays/` and `wiki/`, `.bhook.yml`.
+**This repo (website)**: `index.html`, `index.css`, generated `.html` files in `essays/` and `wiki/`, static assets in `essays/images/`, `.bhook.yml`.
 
 **Do NOT commit**: bhook may generate HTML for files that are excluded from the essays index but still present in the source repo (e.g. `essays/exec/`, `essays/research/`, `essays/.claude/`). These should not be committed.
 
