@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&family=Montserrat:ital,wght@1,700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+      :root {
+          --html-font-size: 18px;
+          --title-font-family: 'Playfair Display';
+          --title-font-style: italic;
+          --title-font-size: 3rem;
+          --title-font-weight: 400;
+          --header-font-family: 'Montserrat';
+          --header-font-weight: 700;
+          --header-font-style: italic;
+          --header-2-padding-bottom: 0.25em;
+          --header-2-font-size: 2rem;
+          --header-3-font-size: 1.6818rem;
+          --header-4-font-size: 1.4142rem;
+          --header-5-font-size: 1.1892rem;
+          --header-margin-top: 1.7em;
+          --header-margin-bottom: 0.8em;
+          --header-margin-left: -2px;
+          --content-width-large-screen: 720px;
+          --content-font-family: 'Fira Sans';
+          --content-line-height: 1.5em;
+          --content-font-weight: 400;
+          --paragraph-spacing: 1.5rem;
+          --paragaph-font-size: 1rem;
+          --toc-font-weight: 400;
+
+          /* Light mode colors */
+          --bg-color: #ffffff;
+          --text-color: #000000;
+          --border-color: #eaeaea;
+          --border-color-light: #bbbbbb;
+          --table-header-bg: #eeeeee;
+          --blockquote-bg: #eeeeee;
+          --blockquote-border: #cccccc;
+          --link-color: #0066cc;
+          --cta-color: #bbbbbb;
+      }
+
+      /* Auto dark mode based on system preference */
+      @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+              /* Dark mode colors */
+              --bg-color: #1a1a1a;
+              --text-color: #e0e0e0;
+              --border-color: #404040;
+              --border-color-light: #555555;
+              --table-header-bg: #2a2a2a;
+              --blockquote-bg: #2a2a2a;
+              --blockquote-border: #505050;
+              --link-color: #7aa3e0;
+              --cta-color: #666666;
+          }
+      }
+
+      /* Manual dark mode toggle */
+      :root[data-theme="dark"] {
+          --bg-color: #1a1a1a;
+          --text-color: #e0e0e0;
+          --border-color: #404040;
+          --border-color-light: #555555;
+          --table-header-bg: #2a2a2a;
+          --blockquote-bg: #2a2a2a;
+          --blockquote-border: #505050;
+          --link-color: #7aa3e0;
+          --cta-color: #666666;
+      }
+
+      @media only screen and (min-width: 64em) {
+          div.content {
+              width: var(--content-width-large-screen);
+          }
+      }
+
+      div.x-comparison {
+          font-size: 32px;
+      }
+
+      div.x-comparison span.x-comparison-title {
+          font-family: var(--title-font-family);
+          font-weight: var(--title-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-header {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-body {
+          font-family: var(--content-font-family);
+          font-weight: var(--content-font-weight);
+      }
+
+      html {
+          font-size: var(--html-font-size);
+      }
+
+      html {
+          background-color: var(--bg-color);
+      }
+
+      body {
+          font-family: sans-serif;
+          background-color: var(--bg-color) !important;
+          color: var(--text-color) !important;
+          transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      div.content-wrapper {
+      }
+
+      div.content {
+          line-height: var(--content-line-height);
+          font-weight: var(--content-font-weight);
+          font-family: var(--content-font-family);
+      }
+
+      a {
+          color: var(--link-color);
+      }
+
+      h1 {
+          font-family: var(--title-font-family);
+          font-style: var(--title-font-style);
+          font-size: var(--title-font-size);
+          font-weight: var(--title-font-weight);
+      }
+
+      h2 {
+          font-size: var(--header-2-font-size);
+          padding-bottom: var(--header-2-padding-bottom);
+          border-bottom: 1px solid var(--border-color);
+      }
+
+      h3 {
+          font-size: var(--header-3-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-4-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-5-font-size);
+      }
+
+      h2, h3, h4, h5 {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+          font-style: var(--header-font-style);
+          margin-top: var(--header-margin-top);
+          margin-left: var(--header-margin-left);
+          margin-bottom: var(--header-margin-bottom);
+      }
+
+      h2 a.header-anchor, h3 a.header-anchor,
+      h4 a.header-anchor, h5 a.header-anchor {
+          float: left;
+          margin-left: -20px;
+          text-decoration: none;
+          outline: none;
+          position: relative;
+      }
+
+      h2 a.header-anchor:after, h3 a.header-anchor:after,
+      h4 a.header-anchor:after, h5 a.header-anchor:after {
+          content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' fill-rule='evenodd' d='M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z'/%3E%3C/svg%3E");
+          box-sizing: border-box;
+          font-size: medium;
+          visibility: hidden;
+      }
+
+      h2:hover a.header-anchor:after, h3:hover a.header-anchor:after,
+      h4:hover a.header-anchor:after, h5:hover a.header-anchor:after {
+          visibility: visible;
+      }
+
+      div.content p, div.content ul, div.content ol {
+          font-size: var(--paragaph-font-size);
+      }
+
+      div.content p {
+          margin-bottom: var(--paragraph-spacing);
+      }
+
+      ol#markdown-toc {
+          font-weight: var(--toc-font-weight);
+      }
+
+      div.after-h1 {
+          border-bottom: 1px solid var(--border-color-light);
+          margin-bottom: 1.5em;
+      }
+
+      div.embed {
+          margin-top: 2.5rem;
+          margin-bottom: 2.5rem;
+          width: 100%;
+          justify-content: center;
+          display: flex;
+      }
+
+      div.footer {
+          margin: 0.5em 0 0.5em 0;
+      }
+
+      div.bhook-cta a {
+          font-size: x-small;
+          text-decoration: none;
+          margin-bottom: 1.5em;
+          color: var(--cta-color);
+      }
+
+      table {
+          margin: 0.5em 0 1em 0.5em;
+      }
+
+      table thead tr {
+          background: var(--table-header-bg);
+      }
+
+      table td, table th {
+          padding: 0.1em 1em 0.1em 1em;
+          border: 1px solid var(--border-color-light);
+      }
+
+      blockquote {
+          border-left: 10px solid var(--blockquote-border);
+          background: var(--blockquote-bg);
+          display: inline-block;
+          padding: 1em;
+      }
+
+      /* Dark mode toggle button */
+      .theme-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: var(--border-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          transition: background-color 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+          opacity: 0.8;
+      }
+
+      .theme-icon {
+          font-size: 24px;
+          color: var(--bg-color);
+      }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-CT9TWBW0WR');
+  </script>
+  <title>Don't Go AI Native</title>
+  <meta property="og:title" content="Don't Go AI Native">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="sidu.in">
+    <meta property="og:description" content="Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new ...">
+  <meta name="twitter:description" content="Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new ...">
+      <meta property="og:image" content="images/header-soviet-coe.png">
+  <meta name="twitter:image" content="images/header-soviet-coe.png">
+  <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Don't Go AI Native">
+  <meta name="twitter:site" content="@ponnappa">
+</head>
+<body>
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+  <span class="theme-icon">◐</span>
+</div>
+<div class="body container">
+  <div class="content-wrapper row justify-content-center">
+    <div class="content col-10">
+      <h1 class="no_toc" id="dont-go-ai-native">Don’t Go AI Native</h1>
+<div class="after-h1">
+<a class="twitter-share-button" 
+href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<div style="width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; margin-bottom:1.5em;">
+<img src="images/header-soviet-coe.png" alt="AI Native Centre of Excellence - Soviet propaganda style poster with a figure pointing at a sprint planning board" style="width:100%; height:40vw; max-height:450px; min-height:200px; object-fit:cover; object-position:center 30%; display:block;" />
+</div>
+
+<p>Looking back, I feel like <a href="https://en.wikipedia.org/wiki/Ruby_on_Rails">Rails</a> kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new standards, one after another for twenty years. Git. Prototype. jQuery. Jenkins. Docker. Kubernetes. React. Tensorflow.</p>
+
+<p>The churn was already too fast for most enterprises to keep up with. But it didn’t matter, because they weren’t trying to. Startups, big tech and HFT shops rode the bleeding edge because staying current <em>was</em> their competitive advantage. For everyone else, technology was a means to an end, not the business itself. They valued long backward-compatibility loops and preferred buying over building - and that preference <a href="after-ai-there-is-no-product.html">created the golden age of SaaS</a>. Jira for planning. GitHub for code. VS Code for editing. CI/CD for shipping. Teach an IT team the stack in a few months and they’d be productive for years.</p>
+
+<p>That held until about eighteen months ago. Now, AI agents write code. New models ship every quarter and each one changes what’s possible. An employee’s first month on the job now includes tools that didn’t exist when the offer letter went out. What worked six months ago is already behind.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Software development tools changed more in 18 months than in the previous 10 years.</p>&mdash; Sergio Pereira (@SergioRocks) <a href="https://twitter.com/SergioRocks/status/2029918979087561187">March 7, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p>Every company is responding. If you take current AI strategy advice at face value, the answer is obvious. Every company should be trying to go AI Native right now. Hire a Head of AI. Stand up a Centre of Excellence. Reorganise engineering around agents. Redesign the workflow. Redesign the org.</p>
+
+<p>I now believe that’s the wrong conclusion. <em>What you need is a business that does things your competitors still can’t</em>. Automating processes that cost too much to automate. Building internal tools that were never worth building. Operating at speeds the pre-AI org couldn’t reach.</p>
+
+<p>Going AI Native is one way to get there. For most companies, it’s the wrong way.</p>
+
+<h2 id="the-wrong-decomposition">The Wrong Decomposition<a href="#the-wrong-decomposition" class="header-anchor"></a></h2>
+
+<p>In 1972, <a href="https://en.wikipedia.org/wiki/David_Parnas">David Parnas</a> published a paper called “On the Criteria To Be Used in Decomposing Systems into Modules.” It’s one of those papers that’s more cited than read, which is a shame, because the core idea is devastatingly simple. The most natural way to break a complex system into parts - by function, by what each part <em>does</em> - is usually wrong. The right way is to decompose by what’s likely to <em>change</em>. Each module should hide one decision that might change, behind an interface that doesn’t.</p>
+
+<p>Parnas was not a man who softened his conclusions. He <a href="https://web.stanford.edu/class/cs99r/readings/parnas1.pdf">resigned from Reagan’s Star Wars advisory panel</a> because he concluded the software couldn’t be made trustworthy - and said so publicly.</p>
+
+<p>Most companies are making exactly the mistake Parnas described - but at the organisational level, not the code level. They’re decomposing their AI response by function. The org chart stays the same, just with new tools plugged in.</p>
+
+<p>The thing most likely to change right now is <em>how software gets built</em>.</p>
+
+<p>Not one aspect of it. All of it - the tooling, the workflows, the team topology, the hiring profiles, the cost structures, the quality assurance process, the way institutional knowledge gets created and retained.</p>
+
+<p>If you’re not decomposing your response around that single volatile decision - if you’re just bolting AI onto existing functions - you’ve created the wrong modules. You’re a 2022 engineering org with a chatbot.</p>
+
+<h2 id="conways-ratchet">Conway’s Ratchet<a href="#conways-ratchet" class="header-anchor"></a></h2>
+
+<p>Say you get the decomposition right. You reorganise around it. Hire differently, restructure teams, adopt agentic workflows, rethink quality assurance. You do the hard work.</p>
+
+<p>Conway’s Law says it won’t hold.</p>
+
+<p>In 1968, <a href="https://en.wikipedia.org/wiki/Melvin_Conway">Melvin Conway</a> - the programmer whose best idea was rejected by Harvard Business Review - observed that organisations produce systems whose structure mirrors their own communication structure. HBR didn’t think much of this. <a href="https://en.wikipedia.org/wiki/Fred_Brooks">Fred Brooks</a> cited it in <em><a href="https://en.wikipedia.org/wiki/The_Mythical_Man-Month">The Mythical Man-Month</a></em> seven years later.</p>
+
+<p>If your engineering org is structured around 2022 assumptions - sprint-based delivery, human-only code review, manual QA, siloed teams owning features - then your output will reflect those assumptions. You can give every engineer Claude Code. If the org is structured for waterfall-with-sprints, the AI accelerates the waterfall. The fundamental process doesn’t change. Conway guarantees it.</p>
+
+<blockquote>
+  <p><em>Staying</em> AI Native is harder than <em>going</em> AI Native.</p>
+</blockquote>
+
+<p>The tooling changes every quarter. New model capabilities invalidate existing workflows. Cost curves shift monthly. The best practices of January are obsolete by June.
+
+
+
+
+The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>. It clicks every quarter and it never clicks back.</p>
+
+<p>Stop reshaping and the org calcifies around yesterday’s tools. You’re no longer AI Native. You’re a 2025 org in 2026 - which is exactly as bad as being a 2022 org in 2025.</p>
+
+<p>Enterprise procurement, vendor evaluation, and tooling rollout cycles were built for an era when core tools changed every two to three years. Those cycles still run on twelve-to-eighteen-month clocks. The procurement process itself is a Conway artefact - it mirrors the rate of change of the era that built it. By the time the org has evaluated, procured, and rolled out a tool, the tool is already behind.</p>
+
+<p>For companies whose core business isn’t software engineering - insurance, logistics, healthcare, finance - this is structurally hard to sustain. The engineering org exists to serve the core business. Asking it to <em>also</em> continuously redesign itself around a shifting paradigm is asking it to serve two masters. And the second master changes its mind every quarter.</p>
+
+<h2 id="the-demand-explosion">The Demand Explosion<a href="#the-demand-explosion" class="header-anchor"></a></h2>
+
+<p>It gets worse. Everything above assumes the <em>demand</em> for software stays roughly constant - that you’re building the same things, just with better tools. That assumption is wrong.</p>
+
+<p>In 1865, William Stanley Jevons noticed something counterintuitive about coal. As steam engines became more efficient, the obvious prediction was that Britain would burn less coal. The opposite happened. Efficiency made coal-powered machinery economical for uses that had previously been too expensive. Demand exploded. Total coal consumption <em>rose</em> as the engines got better. This is <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons’ Paradox</a>: make something dramatically cheaper to produce and you don’t get less of it. You get vastly more.</p>
+
+<p>When the cost of building software drops by an order of magnitude, every process that was too expensive to automate becomes worth automating. Every internal tool that was never worth building becomes trivial to build. Every one-off integration, every custom workflow, every bespoke reporting dashboard - all of it becomes economical. Capabilities the business <em>couldn’t have</em> before.</p>
+
+<p>A company that gets this right builds <em>vastly more</em> software. Decisions happen faster because data pipelines exist that weren’t worth building before. Operations run with less friction because manual processes are automated end to end. Capabilities that used to be uneconomical show up in production as a matter of course.</p>
+
+<p>If a company claims to have transformed but the business itself isn’t visibly accelerating, the transformation hasn’t taken hold.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Jevons paradox is happening in real time. Companies, especially outside of tech, are realizing that they can now afford to take on software projects that they wouldn't have been able to tackle before because now AI lets them do so.</p>&mdash; Aaron Levie (@levie) <a href="https://twitter.com/levie/status/2036832183131033977">March 26, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p>This demand explosion triggers Conway’s Ratchet again - at a <em>higher</em> scale.</p>
+
+<p>The org that just finished reshaping itself to build software ten times faster now has to reshape itself to handle ten times the <em>demand</em> for software. The ratchet doesn’t just mean keeping up with tooling changes. It means keeping up with the demand that those tooling changes unleash.</p>
+
+<p>The chain of problems never terminates: adopt new tools, reshape the org, handle the demand explosion, reshape the org again.</p>
+
+<h2 id="the-module">The Module<a href="#the-module" class="header-anchor"></a></h2>
+
+<p>Parnas had an answer for this too. It’s the same paper.</p>
+
+<p>When a decision is volatile - when it’s likely to change - hide it behind a stable interface. The interface stays the same. The implementation behind it changes as often as it needs to.</p>
+
+<p>The volatile decision right now is everything about how software gets built.</p>
+
+<p>All of it in flux. All of it changing faster than any single company’s org can absorb - unless absorbing that change <em>is</em> the company’s entire reason for existing.</p>
+
+<p>A company like that is a Parnas module.</p>
+
+<p>Amazon did this to supply chains. Before Amazon, logistics was broken and error-prone, and customers <em>felt</em> every mistake - late deliveries, lost packages, painful returns. Amazon encapsulated it behind a smooth interface. The customer never sees the warehouse robotics, the route optimisation, the carrier negotiations. They see a button that says “Buy Now” and a package that arrives on time.</p>
+
+<p>The module does the same thing for software development. The customer says what they need built. The module builds it, maintains it, keeps it current. The tooling behind the interface changes every quarter. The interface doesn’t.</p>
+
+<p>The customer doesn’t need to know the module switched from Cursor to Claude Code last month. Doesn’t need to know the last model drop cut costs by 40%. Doesn’t need to know that the engineering team restructured twice this quarter to absorb a capability that didn’t exist in January. The customer needs working software that keeps working. Everything else is behind the interface.</p>
+
+<p>Parnas, applied to an organisational problem at industry scale.</p>
+
+<h2 id="the-stable-interface">The Stable Interface<a href="#the-stable-interface" class="header-anchor"></a></h2>
+
+<p><a href="after-ai-there-is-no-product.html">A fixed annual contract</a>. The module builds the software, maintains it, keeps it current. As the module’s underlying efficiency improves - and it will, every time a new model drops - the savings pass through.</p>
+
+<p>The module absorbs Conway’s Ratchet. The customer handles their core business. The module handles the tooling churn, the org reshaping, the demand explosion. The customer gets capabilities that weren’t previously possible - delivered and maintained behind an interface that doesn’t change every time the industry does.</p>
+
+<p>Build the module yourself. Keep rebuilding it, forever. Or hire one.</p>
+
+    </div>
+  </div>
+  <div class="footer d-flex justify-content-center">
+    <div>
+                    v. 336fc6cc,
+            2026-03-30 © <a href="https://sidu.in">Sidu Ponnappa</a>
+    </div>
+  </div>
+  <div class="bhook-cta d-flex justify-content-center">
+    <a href="https://gitlab.com/kaiwren/bhook" target="_blank">powered by bhook</a>
+  </div>
+</div>
+<script>
+  // Check for saved theme preference or default to system preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  }
+</script>
+</body>
+</html>
