@@ -283,8 +283,8 @@
   <meta property="og:site_name" content="sidu.in">
     <meta property="og:description" content="Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new ...">
   <meta name="twitter:description" content="Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new ...">
-      <meta property="og:image" content="images/header-soviet-coe.png">
-  <meta name="twitter:image" content="images/header-soviet-coe.png">
+      <meta property="og:image" content="https://sidu.in/essays/images/header-soviet-coe.png">
+  <meta name="twitter:image" content="https://sidu.in/essays/images/header-soviet-coe.png">
   <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Don't Go AI Native">
   <meta name="twitter:site" content="@ponnappa">
@@ -305,10 +305,10 @@ href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">T
 </div>
 
 <div style="width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; margin-bottom:1.5em;">
-<img src="images/header-soviet-coe.png" alt="AI Native Centre of Excellence - Soviet propaganda style poster with a figure pointing at a sprint planning board" style="width:100%; height:40vw; max-height:450px; min-height:200px; object-fit:cover; object-position:center 30%; display:block;" />
+<img src="https://sidu.in/essays/images/header-soviet-coe.png" alt="AI Native Centre of Excellence - Soviet propaganda style poster with a figure pointing at a sprint planning board" style="width:100%; height:40vw; max-height:450px; min-height:200px; object-fit:cover; object-position:center 30%; display:block;" />
 </div>
 
-<p>Looking back, I feel like <a href="https://en.wikipedia.org/wiki/Ruby_on_Rails">Rails</a> kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new standards, one after another for twenty years. Git. Prototype. jQuery. Jenkins. Docker. Kubernetes. React. Tensorflow.</p>
+<p>Looking back, I feel like <a href="https://en.wikipedia.org/wiki/Ruby_on_Rails">Rails</a> kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new standards, one after another for twenty years. Git. Prototype. jQuery. Jenkins. Kafka. Docker. React. Kubernetes. Terraform. Tensorflow.</p>
 
 <p>The churn was already too fast for most enterprises to keep up with. But it didn’t matter, because they weren’t trying to. Startups, big tech and HFT shops rode the bleeding edge because staying current <em>was</em> their competitive advantage. For everyone else, technology was a means to an end, not the business itself. They valued long backward-compatibility loops and preferred buying over building - and that preference <a href="after-ai-there-is-no-product.html">created the golden age of SaaS</a>. Jira for planning. GitHub for code. VS Code for editing. CI/CD for shipping. Teach an IT team the stack in a few months and they’d be productive for years.</p>
 
@@ -320,13 +320,19 @@ href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">T
 
 <p>Every company is responding. If you take current AI strategy advice at face value, the answer is obvious. Every company should be trying to go AI Native right now. Hire a Head of AI. Stand up a Centre of Excellence. Reorganise engineering around agents. Redesign the workflow. Redesign the org.</p>
 
-<p>I now believe that’s the wrong conclusion. <em>What you need is a business that does things your competitors still can’t</em>. Automating processes that cost too much to automate. Building internal tools that were never worth building. Operating at speeds the pre-AI org couldn’t reach.</p>
+<p>I now believe that’s the wrong conclusion.</p>
+
+<blockquote>
+  <p><em>What you need is a business that does things your competitors still can’t</em>.</p>
+</blockquote>
+
+<p>Automating processes that cost too much to automate. Building internal tools that were never worth building. Operating at speeds the pre-AI org couldn’t reach.</p>
 
 <p>Going AI Native is one way to get there. For most companies, it’s the wrong way.</p>
 
 <h2 id="the-wrong-decomposition">The Wrong Decomposition<a href="#the-wrong-decomposition" class="header-anchor"></a></h2>
 
-<p>In 1972, <a href="https://en.wikipedia.org/wiki/David_Parnas">David Parnas</a> published a paper called “On the Criteria To Be Used in Decomposing Systems into Modules.” It’s one of those papers that’s more cited than read, which is a shame, because the core idea is devastatingly simple. The most natural way to break a complex system into parts - by function, by what each part <em>does</em> - is usually wrong. The right way is to decompose by what’s likely to <em>change</em>. Each module should hide one decision that might change, behind an interface that doesn’t.</p>
+<p>In 1972, <a href="https://en.wikipedia.org/wiki/David_Parnas">David Parnas</a> published a paper called “<a href="https://blog.acolyer.org/2016/09/05/on-the-criteria-to-be-used-in-decomposing-systems-into-modules/">On the Criteria To Be Used in Decomposing Systems into Modules</a>.” It’s one of those papers that’s more cited than read, which is a shame, because the core idea is devastatingly simple. The most natural way to break a complex system into parts - by function, by what each part <em>does</em> - is usually wrong. The right way is to decompose by what’s likely to <em>change</em>. Each module should hide one decision that might change, behind an interface that doesn’t.</p>
 
 <p>Parnas was not a man who softened his conclusions. He <a href="https://web.stanford.edu/class/cs99r/readings/parnas1.pdf">resigned from Reagan’s Star Wars advisory panel</a> because he concluded the software couldn’t be made trustworthy - and said so publicly.</p>
 
@@ -336,7 +342,9 @@ href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">T
 
 <p>Not one aspect of it. All of it - the tooling, the workflows, the team topology, the hiring profiles, the cost structures, the quality assurance process, the way institutional knowledge gets created and retained.</p>
 
-<p>If you’re not decomposing your response around that single volatile decision - if you’re just bolting AI onto existing functions - you’ve created the wrong modules. You’re a 2022 engineering org with a chatbot.</p>
+<p>If you’re not decomposing your response around that single volatile decision - if you’re just bolting AI onto existing functions - you’ve created the wrong modules.</p>
+
+<p>You’re a 2022 engineering org with a chatbot.</p>
 
 <h2 id="conways-ratchet">Conway’s Ratchet<a href="#conways-ratchet" class="header-anchor"></a></h2>
 
@@ -363,7 +371,7 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
 
 <p>Enterprise procurement, vendor evaluation, and tooling rollout cycles were built for an era when core tools changed every two to three years. Those cycles still run on twelve-to-eighteen-month clocks. The procurement process itself is a Conway artefact - it mirrors the rate of change of the era that built it. By the time the org has evaluated, procured, and rolled out a tool, the tool is already behind.</p>
 
-<p>For companies whose core business isn’t software engineering - insurance, logistics, healthcare, finance - this is structurally hard to sustain. The engineering org exists to serve the core business. Asking it to <em>also</em> continuously redesign itself around a shifting paradigm is asking it to serve two masters. And the second master changes its mind every quarter.</p>
+<p>For companies whose core business isn’t software engineering - insurance, logistics, healthcare, finance - this is structurally hard to sustain. The engineering org exists to serve the core business. Asking it to <em>also</em> continuously redesign itself around a shifting paradigm is asking it to serve two masters. And the second master moves <em>relentlessly</em> every quarter.</p>
 
 <h2 id="the-demand-explosion">The Demand Explosion<a href="#the-demand-explosion" class="header-anchor"></a></h2>
 
@@ -371,11 +379,11 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
 
 <p>In 1865, William Stanley Jevons noticed something counterintuitive about coal. As steam engines became more efficient, the obvious prediction was that Britain would burn less coal. The opposite happened. Efficiency made coal-powered machinery economical for uses that had previously been too expensive. Demand exploded. Total coal consumption <em>rose</em> as the engines got better. This is <a href="https://en.wikipedia.org/wiki/Jevons_paradox">Jevons’ Paradox</a>: make something dramatically cheaper to produce and you don’t get less of it. You get vastly more.</p>
 
-<p>When the cost of building software drops by an order of magnitude, every process that was too expensive to automate becomes worth automating. Every internal tool that was never worth building becomes trivial to build. Every one-off integration, every custom workflow, every bespoke reporting dashboard - all of it becomes economical. Capabilities the business <em>couldn’t have</em> before.</p>
+<p>When the cost of building software drops by an order of magnitude, every process that was too expensive to automate becomes worth automating. Every internal tool that was never worth building becomes trivial to build. Every one-off integration, every custom workflow, every bespoke reporting dashboard - capabilities the business <em>couldn’t have</em> before.</p>
 
-<p>A company that gets this right builds <em>vastly more</em> software. Decisions happen faster because data pipelines exist that weren’t worth building before. Operations run with less friction because manual processes are automated end to end. Capabilities that used to be uneconomical show up in production as a matter of course.</p>
-
-<p>If a company claims to have transformed but the business itself isn’t visibly accelerating, the transformation hasn’t taken hold.</p>
+<blockquote>
+  <p>If a company claims to have transformed but the business itself isn’t visibly accelerating, the transformation hasn’t taken hold.</p>
+</blockquote>
 
 <div class="embed">
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Jevons paradox is happening in real time. Companies, especially outside of tech, are realizing that they can now afford to take on software projects that they wouldn't have been able to tackle before because now AI lets them do so.</p>&mdash; Aaron Levie (@levie) <a href="https://twitter.com/levie/status/2036832183131033977">March 26, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -389,7 +397,7 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
 
 <h2 id="the-module">The Module<a href="#the-module" class="header-anchor"></a></h2>
 
-<p>Parnas had an answer for this too. It’s the same paper.</p>
+<p>Parnas had an answer for this too - it’s the same paper.</p>
 
 <p>When a decision is volatile - when it’s likely to change - hide it behind a stable interface. The interface stays the same. The implementation behind it changes as often as it needs to.</p>
 
@@ -403,23 +411,33 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
 
 <p>The module does the same thing for software development. The customer says what they need built. The module builds it, maintains it, keeps it current. The tooling behind the interface changes every quarter. The interface doesn’t.</p>
 
+<h2 id="the-forever-reorg">The Forever Reorg<a href="#the-forever-reorg" class="header-anchor"></a></h2>
+
 <p>The customer doesn’t need to know the module switched from Cursor to Claude Code last month. Doesn’t need to know the last model drop cut costs by 40%. Doesn’t need to know that the engineering team restructured twice this quarter to absorb a capability that didn’t exist in January. The customer needs working software that keeps working. Everything else is behind the interface.</p>
 
 <p>Parnas, applied to an organisational problem at industry scale.</p>
 
-<h2 id="the-stable-interface">The Stable Interface<a href="#the-stable-interface" class="header-anchor"></a></h2>
-
-<p><a href="after-ai-there-is-no-product.html">A fixed annual contract</a>. The module builds the software, maintains it, keeps it current. As the module’s underlying efficiency improves - and it will, every time a new model drops - the savings pass through.</p>
-
 <p>The module absorbs Conway’s Ratchet. The customer handles their core business. The module handles the tooling churn, the org reshaping, the demand explosion. The customer gets capabilities that weren’t previously possible - delivered and maintained behind an interface that doesn’t change every time the industry does.</p>
 
-<p>Build the module yourself. Keep rebuilding it, forever. Or hire one.</p>
+<p>Build the module yourself - an entire company within your company, perpetually reshaping itself without disrupting the business.</p>
+
+<p>Or hire one that already exists.</p>
+
+<h2 id="references">References<a href="#references" class="header-anchor"></a></h2>
+
+<ul>
+  <li>Parnas, D.L. (1972). “<a href="https://blog.acolyer.org/2016/09/05/on-the-criteria-to-be-used-in-decomposing-systems-into-modules/">On the Criteria To Be Used in Decomposing Systems into Modules</a>.” <em>Communications of the ACM</em>, 15(12).</li>
+  <li>Conway, M.E. (1968). “<a href="https://www.melconway.com/Home/pdf/committees.pdf">How Do Committees Invent?</a>” <em>Datamation</em>, April 1968.</li>
+  <li>Brooks, F.P. (1975). <em><a href="https://en.wikipedia.org/wiki/The_Mythical_Man-Month">The Mythical Man-Month</a></em>. Addison-Wesley.</li>
+  <li>Parnas, D.L. (1985). “<a href="https://web.stanford.edu/class/cs99r/readings/parnas1.pdf">Software Aspects of Strategic Defense Systems</a>.” <em>Communications of the ACM</em>, 28(12).</li>
+  <li>Jevons, W.S. (1865). <em><a href="https://en.wikipedia.org/wiki/The_Coal_Question">The Coal Question</a></em>. Macmillan.</li>
+</ul>
 
     </div>
   </div>
   <div class="footer d-flex justify-content-center">
     <div>
-                    v. 336fc6cc,
+                    v. 0ad9ef2e,
             2026-03-30 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
