@@ -356,6 +356,8 @@ href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">T
 
 <p>Going AI Native is one way to get there. For most companies, it’s the wrong way.</p>
 
+<p>Some companies compete on continuous technical reinvention - we call them big tech. They can go AI Native because that’s what they already do. Everyone else has a business to run, and technology is how they run it - not what they sell.</p>
+
 <h2 id="the-wrong-decomposition">The Wrong Decomposition<a href="#the-wrong-decomposition" class="header-anchor"></a></h2>
 
 <p>In 1972, <a href="https://en.wikipedia.org/wiki/David_Parnas">David Parnas</a> published a paper called “<a href="https://blog.acolyer.org/2016/09/05/on-the-criteria-to-be-used-in-decomposing-systems-into-modules/">On the Criteria To Be Used in Decomposing Systems into Modules</a>.” It’s one of those papers that’s more cited than read, which is a shame, because the core idea is devastatingly simple. The most natural way to break a complex system into parts - by function, by what each part <em>does</em> - is usually wrong. The right way is to decompose by what’s likely to <em>change</em>. Each module should hide one decision that might change, behind an interface that doesn’t.</p>
@@ -433,7 +435,7 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
 
 <p>A company like that is a Parnas module.</p>
 
-<p>Amazon did this to supply chains. Before Amazon, logistics was broken and error-prone, and customers <em>felt</em> every mistake - late deliveries, lost packages, painful returns. Amazon encapsulated it behind a smooth interface. The customer never sees the warehouse robotics, the route optimisation, the carrier negotiations. They see a button that says “Buy Now” and a package that arrives on time.</p>
+<p>Every Amazon customer sees the same thing: a button that says “Buy Now” and a package that arrives on time. Behind that interface - warehouse robotics, route optimisation, carrier negotiations, an operation that reinvents itself quarterly across a supply chain that is <em>still</em> horrendously error-prone. The customer never sees any of it.</p>
 
 <p>The module does the same thing for software development. The customer says what they need built. The module builds it, maintains it, keeps it current. The tooling behind the interface changes every quarter. The interface doesn’t.</p>
 
@@ -471,7 +473,7 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
   </div>
   <div class="footer d-flex justify-content-center">
     <div>
-                    v. bbb65cf9,
+                    v. 59a40736,
             2026-04-02 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
