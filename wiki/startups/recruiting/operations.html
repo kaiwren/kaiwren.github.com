@@ -47,6 +47,7 @@
           --blockquote-border: #cccccc;
           --link-color: #0066cc;
           --cta-color: #bbbbbb;
+          --dateline-color: #888888;
       }
 
       /* Auto dark mode based on system preference */
@@ -62,6 +63,7 @@
               --blockquote-border: #505050;
               --link-color: #7aa3e0;
               --cta-color: #666666;
+              --dateline-color: #777777;
           }
       }
 
@@ -76,6 +78,7 @@
           --blockquote-border: #505050;
           --link-color: #7aa3e0;
           --cta-color: #666666;
+          --dateline-color: #777777;
       }
 
       @media only screen and (min-width: 64em) {
@@ -204,6 +207,13 @@
           margin-bottom: 1.5em;
       }
 
+      span.dateline {
+          font-family: var(--content-font-family);
+          font-style: italic;
+          font-weight: var(--content-font-weight);
+          color: var(--dateline-color);
+      }
+
       div.embed {
           margin-top: 2.5rem;
           margin-bottom: 2.5rem;
@@ -241,6 +251,15 @@
           background: var(--blockquote-bg);
           display: inline-block;
           padding: 1em;
+      }
+
+      /* Callout: key insights and critical concepts the author wants the reader to retain.
+         Visually distinct from blockquote (which is for cited/attributed material). */
+      aside {
+          font-size: 1.25em;
+          font-style: italic;
+          padding: 0.5em 0 0.5em 1.5em;
+          margin: 1.5em 0;
       }
 
       /* Dark mode toggle button */
@@ -296,7 +315,7 @@
     <div class="content col-10">
       <h1 id="operations">Operations</h1>
 <div class="after-h1">
-<a class="twitter-share-button" 
+<a class="twitter-share-button"
 href="https://twitter.com/intent/tweet?text=Operations&via=ponnappa">Tweet</a>
 <a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

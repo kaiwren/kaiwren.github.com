@@ -46,7 +46,9 @@
           --blockquote-bg: #eeeeee;
           --blockquote-border: #cccccc;
           --link-color: #0066cc;
+          --aside-bg: #f7f5f0;
           --cta-color: #bbbbbb;
+          --dateline-color: #888888;
       }
 
       /* Auto dark mode based on system preference */
@@ -61,7 +63,9 @@
               --blockquote-bg: #2a2a2a;
               --blockquote-border: #505050;
               --link-color: #7aa3e0;
+              --aside-bg: #2a2520;
               --cta-color: #666666;
+              --dateline-color: #777777;
           }
       }
 
@@ -75,7 +79,9 @@
           --blockquote-bg: #2a2a2a;
           --blockquote-border: #505050;
           --link-color: #7aa3e0;
+          --aside-bg: #2a2520;
           --cta-color: #666666;
+          --dateline-color: #777777;
       }
 
       @media only screen and (min-width: 64em) {
@@ -204,6 +210,13 @@
           margin-bottom: 1.5em;
       }
 
+      span.dateline {
+          font-family: var(--content-font-family);
+          font-style: italic;
+          font-weight: var(--content-font-weight);
+          color: var(--dateline-color);
+      }
+
       div.embed {
           margin-top: 2.5rem;
           margin-bottom: 2.5rem;
@@ -241,6 +254,19 @@
           background: var(--blockquote-bg);
           display: inline-block;
           padding: 1em;
+      }
+
+      /* Callout: key insights and critical concepts the author wants the reader to retain.
+         Visually distinct from blockquote (which is for cited/attributed material).
+         Must not be mistaken for a blockquote — no left border, no grey background. */
+      aside {
+          font-family: 'Playfair Display', serif;
+          font-size: 1.3em;
+          font-style: italic;
+          padding: 1em 1.5em;
+          margin: 1.5em 0;
+          background: var(--aside-bg);
+          border-radius: 4px;
       }
 
       /* Dark mode toggle button */
@@ -281,8 +307,8 @@
   <meta property="og:title" content="Don't Go AI Native">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="sidu.in">
-    <meta property="og:description" content="Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new ...">
-  <meta name="twitter:description" content="Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new ...">
+    <meta property="og:description" content="30th March 2026 — Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deploym...">
+  <meta name="twitter:description" content="30th March 2026 — Looking back, I feel like Rails kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deploym...">
       <meta property="og:image" content="https://sidu.in/essays/images/header-soviet-coe.png">
   <meta name="twitter:image" content="https://sidu.in/essays/images/header-soviet-coe.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -298,7 +324,7 @@
     <div class="content col-10">
       <h1 class="no_toc" id="dont-go-ai-native">Don’t Go AI Native</h1>
 <div class="after-h1">
-<a class="twitter-share-button" 
+<a class="twitter-share-button"
 href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">Tweet</a>
 <a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -308,7 +334,7 @@ href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">T
 <img src="https://sidu.in/essays/images/header-soviet-coe.png" alt="AI Native Centre of Excellence - Soviet propaganda style poster with a figure pointing at a sprint planning board" style="width:100%; height:40vw; max-height:450px; min-height:200px; object-fit:cover; object-position:center 30%; display:block;" />
 </div>
 
-<p>Looking back, I feel like <a href="https://en.wikipedia.org/wiki/Ruby_on_Rails">Rails</a> kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new standards, one after another for twenty years. Git. Prototype. jQuery. Jenkins. Kafka. Docker. React. Kubernetes. Terraform. Tensorflow.</p>
+<p><span class="dateline">30th March 2026 —</span> Looking back, I feel like <a href="https://en.wikipedia.org/wiki/Ruby_on_Rails">Rails</a> kicked off the last great cycle of dev tooling. That was 2004. Then the open-source ecosystem took over: new frameworks, new languages, new deployment patterns, new standards, one after another for twenty years. Git. Prototype. jQuery. Jenkins. Kafka. Docker. React. Kubernetes. Terraform. Tensorflow.</p>
 
 <p>The churn was already too fast for most enterprises to keep up with. But it didn’t matter, because they weren’t trying to. Startups, big tech and HFT shops rode the bleeding edge because staying current <em>was</em> their competitive advantage. For everyone else, technology was a means to an end, not the business itself. They valued long backward-compatibility loops and preferred buying over building - and that preference <a href="after-ai-there-is-no-product.html">created the golden age of SaaS</a>. Jira for planning. GitHub for code. VS Code for editing. CI/CD for shipping. Teach an IT team the stack in a few months and they’d be productive for years.</p>
 
@@ -322,9 +348,9 @@ href="https://twitter.com/intent/tweet?text=Don%27t+Go+AI+Native&via=ponnappa">T
 
 <p>I now believe that’s the wrong conclusion.</p>
 
-<blockquote>
-  <p><em>What you need is a business that does things your competitors still can’t</em>.</p>
-</blockquote>
+<p>None of that is going AI Native. Going AI Native is superhuman speed and superhuman quality. Going AI Native is blowing your customers’ minds by doing impossible things.</p>
+
+<aside>What you need is a business that does things your competitors still can't.</aside>
 
 <p>Automating processes that cost too much to automate. Building internal tools that were never worth building. Operating at speeds the pre-AI org couldn’t reach.</p>
 
@@ -449,8 +475,8 @@ The org that doesn’t reorg ships the wrong system. Conway’s <em>ratchet</em>
   </div>
   <div class="footer d-flex justify-content-center">
     <div>
-                    v. e32f6943,
-            2026-03-31 © <a href="https://sidu.in">Sidu Ponnappa</a>
+                    v. e7360b68,
+            2026-04-02 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
   <div class="bhook-cta d-flex justify-content-center">
