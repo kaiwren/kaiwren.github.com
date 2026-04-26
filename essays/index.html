@@ -162,6 +162,9 @@
           font-style: var(--title-font-style);
           font-size: var(--title-font-size);
           font-weight: var(--title-font-weight);
+          line-height: 1.15;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
       }
 
       h2 {
@@ -267,17 +270,79 @@
           color: var(--cta-color);
       }
 
+      /* Tables: editorial, type-forward. Capped break-out on desktop so
+         prose-heavy matrices can breathe beyond the 720px reading column.
+         Mobile: horizontal scroll within the column with a subtle right-edge
+         fade as a scrollability hint. */
       table {
-          margin: 0.5em 0 1em 0.5em;
+          width: 100%;
+          margin: 2em 0;
+          border-collapse: collapse;
+          font-size: 0.95rem;
+          line-height: 1.45;
       }
 
-      table thead tr {
-          background: var(--table-header-bg);
+      @media (min-width: 48em) {
+          table {
+              width: calc(100% + 240px);
+              margin-left: -120px;
+              margin-right: -120px;
+          }
+      }
+
+      table thead th {
+          background: var(--aside-bg);
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          text-align: left;
+          border-bottom: 2px solid var(--border-color-light);
       }
 
       table td, table th {
-          padding: 0.1em 1em 0.1em 1em;
-          border: 1px solid var(--border-color-light);
+          padding: 0.85em 1.1em;
+          border-bottom: 1px solid var(--border-color);
+          vertical-align: top;
+      }
+
+      table tbody td:first-child {
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          border-right: 1px solid var(--border-color);
+          background: var(--aside-bg);
+      }
+
+      table tbody td:first-child strong {
+          font-weight: 600;
+      }
+
+      table tbody tr:last-child td {
+          border-bottom: none;
+      }
+
+      /* Mobile: table itself becomes a horizontal scroll container.
+         Inner rows/cells keep their table layout via explicit display.
+         Negative margin lets the scroll edge align with the page edge. */
+      @media (max-width: 48em) {
+          table {
+              display: block;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              white-space: normal;
+              margin: 1.5em -1.25rem;
+              padding: 0 1.25rem;
+              max-width: calc(100% + 2.5rem);
+              font-size: 0.85rem;
+          }
+          table thead, table tbody, table tr {
+              display: table;
+              width: 100%;
+              table-layout: fixed;
+          }
+          table {
+              border-collapse: separate;
+          }
       }
 
       blockquote {
@@ -361,6 +426,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
 </div>
 
 <ol>
+  <li><a href="ai-transformation-patterns-playground-pattern.html">AI Transformation Patterns: The Playground</a> (Apr 2026)</li>
   <li><a href="dont-go-ai-native.html">Don’t Go AI Native</a> (Mar 2026)</li>
   <li><a href="after-ai-there-is-no-product.html">There is no Product</a> (Feb 2026)</li>
   <li><a href="hiring-product-managers.html">Hiring Product Managers</a> (Feb 2022)</li>
