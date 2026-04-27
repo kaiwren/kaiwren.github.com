@@ -48,6 +48,7 @@
           --aside-bg: #f7f5f0;
           --cta-color: #bbbbbb;
           --dateline-color: #888888;
+          --scroll-shadow: rgba(0, 0, 0, 0.18);
       }
 
       /* Auto dark mode based on system preference */
@@ -65,6 +66,7 @@
               --aside-bg: #2a2520;
               --cta-color: #666666;
               --dateline-color: #777777;
+              --scroll-shadow: rgba(255, 255, 255, 0.18);
           }
       }
 
@@ -81,6 +83,7 @@
           --aside-bg: #2a2520;
           --cta-color: #666666;
           --dateline-color: #777777;
+          --scroll-shadow: rgba(255, 255, 255, 0.18);
       }
 
       *, *::before, *::after {
@@ -162,6 +165,9 @@
           font-style: var(--title-font-style);
           font-size: var(--title-font-size);
           font-weight: var(--title-font-weight);
+          line-height: 1.15;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
       }
 
       h2 {
@@ -267,17 +273,91 @@
           color: var(--cta-color);
       }
 
+      /* Tables: editorial, type-forward. Capped break-out on desktop so
+         prose-heavy matrices can breathe beyond the 720px reading column.
+         Mobile: horizontal scroll within the column with a subtle right-edge
+         fade as a scrollability hint. */
       table {
-          margin: 0.5em 0 1em 0.5em;
+          width: 100%;
+          margin: 2em 0;
+          border-collapse: collapse;
+          font-size: 0.95rem;
+          line-height: 1.45;
       }
 
-      table thead tr {
-          background: var(--table-header-bg);
+      @media (min-width: 48em) {
+          table {
+              width: calc(100% + 240px);
+              margin-left: -120px;
+              margin-right: -120px;
+          }
+      }
+
+      table thead th {
+          background: var(--aside-bg);
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          text-align: center;
+          border-bottom: 2px solid var(--border-color-light);
+      }
+
+      table thead th:first-child {
+          background: transparent;
       }
 
       table td, table th {
-          padding: 0.1em 1em 0.1em 1em;
-          border: 1px solid var(--border-color-light);
+          padding: 0.85em 1.1em;
+          border-bottom: 1px solid var(--border-color);
+          vertical-align: top;
+      }
+
+      table tbody td:first-child {
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          border-right: 1px solid var(--border-color);
+          background: var(--aside-bg);
+      }
+
+      table tbody td:first-child strong {
+          font-weight: 600;
+      }
+
+      table tbody tr:last-child td {
+          border-bottom: none;
+      }
+
+      /* Mobile: bleed the table edge-to-edge, table itself is the
+         horizontal scroll container. Inner table layout flows naturally
+         at content width — Safari and Chrome both respect this when the
+         display: block table has overflow-x: auto.
+
+         Scroll-shadow affordance: two layered gradients use mixed
+         background-attachment to communicate scrollability. The "cover"
+         gradients (--bg-color → transparent) are local-attached so they
+         move with the content and hide the shadow when scrolled to that
+         edge. The "shadow" gradients are scroll-attached so they stay
+         pinned to the viewport edges. Net effect: shadow appears on
+         either side when more content lies that way; fades when you hit
+         the end. The Roma Komarov 2012 pattern, dark-mode adapted. */
+      @media (max-width: 48em) {
+          table {
+              display: block;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              margin: 1.5em -1.25rem;
+              width: calc(100% + 2.5rem);
+              font-size: 0.85rem;
+              background:
+                  linear-gradient(to right, var(--bg-color) 30%, rgba(0, 0, 0, 0)) left center / 2.5rem 100% no-repeat local,
+                  linear-gradient(to left, var(--bg-color) 30%, rgba(0, 0, 0, 0)) right center / 2.5rem 100% no-repeat local,
+                  radial-gradient(farthest-side at 0 50%, var(--scroll-shadow), rgba(0, 0, 0, 0)) left center / 1rem 100% no-repeat scroll,
+                  radial-gradient(farthest-side at 100% 50%, var(--scroll-shadow), rgba(0, 0, 0, 0)) right center / 1rem 100% no-repeat scroll;
+          }
+          table > * {
+              min-width: 44rem;
+          }
       }
 
       blockquote {
