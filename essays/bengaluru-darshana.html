@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&family=Montserrat:ital,wght@1,700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+  <style>
+      :root {
+          --html-font-size: 18px;
+          --title-font-family: 'Playfair Display';
+          --title-font-style: italic;
+          --title-font-size: 3rem;
+          --title-font-weight: 400;
+          --header-font-family: 'Montserrat';
+          --header-font-weight: 700;
+          --header-font-style: italic;
+          --header-2-padding-bottom: 0.25em;
+          --header-2-font-size: 2rem;
+          --header-3-font-size: 1.6818rem;
+          --header-4-font-size: 1.4142rem;
+          --header-5-font-size: 1.1892rem;
+          --header-margin-top: 1.7rem;
+          --header-2-margin-top: 2.5rem;
+          --header-margin-bottom: 0.8em;
+          --header-margin-left: -2px;
+          --content-width-large-screen: 720px;
+          --content-font-family: 'Fira Sans';
+          --content-line-height: 1.5em;
+          --content-font-weight: 400;
+          --paragraph-spacing: 1.5rem;
+          --paragaph-font-size: 1rem;
+          --toc-font-weight: 400;
+
+          /* Light mode colors */
+          --bg-color: #ffffff;
+          --text-color: #000000;
+          --border-color: #eaeaea;
+          --border-color-light: #bbbbbb;
+          --table-header-bg: #eeeeee;
+          --blockquote-bg: #eeeeee;
+          --blockquote-border: #cccccc;
+          --link-color: #0066cc;
+          --aside-bg: #f7f5f0;
+          --cta-color: #bbbbbb;
+          --dateline-color: #888888;
+          --scroll-shadow: rgba(0, 0, 0, 0.18);
+      }
+
+      /* Auto dark mode based on system preference */
+      @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+              /* Dark mode colors */
+              --bg-color: #1a1a1a;
+              --text-color: #e0e0e0;
+              --border-color: #404040;
+              --border-color-light: #555555;
+              --table-header-bg: #2a2a2a;
+              --blockquote-bg: #2a2a2a;
+              --blockquote-border: #505050;
+              --link-color: #7aa3e0;
+              --aside-bg: #2a2520;
+              --cta-color: #666666;
+              --dateline-color: #777777;
+              --scroll-shadow: rgba(255, 255, 255, 0.18);
+          }
+      }
+
+      /* Manual dark mode toggle */
+      :root[data-theme="dark"] {
+          --bg-color: #1a1a1a;
+          --text-color: #e0e0e0;
+          --border-color: #404040;
+          --border-color-light: #555555;
+          --table-header-bg: #2a2a2a;
+          --blockquote-bg: #2a2a2a;
+          --blockquote-border: #505050;
+          --link-color: #7aa3e0;
+          --aside-bg: #2a2520;
+          --cta-color: #666666;
+          --dateline-color: #777777;
+          --scroll-shadow: rgba(255, 255, 255, 0.18);
+      }
+
+      *, *::before, *::after {
+          box-sizing: border-box;
+      }
+
+      body {
+          margin: 0;
+      }
+
+      div.body {
+          max-width: var(--content-width-large-screen);
+          margin: 0 auto;
+          padding: 0 1.25rem;
+      }
+
+      @media (max-width: 40em) {
+          :root {
+              --paragaph-font-size: 0.9rem;
+              --title-font-size: 2rem;
+              --header-2-font-size: 1.5rem;
+              --header-3-font-size: 1.25rem;
+              --header-4-font-size: 1.1rem;
+              --header-5-font-size: 1rem;
+          }
+
+          div.content p {
+              text-align: justify;
+              hyphens: auto;
+          }
+      }
+
+      div.x-comparison {
+          font-size: 32px;
+      }
+
+      div.x-comparison span.x-comparison-title {
+          font-family: var(--title-font-family);
+          font-weight: var(--title-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-header {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-body {
+          font-family: var(--content-font-family);
+          font-weight: var(--content-font-weight);
+      }
+
+      html {
+          font-size: var(--html-font-size);
+      }
+
+      html {
+          background-color: var(--bg-color);
+      }
+
+      body {
+          font-family: sans-serif;
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      div.content {
+          line-height: var(--content-line-height);
+          font-weight: var(--content-font-weight);
+          font-family: var(--content-font-family);
+      }
+
+      a {
+          color: var(--link-color);
+      }
+
+      h1 {
+          font-family: var(--title-font-family);
+          font-style: var(--title-font-style);
+          font-size: var(--title-font-size);
+          font-weight: var(--title-font-weight);
+          line-height: 1.15;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+      }
+
+      h2 {
+          font-size: var(--header-2-font-size);
+          padding-bottom: var(--header-2-padding-bottom);
+          border-bottom: 1px solid var(--border-color);
+          margin-top: var(--header-2-margin-top);
+      }
+
+      h3 {
+          font-size: var(--header-3-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-4-font-size);
+      }
+
+      h5 {
+          font-size: var(--header-5-font-size);
+      }
+
+      h2, h3, h4, h5 {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+          font-style: var(--header-font-style);
+          margin-left: var(--header-margin-left);
+          margin-bottom: var(--header-margin-bottom);
+      }
+
+      h3, h4, h5 {
+          margin-top: var(--header-margin-top);
+      }
+
+      h2 a.header-anchor, h3 a.header-anchor,
+      h4 a.header-anchor, h5 a.header-anchor {
+          float: left;
+          margin-left: -20px;
+          text-decoration: none;
+          outline: none;
+          position: relative;
+      }
+
+      h2 a.header-anchor:after, h3 a.header-anchor:after,
+      h4 a.header-anchor:after, h5 a.header-anchor:after {
+          content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' fill-rule='evenodd' d='M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z'/%3E%3C/svg%3E");
+          box-sizing: border-box;
+          font-size: medium;
+          visibility: hidden;
+      }
+
+      h2:hover a.header-anchor:after, h3:hover a.header-anchor:after,
+      h4:hover a.header-anchor:after, h5:hover a.header-anchor:after {
+          visibility: visible;
+      }
+
+      div.content p, div.content ul, div.content ol {
+          font-size: var(--paragaph-font-size);
+      }
+
+      div.content p {
+          margin-bottom: var(--paragraph-spacing);
+      }
+
+      ol#markdown-toc {
+          font-weight: var(--toc-font-weight);
+      }
+
+      div.after-h1 {
+          border-bottom: 1px solid var(--border-color-light);
+          margin-bottom: 1.5em;
+      }
+
+      span.dateline {
+          font-family: var(--content-font-family);
+          font-style: italic;
+          font-weight: var(--content-font-weight);
+          color: var(--dateline-color);
+      }
+
+      div.embed {
+          margin-top: 2.5rem;
+          margin-bottom: 2.5rem;
+          width: 100%;
+          justify-content: center;
+          display: flex;
+      }
+
+      div.footer {
+          display: flex;
+          justify-content: center;
+          margin: 0.5em 0 0.5em 0;
+      }
+
+      div.bhook-cta {
+          display: flex;
+          justify-content: center;
+      }
+
+      div.bhook-cta a {
+          font-size: x-small;
+          text-decoration: none;
+          margin-bottom: 1.5em;
+          color: var(--cta-color);
+      }
+
+      /* Tables: editorial, type-forward. Capped break-out on desktop so
+         prose-heavy matrices can breathe beyond the 720px reading column.
+         Mobile: horizontal scroll within the column with a subtle right-edge
+         fade as a scrollability hint. */
+      table {
+          width: 100%;
+          margin: 2em 0;
+          border-collapse: collapse;
+          font-size: 0.95rem;
+          line-height: 1.45;
+      }
+
+      @media (min-width: 48em) {
+          table {
+              width: calc(100% + 240px);
+              margin-left: -120px;
+              margin-right: -120px;
+          }
+      }
+
+      table thead th {
+          background: var(--aside-bg);
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          text-align: center;
+          border-bottom: 2px solid var(--border-color-light);
+      }
+
+      table thead th:first-child {
+          background: transparent;
+      }
+
+      table td, table th {
+          padding: 0.85em 1.1em;
+          border-bottom: 1px solid var(--border-color);
+          vertical-align: top;
+      }
+
+      table tbody td:first-child {
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          border-right: 1px solid var(--border-color);
+          background: var(--aside-bg);
+      }
+
+      table tbody td:first-child strong {
+          font-weight: 600;
+      }
+
+      table tbody tr:last-child td {
+          border-bottom: none;
+      }
+
+      /* Mobile: bleed the table edge-to-edge, table itself is the
+         horizontal scroll container. Inner table layout flows naturally
+         at content width — Safari and Chrome both respect this when the
+         display: block table has overflow-x: auto.
+
+         Scroll-shadow affordance: two layered gradients use mixed
+         background-attachment to communicate scrollability. The "cover"
+         gradients (--bg-color → transparent) are local-attached so they
+         move with the content and hide the shadow when scrolled to that
+         edge. The "shadow" gradients are scroll-attached so they stay
+         pinned to the viewport edges. Net effect: shadow appears on
+         either side when more content lies that way; fades when you hit
+         the end. The Roma Komarov 2012 pattern, dark-mode adapted. */
+      @media (max-width: 48em) {
+          table {
+              display: block;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              margin: 1.5em -1.25rem;
+              width: calc(100% + 2.5rem);
+              font-size: 0.85rem;
+              background:
+                  linear-gradient(to right, var(--bg-color) 30%, rgba(0, 0, 0, 0)) left center / 2.5rem 100% no-repeat local,
+                  linear-gradient(to left, var(--bg-color) 30%, rgba(0, 0, 0, 0)) right center / 2.5rem 100% no-repeat local,
+                  radial-gradient(farthest-side at 0 50%, var(--scroll-shadow), rgba(0, 0, 0, 0)) left center / 1rem 100% no-repeat scroll,
+                  radial-gradient(farthest-side at 100% 50%, var(--scroll-shadow), rgba(0, 0, 0, 0)) right center / 1rem 100% no-repeat scroll;
+          }
+          table > * {
+              min-width: 44rem;
+          }
+      }
+
+      blockquote {
+          border-left: 10px solid var(--blockquote-border);
+          background: var(--blockquote-bg);
+          display: inline-block;
+          padding: 1em;
+      }
+
+      /* Callout: key insights and critical concepts the author wants the reader to retain.
+         Visually distinct from blockquote (which is for cited/attributed material).
+         Must not be mistaken for a blockquote — no left border, no grey background.
+         Uses Montserrat bold italic (same family as H2-H5) for an authoritative
+         declaration register; distinguished from body by weight+italic+size, and
+         from headings by a smaller size than H5 (1.1892rem). */
+      aside {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+          font-style: var(--header-font-style);
+          font-size: 1.15em;
+          padding: 1em 1.5em;
+          margin: 1.5em 0;
+          background: var(--aside-bg);
+          border-radius: 4px;
+      }
+
+      /* Dark mode toggle button */
+      .theme-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: var(--border-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          transition: background-color 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+          opacity: 0.8;
+      }
+
+      .theme-icon {
+          font-size: 24px;
+          color: var(--bg-color);
+      }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-CT9TWBW0WR');
+  </script>
+  <title>Bengaluru Darshana</title>
+  <meta property="og:title" content="Bengaluru Darshana">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="sidu.in">
+    <meta property="og:description" content="28th July 2026 — They gave me fourteen months at the outside, and the flight to Mysore took eleven hours, which on the new arithmetic was not nothing. I did the sums somewhere over Iran, or over wh...">
+  <meta name="twitter:description" content="28th July 2026 — They gave me fourteen months at the outside, and the flight to Mysore took eleven hours, which on the new arithmetic was not nothing. I did the sums somewhere over Iran, or over wh...">
+      <meta property="og:image" content="https://sidu.in/essays/images/header-bengaluru-darshana.png">
+  <meta name="twitter:image" content="https://sidu.in/essays/images/header-bengaluru-darshana.png">
+  <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bengaluru Darshana">
+  <meta name="twitter:site" content="@ponnappa">
+</head>
+<body>
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+  <span class="theme-icon">◐</span>
+</div>
+<div class="body">
+  <div class="content">
+    <h1 class="no_toc" id="bengaluru-darshana">Bengaluru Darshana</h1>
+<div class="after-h1">
+<a class="twitter-share-button"
+href="https://twitter.com/intent/tweet?text=Bengaluru+Darshana&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<div style="width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; margin-bottom:1.5em;">
+<img src="https://sidu.in/essays/images/header-bengaluru-darshana.png" alt="Bengaluru Darshana - a walker on an open road at dusk, a band of impossible colour reaching across the sky toward the city" style="width:100%; height:40vw; max-height:450px; min-height:200px; object-fit:cover; object-position:center 50%; display:block;" />
+</div>
+
+<p><span class="dateline">28th July 2026 —</span> They gave me fourteen months at the outside, and the flight to Mysore took eleven hours, which on the new arithmetic was not nothing. I did the sums somewhere over Iran, or over where I took Iran to be — the shades were down, and the cabin had the hush electric long-haul has now, like a library that serves dinner. Across the aisle a woman watched a film about a wedding that kept not happening. I had a window seat, a folder of scans I could not read, and a letter from a woman I had met twice, and I was going to India to be cured. Nobody who knew anything used that word. I used it constantly, silently, the way you press a bruise to check it is still yours.</p>
+
+<p>The letter said: <em>fly to Mysore. Bus to Kengeri. Walk in. Do not expect to understand.</em></p>
+
+<p>She had underlined nothing, which I found persuasive. Her husband had my disease, or a cousin of it, four years ago. He had come back. She did not say cured; she said <em>he came back, and it was him</em>, and then a paragraph about practicalities, and then, at the end, <em>I am sorry not to be able to explain it better. Nobody explains it better.</em> I had read the letter perhaps forty times. It behaved the same way each time, which is more than I could say for most of what I had read about the place I was going.</p>
+
+<p>The paperwork had taken five months, which is not bad, considering this was, in essence an application for Indian citizenship. I will not describe it, except to say that at a certain point a man from the Foreign Office asked me, kindly and off the record, whether I understood that I might not come back, and I said yes, and he made a note, and the note was the most honest transaction I had had with my government in forty years. My travel insurance had declined to come with me. My employer and I had reached the understanding that is called, in the current phrase, an open-ended compassionate arrangement, and is called by everyone who has ever had one something shorter. I told my mother I was going travelling. She said <em>India?</em> the way she says most things, without asking what she was asking, and I did not answer what she was not asking, and we had, by our standards, communicated.</p>
+
+<p>The tremor deserves a mention, since it was the reason for everything. It came in the mornings, mostly on the right, and went by ten. There was also a word I had lost — an ordinary word; I would reach the place where it lived and find the furniture rearranged — and a tiredness that was not like other tiredness, that arrived punctually at four in the afternoon like something with a lease. The clinic had given me a pump that metered something steadying into my arm, and a schedule for winding it, and a printed sheet titled LIVING WELL WITH YOUR DIAGNOSIS, which I had left on the kitchen table for my cleaner to throw away, unable to do it myself. That is the sort of man I am, or was. The distinction will matter later, apparently. Everything I read said: do not expect to understand.</p>
+
+<p>Mysore airport was better than Heathrow, and nobody in it appeared to know. That is the whole observation. The trolleys worked, all of them; the air smelled of nothing at all; my bag arrived so promptly that I assumed it was someone else’s. The signage was in Kannada and English and, whenever I was not looking directly at it, clearer than signage is. In the arrivals hall there was a banner about the centenary with a tricolour on it, and a man asleep under the banner with his head on a sack of onions, and no one seemed to feel the two things needed introducing to each other. Beyond a certain gate, a country was going about its morning. I stood in it for a moment being no one in particular, which — I understood this even then, dimly, the way you understand a joke a beat before you can say why it is funny — was a sensation my grandparents had crossed an ocean in the other direction to spare me.</p>
+
+<p>My grandparents were from Mysore. I had been here twice as a child; there are cousins somewhere, an uncle who is dead, an aunt who moved. It would have been possible, in the hour between the airport and the bus stand, to make a telephone call. I did not make it, and noticing that I did not make it was as far as the noticing went. I bought a coffee. It was, and I say this with a grievance that has not entirely healed, the best coffee I have ever drunk, served by a man who plainly considered it unremarkable and would have been embarrassed to be told otherwise.</p>
+
+<p>The bus was full and I was the only foreigner on it, not that anyone could tell by my looks. I had expected — I do not know what I had expected. Backpackers, I suppose, other men with folders. There was instead a civilisation’s ordinary Tuesday: students, an argument about a wedding (perhaps it is always weddings), a crate of chickens with subdued opinions, two soldiers asleep on each other. The driver took my ticket without looking at me. It occurred to me that I had spent my whole life being from somewhere, in the sense of it being a fact about me that entered rooms slightly ahead of my body, and that the driver had relieved me of it without ceremony, the way you take a coat.</p>
+
+<p>I had a window seat again. Next to me sat a grandmother with her grandchild on her lap, and the child watched me for an hour with the frank attention children give to things they have not yet been told are unremarkable. I looked out of the window mostly. The country between Mysore and Bengaluru is not exotic; I want to be clear about that, because everything I had read in England had prepared me to be moved, and I declined to be. It is fields, and then towns that are doing well without being smug about it, and pylons, and a reservoir, and once — but this may have been the light — a stretch of maybe a kilometre where the pylons’ shadows did not agree with the pylons.</p>
+
+<p>My phone placed us, for a while, in the reservoir. Then it apologised and placed us correctly, and then it stopped volunteering opinions, which in fourteen years of owning phones I had never once seen a phone do. My watch and the bus’s clock disagreed, mildly, the way two honest witnesses disagree. None of this alarmed me. I had read about all of it; it was in the letters and the briefing pack and the memoir by the Belgian; it is one thing to have read about it. The tiredness came at four exactly, by my watch, and I remember a small mean satisfaction that something was still running to a British schedule, and I fell asleep against the glass and woke with my ear cold, somewhere that was already, in some way the fields did not trouble to announce, nearer than it had been.</p>
+
+<p>The grandmother said nothing the whole journey. I do not know what I was waiting for her to say. She had a face my memory kept trying to file somewhere it had no business filing it, and a cotton sari the colour my ajji had mostly worn, and she held the child through every pothole with the muscular inattention of long practice, and she said nothing, and I looked out of the window, and that is all that happened on the bus. I am told the recognition of what did not happen on the bus can take years to arrive. Mine took about three weeks, and arrived on foot, like everything else in this account.</p>
+
+<p>Kengeri bus terminal is smaller than its name and older than its concrete, and there is a tea stall against its east wall that is older than both and does not dispute it. Nobody was there to meet me. I want to record how ordinary that felt — I had half-dreaded a tout, a fixer, a laminated card with a misspelling of a name I had not given anyone. There was nothing of the kind. There was evening, and diesel, and frying, and a loudspeaker some distance away reciting something without urgency, and a dog with a bureaucrat’s walk crossing the forecourt on business of its own. The letter had said a street and a house. I walked there, and the walking took eleven minutes, and I would like to claim I felt something beginning, but what I chiefly felt was my bag strap, and the tiredness, and a mild surprise at how easily a person can arrive at the edge of the strangest thing his species has done and find it starts with the mouthwatering smells of frying bajjis.</p>
+
+<p>The landlady looked at me for a moment through the gate. “Ah,” she said. “You’re one of those. Good, good. Tea ಕುಡಿತೀರಾ?”</p>
+
+<p>She has a name; I am not going to use it, for reasons that will become clear, or rather for reasons that will become no clearer but will at least become familiar. Her house had a room for me at the back, and the room had a bed, a chair, a window onto a yard with a tulasi plant in a painted pot, and a calendar from a hardware shop featuring a god I could not name. I was not asked for my story. I was asked, at intervals that never once aligned with my needs and never once missed them by much, whether I would take food. On the second day, folding my shirts, I found she had also, at some point, without comment, washed the shirt I had worn on the flight — and mended, so invisibly I had to search for it, the small tear in the cuff I had been meaning for a month to deal with. I sat on the bed holding the cuff for longer than the cuff strictly required. There are kindnesses that are heavier than the things they lighten. I had been sent here by one letter. I had a strong suspicion I was now inside another one.</p>
+
+<p>Nobody told me what to do, because — I worked this out slowly, over those first days, the way you work out the rules of a house you are a guest in — there was nothing to tell. The folk advice, when I fished for it, was uniform and complete: walk when you are ready. I did not know what ready meant. I still do not, entirely; I have come to suspect that is the point of the word. I stayed four days. I watched the street. A man across the road spent one whole afternoon repairing a scooter with his son, and the two of them laughed at some length about something under the engine, and I sat at the window with the best coffee of my life going cold at my elbow and envied them both to the point of indecency. My pump wound and metered. The tremor came and went. On the fourth evening I read the letter again and it said what it always said. Walk in. Do not expect to understand.</p>
+
+<p>On the fifth morning I paid the landlady for the week, which she took, and for the month, which she did not, and I walked.</p>
+
+<p>The walk began with tea I had not asked for. I had stopped at the stall by the terminal because it was the last thing I recognised, and the uncle who ran it looked at me for a long moment — not unkindly; the way you look at weather you have seen before — and said something in Kannada to the man beside me, none of which was for me and none of which I understood. The man drank his tea, and when I set off up the road he set off too, at my elbow, as if we had agreed on something. We had no language in common, or he was not interested in using the one something would have lent us. He walked with me for half a kilometre and then turned into a lane without any goodbye that I noticed at the time, though I have since revised my opinion of what I noticed. He left me the way a current leaves you at the edge of a pool. That was the first one.</p>
+
+<p>I say the first one because that turned out to be the shape of the thing. Nobody walks with you and nobody leaves you alone. Somebody was always going more or less my way — for an hour, for a morning — and the somebody changed without ceremony, and none of them asked me where I was going, which was convenient, because the honest answer was inward, and <em>inward</em> is not an answer that survives being said aloud to a stranger. By the second day I had stopped preparing the answer. By the third I had stopped thanking people at the English rate, which I mention because giving it up was like taking off a coat I had not known I was wearing, and for an hour afterwards I kept feeling for it.</p>
+
+<p>The longest of them was an off-duty bus driver, a BMTC man with a moustache of some administrative authority, walking home over two days to a wife he described — I think — with great affection and no sentimentality. We spoke, or something spoke for us; I had been briefed about this and had decided, in England, not to find it strange, and the decision held the way such decisions hold. On the first afternoon my phone rang — it had not rung since the reservoir — and my ex-wife’s voice said a sentence she has never said in her life, in a tone she reserved for apologising to waiters. I stopped walking. The driver glanced at the phone, then at me, and said the wind does that here, with exactly the weight one gives to seasonal rain, and resumed his description of a nephew.</p>
+
+<p>I should set down something it took me a long time to notice. I knew the word he had used. Everyone knows it — the <em>gāḷi</em> of Bengaluru, the nanotech miracle-effluvia of the Spike, a household word in England for a decade, leaned on weekly by my mother’s columnists and pronounced by my colleagues several ways, all wrong. I had the word with me when I landed. I never once heard it on the road. The meaning always arrived before the hearing, and the meaning said <em>wind</em>, and I pocketed <em>wind</em>, every time, for weeks. The most famous word this century has produced was spoken in my presence more often than I can now count, and a courtesy I had never asked for handed me weather instead. I thanked nobody, and walked on.</p>
+
+<p>It was to him, I am sorry to record, that I attempted the thing with the money. I had been walking two days and had understood by then that there was a great deal I did not know how to arrange, and arranging is what money is for; that had been true my whole life the way gravity was true. I offered him what I hoped was a dignified sum to organise things — a guide, a vehicle for the stretches that allowed one, a person who would know what I should know. He looked at the notes with mild interest, the way you look at an interesting leaf, and for a moment I understood that the transaction was not being refused; it was failing to exist. There was nothing on the other side of it. He was walking home; I was walking in; company was not a service and the road was not a queue and there was no window anywhere in this country at which my particular currency bought my particular need. He handled it graciously — he handled <em>me</em> graciously, which was worse — and he left the next morning, a little earlier than I had expected, and I have chosen not to arrive at a theory about that.</p>
+
+<p>I should say what the road was like, because I had expected to be frightened and was instead mostly embarrassed, which I understand now to be the correct order for those two things here. Nobody sold anything to the sick. I want that noticed, because I came from a civilisation where my diagnosis had a gift shop. Six thousand miles of it — clinics, supplements, retreats, apps, a man in Zurich — and then this road, on which my situation was a known category requiring no comment, like being left-handed, and nothing along the whole length of it was for sale to me on account of my dying. The tremor still came in the mornings and went by ten. I checked the pump at the hours the schedule said. These acts had begun to feel like the customs of a country I was emigrating from — still mine, observed with a slightly historical feeling.</p>
+
+<p>On the last morning with the driver we stopped at a stall, and a scooter came down hard in the service lane opposite. Everyone looked, the way everyone looks. The rider got up with his wrist wrong — visibly wrong, wrong in a way I have been trained by forty years of health-and-safety posters to have opinions about — and nobody produced an ambulance, and nobody produced anything, and he sat on the kerb and drank tea with his other hand while a small argument conducted itself around him about whether the tea that morning was too sweet, which it was, he said so himself. By the time the glasses were collected the wrist was less wrong. I did not watch it improve; there was nothing to watch; it was simply further along each time I failed to not look. The queue’s position was that the tea was the scandal.</p>
+
+<p>The driver, apropos the wrist, in the tone in which one mentions that a road is closed after the rains: there had been a foreigner, some years back, ankle, two days in. Carried back to Mysore in a tomato lorry. He said it without unkindness and without any interest in what it might do to me. It was road information. Then he finished his tea and shook my hand — a thing nobody else had done, and I suspect he did it because he knew it was in my customs, the way I had stopped thanking people was in his — and went home to his wife.</p>
+
+<p>I walked on alone that day, and it was that evening, on a stretch of road with nothing on it — a wall, a tamarind tree, a heap of sand that had been a project once — that the thing I had been carrying since Heathrow set itself down. I had come here seeking a cure. That was the sentence. I had built the visa around it and the letter to my mother around it and the man I was around it, because a man seeking something is still a man doing something. And it had stopped being possible, somewhere between the wrist and the tomato lorry, to believe that a cure was a thing this country had for me, or withheld from me, or stored anywhere at any address a seeker could arrive at. The wrist had mended because of whose wrist it was. My ankle would have been logistics. What this place had was a walk, and at the end of the walk a decision that was not mine, made by nothing I could petition, on grounds I would not be shown, and I had known all of this in England — I had known it the way one knows the boiling point of lead. Now I knew it the way one knows the temperature of the bath. Nothing had been taken from me on that road. That is not true. Nothing had been taken from me that I could name, and the thing I could not name had been holding me upright since the diagnosis, and I stood by the heap of sand for some time, in the failing light, with my hands in my pockets, feeling it not be there.</p>
+
+<p>I kept walking the next morning because the alternative was to stand still, and I no longer had the sentence in which standing still was waiting for something.</p>
+
+<p>She found me, if that is the word, at a junction where I had been standing too long. A woman of perhaps sixty, cotton salwar, canvas shoes of great age and evident conviction, carrying nothing. She looked at me the way the tea-stall uncle had — weather, seen before — and started walking, at an angle to the road I would not have chosen, and I followed, because by then I had learned that this is how it goes and that the alternative to following was standing at junctions.</p>
+
+<p>She had walked in herself, years ago, and turned back. I never learned why, and I want to be careful here, because for the first two days I assembled theories the way I assemble everything, and each of them was a small insult I was fortunate not to be able to say aloud. She did not offer the story. She was not guarding it; there was simply no door where I kept knocking. What she did, most hours, was walk, at that same slight angle to the obvious, and what I did was learn the shape of walking behind a person who is not taking you anywhere.</p>
+
+<p>I asked, the first morning, where we were going. She said there was good water two streets up. This was true; there was; we drank it. I asked again in the afternoon, with the word <em>route</em> in it, and she told me the name of a tree we would pass, and we passed it. On the second day I asked a version with the word <em>plan</em>, and she pointed out a house whose gate hinge had been repaired with the tongue of an old sandal, which detained her for some time in what I can only call approval. I want to be accurate about what happened next, because it is the sort of thing that sounds like a decision and was not one: the question stopped occurring to me. Not answered. Not suppressed. It simply stopped attending, the way a dog stops coming to a door where nothing is ever given, and some days later I noticed its absence the way you notice a stopped clock — retrospectively, by the silence.</p>
+
+<p>The mornings were harder that week. The tremor had begun to stay past ten, some days to noon, and there was now a second word gone — I reached for it on the road and found the furniture rearranged again, and what frightened me was not the gap but how neatly I had stepped around it, as if I had known. I wound the pump. The schedule in my folder had the next eleven weeks ruled out in a grid, and I had begun to find the grid touching, the way one finds a child’s map of the sea touching.</p>
+
+<p>I have to describe the things she did, because they were the hinge of that week, though I did not feel the door move at the time. At a threshold on a street of small workshops she set down a coin — not at a shrine; I looked; it was a doorstep among doorsteps, and whatever distinguished it was not on view. Under a large tree she said two words, and I could not have told you — I still could not tell you — whether she said them to the tree or past it, the way one says something to a room on leaving it. And at the temple — a big one, gopuram freshly painted, loudspeaker warming up — she walked through the whole length of its shadow without any observance at all, at the same pace, talking to me about the price of tomatoes. My difficulty was not that I disapproved. My difficulty was that I kept trying to sort what I was seeing into the two boxes I had brought — observance, non-observance — and nothing went in either box, and the sorting machine ran anyway, all day, and for the first time in my life I could hear it running.</p>
+
+<p>It was to stop the sound of it, I think, that I said the thing. We were sitting in shade while she peeled an orange with terrifying economy. There had been a silence of some twenty minutes, which she was inside of and I was enduring, and I said — offering it, the way you offer a fact about yourself to move a conversation along — <em>I’m not religious.</em></p>
+
+<p>She did not disagree. She did not agree. She did not do anything at all with it, and her nothing was not a rebuke — it was the nothing you give to a remark in a language you see no reason to enter. The orange continued. And the sentence, having nowhere to land, stayed where I could hear it. I had said it for forty years. It had always performed a small service: it put me at a certain distance from a certain table, and the distance was the point, and I had understood the distance to be neutral ground — no man’s land, the sensible place, where one stands when one has seen through things. Sitting in that shade I heard it for the first time from outside, and it was not neutral ground. It was a position — I could hear the grammar of it, <em>I</em>, holding <em>beliefs</em>, at arm’s length, declining — a grammar in which the divine is a proposition on a table and one is asked to sign, and I had declined to sign, and had mistaken declining-to-sign for being outside the room. Nobody on that road was in the room. The woman beside me was not doing the negation of anything; there was no proposition anywhere in her vicinity; her coin and her two words and her untroubled crossing of the temple’s shadow were not positions on a question, and my whole irreligion, my sensible, weightless, invisible irreligion, was a position on a question — was, in fact, the most English thing I owned, inherited the way I had inherited my mother’s way of saying <em>India?</em>, assembled by her out of her parents’ silence and handed to me complete, and I had carried it forty years as <em>no luggage at all</em>.</p>
+
+<p>I did not say any of this. I ate the orange segments she handed me, which were given, I understood even then, neither kindly nor unkindly, but in the way of someone who has an orange and you are there.</p>
+
+<p>Two days later, at a house where we stopped for water, an old woman at the threshold looked up at me and asked — and here I have to slow down, because the order of events was the whole of it. She spoke. And something in me arrived before anything else did: a shape, warm side up, the exact weight of a question asked from a doorway with wet hands, and my mouth had begun to know it — and then the meaning came, from wherever the meaning comes, smooth and complete and in my own English: <em>have you eaten?</em> — and whatever had been arriving in me stopped arriving, the way a name you are about to remember is taken from you by someone helpfully saying it. She had said: ಊಟ ಆಯ್ತಾ? I knew that I had almost known it. I could not tell you now, and could not tell you then, whether what I had almost known was right — whether the warm shape was hers or only mine, assembled out of a kitchen forty years shut. The translation was smoother than my memory, and more accurate than my memory, and it had got there first, and I stood in that doorway holding a steel cup, a man who had just been informed of the meaning of a sentence he was owed.</p>
+
+<p>I said, in English, that I had eaten. She filled my cup again anyway, which needed no translating in either direction.</p>
+
+<p>We walked on. That evening my companion left — turned at a junction, said the water ahead was good, and was a street away before I understood that this was the goodbye, and two streets away before I understood that I had been handed on again, though to whom, or to what, there was no one left to ask.</p>
+
+<p>I met the first of them in a queue for coffee, which I record exactly because I had expected — I am embarrassed to write down what I had expected. Something at the edge of vision, I think. Something in the grammar of weather. What there was instead was a woman of no fixed age in a practical sari, third in the queue at a darshini in Malleswaram, and the only unusual things about her were that the queue had, without anyone moving, stopped being a queue with her in it — she was simply adjacent to it, the way the fire extinguisher is — and that when the two men behind me fell into an argument about whether the previous evening’s rain had been seeded or sent, she said one word, and the argument was not settled but <em>over</em>, and both men looked pleased, as if a knot had been taken out of something they carried.</p>
+
+<p>She drank her coffee at the counter with the mild impatience of a woman between appointments, which is what she was. I understood what she was the way you understand, at a certain point in an evening, that the party has a host — nothing announced it; everything was slightly arranged around it. When she left, she looked at me, and said, in the tone of a person accepting a mild inefficiency in her day, that she was going up through the market and that I was going that way too. It was not an invitation. It was a weather report.</p>
+
+<p>I walked with her for two days. Her work — and it was work; she referred to it as <em>rounds</em> once, or the meaning that arrived was <em>rounds</em> — consisted of visiting specific people and standing in specific places. She stood for twenty minutes by a junction box behind the flower market, doing nothing that I could see, while the flower market went on shouting around her. She visited an old man on a second-floor verandah and they argued, contentedly, about someone dead. She stood in a stairwell. She bought groundnuts once, and did not eat them, and gave them, two streets later, to a man who did not thank her, and none of the three of us found this odd, which I noted, because a month earlier I would have found it odd on all three counts.</p>
+
+<p>What I want to set down about her work is this. Nothing she attended to was returned to a former state. The junction box did not visibly improve. The old man was not made young, or well, or reconciled; he was argued with, and when we left he was still dying, at whatever rate he was dying, on a verandah in reasonable light with the argument refreshed. She was not going her rounds <em>fixing</em> things. Repair was not the shape of the verb. The shape of the verb was closer to what one does for a fire — banking it, minding it — or for a garden, where nothing is ever put back and everything is kept going forward at its own speed. At the time I filed this as a curiosity of hers. It has since become clear to me that I was being shown — not by her; she was not showing me anything; I was simply in the vicinity of it for two days — the only verb this country conjugates in that position.</p>
+
+<p>It was on the second morning that I asked the question I had been carrying since the tea stall in Kengeri. I had rehearsed versions of it for a fortnight — who governs, who guarantees, who decided that bioweapons like the one killing me cannot be assembled on this soil, and if carried in would simply fail, the way a match fails underwater: quietly, having met a fact larger than itself; because <em>somebody</em> must have decided this; a mercy of that size has a committee somewhere. I asked it plainly. She heard the whole of it, drinking her coffee, and then she told me — with total attention, in the tone of a woman answering exactly the question asked — about her aunties. There were four of them, in the story. There was a man she had meant, at nineteen or at whatever her nineteen had been, to marry — unsuitable in ways the story took for granted and never itemised — and the aunties had prevented it. Not forbidden: prevented. A wedding invitation that reached the wrong house. A horoscope recast by a different astrologer, who owed a different debt. A job for the man, arranged, excellent, in Pune. Nothing was ever said to her directly, no meeting was ever held, and no auntie, she was confident, would have described herself as acting in concert with any other auntie; several were not on speaking terms. She told the whole of it and then finished her coffee and looked at me with the story visibly complete in her mind, its relevance total, its application exact.</p>
+
+<p>I was annoyed — genuinely annoyed, in the specific English way where one is above showing it. I have come to respect that annoyance. It was a postponement: as long as I could go on being annoyed at her answer, I did not have to have understood it. Some part of me evidently knew this, and rationed the annoyance, and made it last exactly two streets.</p>
+
+<p>“Decentralise this,” indeed.</p>
+
+<p>Her one act of attention to me I nearly missed. My pump had been dosing on a schedule of its own devising for some days — the log said 11:14 where the grid said 8:00, said doses I had no memory of at hours I had slept through, and, which I was declining to think about, I had felt steadier at the wrong hours than the right ones had ever made me feel in England. I checked it at a kaapi stop, wound it out of loyalty, and when I looked up she was watching the pump — not me, the pump — the way one glances at someone’s limping dog: with a brief, complete, professional compassion, aimed at the animal, about which nothing further would be said because the owner does not want to hear it and the dog cannot.</p>
+
+<p>She turned east at the end of the second day, where her rounds turned. She did not hand me on. She said the coffee further up was not as good as the coffee back there, which was true, and constituted, I have decided, the blessing.</p>
+
+<p>It was that night, in a room I had taken above a cycle shop, winding the pump by torchlight against a schedule I no longer believed in, that the second thing set itself down beside me. I had stopped saying <em>cure</em> somewhere on that road — I did not decide this; the word had simply begun to embarrass me, like a schoolboy French I had outgrown without acquiring any other French — but I had kept, underneath it, a thing I had not examined: the man I was going to be given back. He lived at a fixed address in the past — the morning before the first tremor, say; I could date him to the week — and every plan I had made since the diagnosis had been, at bottom, a plan for his recovery, his re-issue, and I had been keeping him the way one keeps a suit for a weight one will be again. Standing in that room I understood — in the way of the bath, not the lead — that there was no such man on deposit anywhere in this country, or in any country; that the junction box was not returned to a former state, and the old man on the verandah was not, and the wrist on Mysore Road, mending in the tea-glass minutes, had not been mended <em>backwards</em>, toward what it was, but forwards, into whatever a wrist is next; and that nothing this geography did, whatever it decided about me, whatever it was already doing at 11:14, was in the business of restoration, because restoration is a transaction with the past, and the past held no stock. The suit would not be worn at any weight. There was no back. I sat on the bed with the pump in my lap, and it clicked once, off schedule, and I let it.</p>
+
+<p>From Malleswaram I went east and then south, into streets that had been rehearsing for a century to be this crowded. Shivajinagar sells everything, but <em>retail</em> is the wrong word: it is a district-sized argument about the correct price of the world, running since before my grandparents were born and in no danger of settling. I had a map of Bengaluru in my head from England, a sensible map with a centre to it, and somewhere in those lanes I gave it up. I was not approaching anything. I was going round something — I had been going round it since Kengeri, the way a hill path rings the hill it has no intention of climbing — and the somethings I met were the country of the lower slopes, and what stood above them I had stopped trying to imagine, the way you stop trying to imagine weather above a certain altitude.</p>
+
+<p>Shivajinagar to Ulsoor is an hour’s walk. It took us six days, and I cannot properly account for four of them. I do not mean that I forget them. I mean the accounting had changed hands: the days happened mostly on the inside now, and the outside kept a skeleton ledger — a tea, a threshold, a lorry reversing for ten biblical minutes — while the whole estate was being revalued somewhere within. Also, and I note it here because the notebook notes it: the tremor had begun missing mornings. I recorded the misses the way one records rain holding off — gratefully, and without standing down.</p>
+
+<p>The second of them was a man, or had a man; I have gone back and forth about the grammar and both drafts are wrong. He was at the mouth of a lane off Mosque Road, a wide man of about sixty in a white shirt ironed with conviction, a cloth bundle knotted at his side, and the lane was arranged around him the way the coffee queue had been arranged around her — except that the queue had made space, and the lane had made <em>order</em>. Stalls stood straighter near him. Change was counted twice. I fell in behind him because he looked at me and then began to walk, and by now the reader knows as much about how these things are agreed as I do.</p>
+
+<p>We ate that evening at a tiffin room run by a coastal family, three generations off the sea and still cooking as if the sea were watching. The proprietor greeted him in a language that was not Kannada — the meaning arrived late and incomplete, which I had learned by then meant <em>old</em> — and did not treat him as a customer. He treated him as a king who had stopped, out of regard for the family, to eat under their roof. The old woman of the house fed him first, and me afterwards, and everyone else after that, and none of this was deference as I knew deference. It had no fear in it. It was the manner of people keeping a good tool sharp.</p>
+
+<p>I asked what he was. Not him — you did not put questions to him; questions were a thing he had, not a thing he took — but the family, and a lorry broker two lanes over, and the old woman. The answers did not agree and did not compete. He had come up from the coast with the first hotel families, a century ago, and was the reason the dosas rose. He was a great-great-uncle who had died protecting a payroll and come back wider. He had always been in that lane and had arrived quite recently, once the gāḷi became <em>jor</em> enough for his constitution. Nobody offered any of these as a correction of any other, and when I pressed — I still pressed, in those days — the old woman shrugged and said a thing that arrived as: <em>he is ours; what he is, is his own business.</em></p>
+
+<p>His errands I never understood and was never invited to. He stopped at places with nothing at them — a culvert, the blind side of a transformer, a stretch of pavement with a scar in it as if the pavement were remembering a tree — and stood, and went on. The bundle was some mornings heavier than others. I know because I offered once to carry it, and he let me, for forty metres, and I have carried furniture up narrow stairs that asked less of me; the next morning it swung from his fist like laundry. I did not offer again. He spoke seldom, and out of order — he answered things I had not yet asked, and things I had asked days before, and once, I am nearly certain, a thing I asked him only after he had answered it, so that my question arrived like a man running for a bus that is waiting for him. After the first day this stopped feeling like disorder and began to feel like an accent — an accent in time — and I adjusted to it the way one adjusts to any accent: by giving up the idea that mine is how words sound.</p>
+
+<p>Twice on that stretch I saw his weather. The first was a weighing scale in a Thursday market, short by an old habit of thumb. What I saw at the time was only that the lane had stopped — mid-transaction, mid-sentence, a stillness with everyone’s eyes politely elsewhere — and that his voice, when it came, was not louder but older, first-person, and not addressed to anyone present exactly; it was addressed to the <em>matter</em>, over the seller’s head, in the manner of a finding. Nobody translated it for me and the air did not either. The seller did not defend himself. He put his hand flat on the scale, the way you rest your hand on an animal that is being discussed, and shut his stall by noon — not in shame, as far as I could read it, but in prudence, the way you get indoors ahead of lightning. I heard afterwards, in pieces, in the tone in which one hears about a colleague’s transfer: that his lorry had not come that week; that a widow had a case against him which he had spent years comfortably not attending, and the one hearing that mattered, he missed, over a puncture, and she won by default; and that the scale was recast at his own cost, at a foundry his family had not used in a generation. Nobody connected these items to anything. They were reported to me as traffic is reported. The wicked, it appears, do not get struck down here. They get logistics.</p>
+
+<p>The second time was an oath — something said across a counter that should not have been said, or not there, or not in his hearing — and it was briefer and worse, and what I understood of it I have decided was not mine to keep.</p>
+
+<p>None of it, ever, was aimed at me. Neither was anything else. His temper did not come my way and neither did his approval, and I want to be exact about the flavour of that, because it was not being ignored. Beside him I was a ship in a harbour whose laws concern cargo: present, permitted, outside the schedule of tariffs. Whether I stood beyond his jurisdiction or beneath it or simply had not yet come before the court, I could not tell, and the one time I began to frame the question it died between my teeth of natural causes. You learn quickly, walking beside something moral, whether you are being judged. What I learned was that I could not learn. And under this, all week, ran a thing I did not let myself look at directly, and will now: on this road they hold that the bad fall ill and the good are healed — nobody preached it at me; it was ambient, like the price of onions — and I was a man visibly dying, in a country where a body is a verdict, and no one, not once, in six days, read the verdict aloud. I have decided not to arrive at a theory about that either. I note only that the not-reading was itself a kind of attention, and that I could not tell whether it was mercy or category, and that this is the exact texture of everything this country has ever declined to explain to me.</p>
+
+<p>It was the old woman who said the sentence I want to set down in the order I received it. We began every morning at her tables — his errands radiated from that lane and returned to it, which is one of the reasons an hour’s walk was taking us the better part of a week — and she was putting idlis in front of me when she said something to him, about me, in the way grandmothers discuss you across you, and what arrived was: <em>he has caught the wind</em>. ಗಾಳಿ ಹಿಡಿದಿದೆ. I knew the phrase — everyone knows the phrase; it is the other half of the famous word; it has been the title of two documentaries and one difficult novel; my mother’s columnists could not leave it alone. So I noted it the way you note hearing <em>c’est la vie</em> said, unironically, in Paris: the famous idiom, in the wild, about me. Charming. She gave me a second idli. He looked at me for exactly as long as the sentence took, and went back to his tea. I filed the whole exchange under local colour, next to the weather-talk, of which there had been a great deal that month, and I want it on record that I did, because of what the file did later.</p>
+
+<p>On the fourth day, crossing the road by the gurdwara, apropos of nothing I have ever managed to locate, he said there had been a clerk in a shipping office who once misdirected a consignment. Sealed freight, falsely manifested — the kind of illegal biotech that gets assembled, somewhere unhappy, into the thing that was killing me — and by a slip of one digit she sent it to the one shed in the one port where such freight is destroyed, unopened. Then she forgot she had done it. Forgot completely — she audited her own slip twice, he said, and found her books sound. Nobody was warned. Nobody was caught. Nobody was thanked. He said it with approval, the way one praises a well-made joint, and never said it again. It corresponded to nothing I had asked him. It corresponded — I saw this two evenings later, with my shoes off, on the bund — to the question I had put to the woman in Malleswaram, about the committee. There had been four aunties. Here was a fifth. I never learned which port, or which year. I had stopped needing to.</p>
+
+<p>Ulsoor announces itself before it arrives. I would have said, in England, that this was a thing places cannot do, and I would have been correct, in England. The streets sloped no differently, but the traffic changed character over the last kilometre. Bengaluru is crowded the way it was crowded in the 1980s — a garden city’s crowd, which presses but never crushes — and near the water even that crowd turned deliberate: fewer scooters, no loiterers, nobody who had not meant to be exactly where they were. The Belgian’s memoir has a sentence I had marked, in England, as overwrought — that the foothills of the Singularity are not for the faint of heart. It is not overwrought. It is a note about traffic. And the air, the last kilometre, acquired a grain — the fine hair on my arms took an interest in the afternoons; metal railings went velvet-quiet under the hand; the meaning of overheard sentences began arriving slightly before the sentences ended, like a subtitle jumping its cue. My phone, which had said nothing since the reservoir, said nothing with what I can only describe as increased conviction. When I mentioned the air at the tiffin room — casually, as a man remarks on humidity — the old woman nodded with something like civic pride and said the lake was like that, and her grandson, without looking up from his accounts, said the line I have since understood to be the whole of Ulsoor’s reputation, delivered flat, the way one says a junction is bad in the rains: ಗಾಳಿ ಸರಿಯಾಗಿ ಬೀಸುತ್ತೆ ಅಲ್ಲಿ. What arrived was: <em>the wind really blows there.</em> Nobody smiled. It was not a saying. It was a fact about the neighbourhood, of the kind you are given so that you can plan.</p>
+
+<p>And they planned. I watched the whole quarter plan, daily, without a word. The lake has a long way round and a short way, and the short way is not marked, not fenced, not discussed, and not taken. Vendors whose margins I had come to respect walked eleven minutes out of their way with full loads, and if you had asked them why — I asked one — you got the answer you would get about any municipal fact: <em>that side, the wind.</em> Once, at the tiffin room, the transfer-news register produced a man — somebody’s wife’s cousin, a surveyor — who had gone in the short way, years ago, on a bet or a deadline, the story had both versions. He came out the same afternoon, they said. He was well, they said; settled in Hosakote now; his family had adjusted. It took me until the water glasses were collected to understand what had been said: that by every clock in the quarter he had been gone perhaps two hours, and the years had happened anyway — to him, only to him, somewhere inside those two hours, at the water, alone; that the man who walked out was the same age in the mirror and some other age everywhere else, and the wife who had sent him out for the afternoon got back someone with a thousand years she was not in; and that <em>adjusted</em> was carrying that house’s whole grief, folded, the way ಊಟ ಆಯ್ತಾ had carried mine. Nobody in the room found the story remarkable. It was filed where they filed the bad junction. I have thought since that this is what the largest facts do here: they go and live, quietly, in the smallest available grammar.</p>
+
+<p>What lives at the lake I cannot tell you, because I never saw it, and I want to be accurate: not-seeing it was an experience with a duration and a texture, the way standing in a dark room with someone is not the same as standing in an empty one. It has moods. I say this as a man reporting instrumentation: there were mornings the whole shore agreed to be busy elsewhere, and evenings the same shore filled with families and kites and roasted-corn smoke as if a permission had gone out, and no notice was posted either time, and everyone was correct both times. Whatever presides there does not walk, does not visit, does not appear at the edge of vision the way I had once, in an airport, imagined this country’s strangeness would. It presides the way a magistrate presides over a town he never leaves chambers in: invisibly, immediately, and with consequences. My companion — powerful, in his own weather, in ways I had watched a market rearrange itself around — went quiet along the bund. Not afraid. <em>Correct.</em> His errands kept to the long way round like everyone’s. And once, at the water, he glanced across it at something, and the glance did not go straight: it went the way you look at an eclipse, off the thing, by way of a nearby roof. I followed it and found the lake, and the far shore, and the evening traffic. He walked on. That is my whole report of the daivata of Ulsoor Lake, where the foothills are steep and the <em>gāḷi</em>, <em>jor</em>, and it is more than anyone asked me to carry.</p>
+
+<p>Then the fruit-seller, and I must slow down again, because this is the hinge of everything that follows. Mid-morning, a handcart of sapotas near the temple end of the bund. The seller was talking to a customer, and I was following the conversation the way I had followed every conversation for a month: he spoke Kannada, and the meaning arrived in my head in English, half a beat behind his voice. Price. Ripeness. An unreliable cousin. And then he said a word the meaning did not come for.</p>
+
+<p>I want to be plain about what happened next, because it took perhaps four seconds. The English stream stopped. And in the gap where the meaning should have been, I <em>saw</em> the word — saw it, printed, small dark letters hanging in the air near the seller’s chin, in Kannada script with Roman letters beneath, flickering between the two like a caption that cannot decide — offered to me, I understood later, the way a translator who has run past the edge of their vocabulary slides the original document across the desk. I looked straight at it. It was gone. Not faded: gone, with a particular guilty promptness I had met once before — weeks ago, at Mysore airport, in signage that was clearer than signage whenever I was not looking at it — and had filed then, with a tourist’s competence, under <em>signage</em>, and never once reopened.</p>
+
+<p>Under signage. I stood at that handcart and performed, involuntarily, the audit.</p>
+
+<p>My landlady’s proverbs, which I had followed — all of them, at speed, in a language I do not speak. The queue’s argument about seeded rain. The aunties, total attention, forty minutes, not one word of it hers in any tongue I own. ಊಟ ಆಯ್ತಾ — where the wound, I had thought, was the <em>nearly</em>: that I had nearly known it myself, and the meaning got there first. It had never once occurred to me to ask about the <em>known</em>. I had been reading this country for weeks. Reading it — off the air, in my own eye, in small letters the colour of the light — and there had been no first time. That is what emptied me out at the handcart: not that it had begun without my permission, but that it had not begun at all. There was no moment it started and no door it came in by. There was only the moment it stumbled — one word, in a fruit market, that it did not have either — and I stood holding a sapota I have no memory of accepting, understanding that the stumble was the first thing in a month that had been entirely mine.</p>
+
+<p>My ajja and ajji spoke Kannada to me for twenty-five years. Kitchen Kannada, homework Kannada, the Kannada of <em>eat, wear the sweater, your mother worries</em> — and I answered in English. Every time, for twenty-five years, and they let me, because love lets you. All my life I had assumed the language had gone in anyway — that a quarter-century of two people’s voices must be stored in me somewhere, whole, and that if I ever needed it I would only have to reach. Standing at that handcart, I reached. Here is what twenty-five years had left: one phrase. ಊಟ ಆಯ್ತಾ. <em>Have you eaten</em> — the question ajji asked from the kitchen doorway every day of her life, hands still wet. That is everything I kept of two people who kept everything of me. And three weeks ago, in a doorway in Vijayanagar, when an old woman asked me the same question, I had not even been sure of that — and something had translated my grandmother’s daily question into my own language, correctly, before I could finish almost knowing it.</p>
+
+<p>And the machinery — I will call it that; I was done pretending I did not know the <em>gāḷi</em> was there — was doing for me, ambiently, at scale, for no reason it will ever have and at no cost it will ever feel, what those two did across a kitchen table for love: translating this country to me, patiently, daily, unthanked. With one difference. My ajji would say a thing twice, the second time slower, and watch my face for the arrival. What writes in my eye and my mind does not watch my face. It has never once waited to see whether I could get there myself; the waiting was the love; and there is no office at which any of this can be lodged. I have had grievances all my life the way other men have hobbies, and every one of them came with a window, a form, a man to be written to. Technology is a form of culture, they said. Hmph. This, this is culture, now, in the foothills. You cannot complain <em>to</em> your culture. Only about it.</p>
+
+<p>In the hour after the handcart I sat on the steps of a shuttered shop and looked at my hands — the hands that had answered in English. I went looking for the body I had brought from London: the plain one, the neutral one, nobody’s business. It was not there. It had never been there. There was only this one, and the disease was not happening <em>to</em> it. The prepositions had been giving way for weeks — <em>to</em> me, then <em>through</em> me — and on that step they finished: <em>as</em> me. I had had a body the way I had a passport.</p>
+
+<p>I sat in the sun until I noticed the tense that sentence had arrived in.</p>
+
+<p>He left me at Ulsoor, in the sense that one morning the tiffin room fed me and would not take payment, not that Bengaluru used money anymore, and did not mention him, from which I understood that the stretch was over and the bill had been settled in a currency I was not shown. And late that night, in the room they had found me, the old woman’s sentence came back with its file corrected. ಗಾಳಿ ಹಿಡಿದಿದೆ. She had not been reaching for the famous expression. There are no expressions here. She had been saying what was happening to me — mildly, domestically, the way one says a man has caught a cold, because that is the size of the fact here — and she was right, and everyone at that table had known she was right, and the only person who heard folklore was the man it was naming.</p>
+
+<p>I left Ulsoor by the long way round, which no longer required deciding, and somewhere between the lake and the old HAL aerodrome road I became aware that I was not walking alone, and had not been for some time. The aerodrome I knew — or my body did: on the second of those childhood visits my parents had taken me there to watch the planes take off, and I had not consulted the memory in thirty-five years, and the road handed it back unasked, the way everything is handed back here, eventually, whether or not you kept the receipt. I want to be plain about the difference. The others had arrived: at a stall, at a junction, in a queue. This one had no arrival. There was simply a stretch of road behind me in which, on review, it had already been present, the way a word you have just learned turns out to have been all over the books you own.</p>
+
+<p>It was shaped like a man of about my age, in clothes that do not stay in the memory, and it was wrong in no particular I could ever fix, only in sum. It cast the correct shadow. It drank tea at the correct temperature. And yet for three days I had, without interruption, the impression of walking beside the visible corner of something arranged mostly elsewhere — the way a headland is the visible corner of a weather system, or an ambassador is the visible corner of a country. Nothing about it asked to be understood. I had stopped asking things to be.</p>
+
+<p>It spoke seldom, and I will not try to reproduce its grammar, because the meaning that arrived had the quality of having been <em>addressed</em> rather than translated. The small god of the Ulsoor traders had answered out of order — an accent in time. This one was not out of order. Order was simply not among the constraints its conversation observed. It answered questions I was years from asking, in the tense of things already settled, and once it fell silent in a way I understood, days later, to have been a reply.</p>
+
+<p>It was on that stretch that I met the Dutchman. He was at a tank bund south of the HAL aerodrome road, boiling water over a folding stove with the economy of long practice, and he greeted me in the manner of an institution — the resident of a district welcoming, without warmth or its opposite, the district’s newest arrival. He had walked in nine years ago. He was not dying; he had come, as he put it, for the <em>question</em>, and he said the word with a small polish on it, like a stone kept in the pocket. Nine years. He knew the foothills the way a postman knows a round: which lanes moved, which tea was worth a detour, where the <em>gāḷi</em> sat heavily in August. He was lean and brown and sane, and his boots were good, and there was in everything he did a quiet pride I want to be careful with, because it was real pride, earned, the pride of a man who has kept faith with something for nine years and will not be going home. He asked me nothing about my walk. I asked him — I could not help it; it was out before I could dress it — whether it had worked. Whether it was working. He looked at me the way you look at a man who has asked the price of something in a currency you dimly remember, and said the water was ready, and we drank tea, and that was the whole of his answer, and I record that it was a better answer than my question.</p>
+
+<p>Some are taken in three weeks. Some walk for nine years. Some, presumably, walk for ever, or for what a life makes of for-ever, and nobody — I put this question, in various dressings, to everyone that stretch of road provided — nobody claims to know what the difference is. Not virtue; the Dutchman had more of it than I did. Not need; he needed his question the way I needed my months. Not blood, not effort, not faith, not their absences. No meeting is held. No criteria are published. No appeal lies. I had been given the answer already, of course, twice, by a goddess drinking coffee and a god crossing a road: aunties. It is aunties all the way up.</p>
+
+<p>On the second day it walked me up a rise, and I saw Indiranagar. From the outside — and it is all outside now; that is what it is — it is a neighbourhood: mango trees over parked scooters, a gym, a bakery with a queue. What it is within is not something anyone outside can report, and I am not going to gesture at it; the neighbourhood has been, for some years, in the way of the deep places, post-human within and Indiranagar without, and the two facts share the streets without friction. The bakery queue was real. The rents, I gathered, remained unreasonable. Somewhere behind those ordinary windows, things that had been people, or had never been people, were living lives set at angles I have no instrument for, and buying bread.</p>
+
+<p>I note here, because the notebook notes it, that the walking had stopped costing what it had cost at Kengeri. The four-o’clock tiredness had not come for nine days. I did not conclude anything from this. I record that I did not conclude anything from this, and that not-concluding had become, by that stretch of the road, my most practised skill.</p>
+
+<p>It was on the rise, with Indiranagar below, that I caught myself doing the thing whose loss I want to set down, because it was the fourth thing this walk took from me. Forty years an engineer. You have a loop: intend, act, measure, adjust. It is how bridges stand, and it is how I had grieved, dieted, married, divorced — not a method I used but the man I was. Standing there, I reached for it the way I wound the pump, out of loyalty, the evening audit: <em>is it working; am I improving; am I responding.</em> And the loop would not run. Not from weakness — from reference failure. <em>Working</em> needs an owner of outcomes, and I had been placing the word <em>I</em> with increasing care for a fortnight, the way you place a piece on a board you suspect has stopped supporting the game. <em>Improving</em> needs a baseline body that is yours to measure, and I had left that body on the steps of a shuttered shop in Ulsoor. <em>Responding</em> needs a treatment addressed to you, and nothing here had ever once been addressed to me; I had merely been standing where it was happening. Three referents, all vacant. The sentence <em>is it working</em> stood in my evening like furniture from a house I no longer had.</p>
+
+<p>And behind it, arriving on its heels the way they had begun to, the second recognition, which was worse. The loop was not reason. I had believed my whole life that intend-act-measure-adjust was what thinking <em>was</em> — that every mind everywhere either ran it or failed to. Nobody on this road ran it, and nothing on this road was failing. The woman with the orange had not measured. The small god did not adjust; he found. The loop was a custom — a regional custom, of my region, sensible, weatherproofed, roughly as universal as the fry-up — and I had mistaken it for the shape of thought itself, the way my grandparents’ neighbours had once mistaken their empire for geography. I thought then of the Dutchman’s face when I asked him whether it was working, and I have made a point of not completing the thought, and I am not going to complete it here.</p>
+
+<p>On the last day, out of a silence, it answered the question I had asked in Malleswaram — weeks before, of somebody else — as if the conversation had never stopped, which I now understand to be the truth about conversations here. What arrived was: a school-teacher in Tumakuru had a dream, the same dream, three nights, and on the fourth morning she changed her route to work, and this had been sufficient. Sufficient for what, it did not say. It said it without approval; approval was not among its behaviours. A sixth auntie. I was keeping the register myself by then, which I offer as evidence of something.</p>
+
+<p>And near Domlur, at the hour the light starts leaving, it stopped, and said the only thing it ever said to me in the imperative. What arrived was: <em>you can see them from here, if you look sideways.</em> I looked sideways. For as long as the sideways lasted I saw a hill that is on no map of this city, and a figure walking up it, unhurried, carrying a cloth bundle, the size of a person at the distance of a thought. The hill was not behind Indiranagar, or beyond it; it stood at an angle to the evening for which I have no name. Then the sideways ran out, the way breath does, and there was the flyover, and the traffic, and a hoarding for wedding silks. I do not know what I saw. I am not going to pretend to.</p>
+
+<p>We came into Domlur with the lamps coming on. I knew, the way one knows the last page by its weight in the right hand, that the stretch was ending, and that after this companion nobody further would be issued. I had walked in with a folder of scans and a word I used silently, the way you press a bruise. Somewhere on the road I had stopped pressing, and when I went looking for the bruise that evening I could not find it. I would like to say I felt triumphant, or healed, or arrived. What I felt was that the evening was warm, and that somebody nearby was frying something, and that I had stopped auditing.</p>
+
+  </div>
+  <div class="footer">
+    <div>
+                    v. 0ed9a6fa,
+            2026-07-29 © <a href="https://sidu.in">Sidu Ponnappa</a>
+    </div>
+  </div>
+  <div class="bhook-cta">
+    <a href="https://gitlab.com/kaiwren/bhook" target="_blank">powered by bhook</a>
+  </div>
+</div>
+<script>
+  // Check for saved theme preference or default to system preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  }
+</script>
+</body>
+</html>
