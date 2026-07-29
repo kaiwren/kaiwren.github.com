@@ -2,3 +2,5 @@
 .idea
 _source/output
 _source/tmp
+# Image originals - kept locally, never published (compressed versions ship instead)
+*-orig.png
