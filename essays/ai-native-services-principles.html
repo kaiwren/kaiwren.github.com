@@ -24,6 +24,7 @@
           --header-3-font-size: 1.6818rem;
           --header-4-font-size: 1.4142rem;
           --header-5-font-size: 1.1892rem;
+          --header-line-height: 1.25;
           --header-margin-top: 1.7rem;
           --header-2-margin-top: 2.5rem;
           --header-margin-bottom: 0.8em;
@@ -193,6 +194,7 @@
           font-family: var(--header-font-family);
           font-weight: var(--header-font-weight);
           font-style: var(--header-font-style);
+          line-height: var(--header-line-height);
           margin-left: var(--header-margin-left);
           margin-bottom: var(--header-margin-bottom);
       }
@@ -457,17 +459,30 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
 
 <p>One caveat before the list. Everything below applies to AI Native <em>Services</em>, early stage, selling B2B into the enterprise. Consumer and SMB dynamics are different, and I’m not claiming any of this transfers.</p>
 
-<h2 id="when-models-get-better-your-tam-should-go-up">1. When models get better, your TAM should go up<a href="#when-models-get-better-your-tam-should-go-up" class="header-anchor"></a></h2>
+<ol id="markdown-toc">
+  <li><a href="#when-models-get-better-your-tam-should-go-up" id="markdown-toc-when-models-get-better-your-tam-should-go-up">When models get better, your TAM should go up</a></li>
+  <li><a href="#pivoting-isnt-a-problem-its-mandatory" id="markdown-toc-pivoting-isnt-a-problem-its-mandatory">Pivoting isn’t a problem, it’s mandatory</a></li>
+  <li><a href="#the-rebuild-trap-is-the-ux-not-the-architecture" id="markdown-toc-the-rebuild-trap-is-the-ux-not-the-architecture">The rebuild trap is the UX, not the architecture</a></li>
+  <li><a href="#product-is-extracted-from-real-work" id="markdown-toc-product-is-extracted-from-real-work">Product is extracted from Real Work</a></li>
+  <li><a href="#segment-users-by-cognitive-load" id="markdown-toc-segment-users-by-cognitive-load">Segment users by cognitive load</a></li>
+  <li><a href="#dont-sell-ai-native-services-like-b2b-saas" id="markdown-toc-dont-sell-ai-native-services-like-b2b-saas">Don’t sell AI Native Services like B2B SaaS</a></li>
+  <li><a href="#if-it-matters-it-matters-this-quarter" id="markdown-toc-if-it-matters-it-matters-this-quarter">If it matters, it matters this quarter</a></li>
+  <li><a href="#dont-lock-into-your-thesis---follow-the-money" id="markdown-toc-dont-lock-into-your-thesis---follow-the-money">Don’t lock into your thesis - follow the money</a></li>
+  <li><a href="#the-hype-cycle-has-always-been-wrong-so-far" id="markdown-toc-the-hype-cycle-has-always-been-wrong-so-far">The hype cycle has always been wrong so far</a></li>
+  <li><a href="#talent-is-always-a-core-pillar" id="markdown-toc-talent-is-always-a-core-pillar">Talent is always a core pillar</a></li>
+</ol>
+
+<h2 id="when-models-get-better-your-tam-should-go-up">When models get better, your TAM should go up<a href="#when-models-get-better-your-tam-should-go-up" class="header-anchor"></a></h2>
 
 <p>The first thing every AI Native business needs to ensure. Most AI businesses are, structurally, the gap between what the models can do and what the customer needs - scaffolding, retrieval, orchestration, evals. Every model release eats a layer of that, and your market shrinks with it. If a better model is bad news for your business, you’re arbitraging a capability gap on a timer.</p>
 
 <p>For a services business the test works in your favour, if you build for it. Better models make more work economically viable to take on. Projects that made no sense at 40 hours of human effort make plenty of sense at 8. The frontier of “worth doing at all” moves outward with every release, and your job is to be standing on it when it does.</p>
 
-<h2 id="pivoting-isnt-a-problem-its-mandatory">2. Pivoting isn’t a problem, it’s mandatory<a href="#pivoting-isnt-a-problem-its-mandatory" class="header-anchor"></a></h2>
+<h2 id="pivoting-isnt-a-problem-its-mandatory">Pivoting isn’t a problem, it’s mandatory<a href="#pivoting-isnt-a-problem-its-mandatory" class="header-anchor"></a></h2>
 
 <p>Every step change in AI capabilities should be accompanied by a pivot that takes advantage of the changes. Founders treat pivots as an admission that something went wrong, and in most categories that instinct is fair. Not here. The capability ground moves every 2 quarters, and a strategy that hasn’t moved with it has simply gone stale. Plan for the pivot the way you plan for hiring: a recurring <em>part</em> of doing business in a space where the fundamentals change every quarter, not a response to an emergency.</p>
 
-<h2 id="the-rebuild-trap-is-the-ux-not-the-architecture">3. The rebuild trap is the UX, not the architecture<a href="#the-rebuild-trap-is-the-ux-not-the-architecture" class="header-anchor"></a></h2>
+<h2 id="the-rebuild-trap-is-the-ux-not-the-architecture">The rebuild trap is the UX, not the architecture<a href="#the-rebuild-trap-is-the-ux-not-the-architecture" class="header-anchor"></a></h2>
 
 <p>Whatever you build has to be re-engineerable to take advantage of the next step change without starting over. Everyone thinks the hard part of that constraint is the architecture or the technology, but architectures survive model swaps surprisingly well. What doesn’t survive is the UX - the workflow assumptions, the interaction grain, the places where the product quietly encoded how capable the model <em>used</em> to be. That’s where the ground-up rebuilds come from, and it’s the part nobody budgets for.</p>
 
@@ -475,13 +490,13 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
 
 <p>The risk to mitigate here is time, effort and capital thrown at problems where there is no multi-year window to monetise the solution.</p>
 
-<h2 id="product-is-extracted-from-real-work">4. Product is extracted from Real Work<a href="#product-is-extracted-from-real-work" class="header-anchor"></a></h2>
+<h2 id="product-is-extracted-from-real-work">Product is extracted from Real Work<a href="#product-is-extracted-from-real-work" class="header-anchor"></a></h2>
 
 <p>Not designed in a thesis document, not refined in debates with VCs. Real Work is work an actual enterprise client pays for, ideally executed profitably. Those 2 constraints - someone pays, you profit - are what filter out the product ideas that only exist in decks. The product is already latent in the work; delivery is how you find it.</p>
 
 <p>And to be clear, there’s plenty of product left to build - <a href="after-ai-there-is-no-product.html">the thing that died</a> was software as an amortisable asset, not product itself. What’s scarce now is PMF. Which has quietly become a 2-stage problem: PMF in the market, then PMF in the customer. A product that isn’t married to change management services never achieves the second one - it becomes shelfware. Shelfware was a survivable outcome in the 2010s, because B2B SaaS only ever paid lip service to adoption - once the contract was signed, whether anyone used the thing was somebody else’s problem. Consumer software never had that luxury; consumer companies die without adoption. And it’s early days, but those consumer dynamics - rapid iteration, engagement, adoption - are entering the enterprise now.</p>
 
-<h2 id="segment-users-by-cognitive-load">5. Segment users by cognitive load<a href="#segment-users-by-cognitive-load" class="header-anchor"></a></h2>
+<h2 id="segment-users-by-cognitive-load">Segment users by cognitive load<a href="#segment-users-by-cognitive-load" class="header-anchor"></a></h2>
 
 <p>Every AI solution splits along one line: does the user get more and better work <em>without</em> taking on more cognitive load, or <em>with</em> it?</p>
 
@@ -493,31 +508,33 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
 
 <p>And given models and agents glaze, taste, judgement and execution discipline are all the responsibility of the human in the loop.</p>
 
-<h2 id="dont-sell-ai-native-services-like-b2b-saas">6. Don’t sell AI Native Services like B2B SaaS<a href="#dont-sell-ai-native-services-like-b2b-saas" class="header-anchor"></a></h2>
+<h2 id="dont-sell-ai-native-services-like-b2b-saas">Don’t sell AI Native Services like B2B SaaS<a href="#dont-sell-ai-native-services-like-b2b-saas" class="header-anchor"></a></h2>
 
 <p>AI Native Services, by definition, should deliver workflows - and business impact - that are humanly impossible. The client starts to move in ways their competition simply cannot keep up with manually. This outcome is the business equivalent of crack cocaine.</p>
 
 <p>And you don’t sell something addictive like you do B2B SaaS, which is anything but.</p>
 
-<h2 id="if-it-matters-it-matters-this-quarter">7. If it matters, it matters this quarter<a href="#if-it-matters-it-matters-this-quarter" class="header-anchor"></a></h2>
+<h2 id="if-it-matters-it-matters-this-quarter">If it matters, it matters this quarter<a href="#if-it-matters-it-matters-this-quarter" class="header-anchor"></a></h2>
 
 <p>The key value prop of AI Native is humanly impossible speed and quality. Here’s the uncomfortable part: enterprises mostly don’t want it. Speed and quality matter at the top, if at all - and there are industries like banking and insurance where speed is viewed as a serious risk even at the top, and rightly so. Below that, in the middle and bottom layers of the enterprise you find demand in occasional pockets, and usually capped by limited risk-taking ability.</p>
 
 <p>So you sell speed and quality to the segments and the individual decision makers to whom it matters. And there’s a clean test for whether it actually matters to them: if it matters, it matters this quarter. Something that matters next year is by definition slow.</p>
 
-<h2 id="dont-lock-into-your-thesis---follow-the-money">8. Don’t lock into your thesis - follow the money<a href="#dont-lock-into-your-thesis---follow-the-money" class="header-anchor"></a></h2>
+<h2 id="dont-lock-into-your-thesis---follow-the-money">Don’t lock into your thesis - follow the money<a href="#dont-lock-into-your-thesis---follow-the-money" class="header-anchor"></a></h2>
 
-<p>Your fitness function is revenue, immediately followed by margin. This is a new category. All the look-ahead optimisations - the B2B SaaS ones <em>and</em> the trad services ones - are tuned for categories that already exist, which makes them wrong for this one. Run a greedy algo: take the best-paying work in front of you, extract what compounds, repeat. The TAM test in point 1 is a constraint on what you’ll chase, not a 5-year plan - greedy search inside a fence is still greedy search.</p>
+<p>Your fitness function is revenue, immediately followed by margin. This is a new category. All the look-ahead optimisations - the B2B SaaS ones <em>and</em> the trad services ones - are tuned for categories that already exist, which makes them wrong for this one. Run a greedy algo: take the best-paying work in front of you, extract what compounds, repeat. The <a href="#when-models-get-better-your-tam-should-go-up">TAM test</a> is a constraint on what you’ll chase, not a 5-year plan - greedy search inside a fence is still greedy search.</p>
 
-<h2 id="the-hype-cycle-has-always-been-wrong">9. The hype cycle has always been wrong<a href="#the-hype-cycle-has-always-been-wrong" class="header-anchor"></a></h2>
+<p>The B2B SaaS GTM hangover is what kills momentum in the early days. Back then it made sense to pick a vertical, then a segment, then a channel - and then lock into that at a thesis level. An AI Native GTM is a totally new beast, with different advantages as well as different points of friction in the selling motion. Bad assumptions here can kill all chance at PMF. We lost a year to that - a premature thesis level lock-in into Salesforce implementations. Iterate to an ICP using a greedy search and the fitness function above; don’t lock in going in.</p>
+
+<h2 id="the-hype-cycle-has-always-been-wrong-so-far">The hype cycle has always been wrong so far<a href="#the-hype-cycle-has-always-been-wrong-so-far" class="header-anchor"></a></h2>
 
 <p>The frontier lab model is baked. The rest of the ecosystem is not - category creation continues. And the tpot/VC hype cycle’s track record on where that creation lands is unblemished: fine tuning, RAG, LangChain, “wrapper tech is bad” (haha - Claude Code, Codex and Pi are all wrapper tech, and they gave us the first actual agents) and now software factories. Don’t anchor on any of these as a thesis.</p>
 
 <p>The fitness function in the previous point is what you act on as you search the solution space for PMF and growth.</p>
 
-<h2 id="talent-is-always-a-core-pillar">10. Talent is always a core pillar<a href="#talent-is-always-a-core-pillar" class="header-anchor"></a></h2>
+<h2 id="talent-is-always-a-core-pillar">Talent is always a core pillar<a href="#talent-is-always-a-core-pillar" class="header-anchor"></a></h2>
 
-<p>AI Native Services as a model is capped by needing humans in the loop. If no humans are needed in the loop anymore, most of the rules above stop holding and the frontier labs come eat your lunch - and that’s assuming the global economy hasn’t collapsed from humans not being needed anymore. Which is to say the cap is also the moat - the human requirement is the thing the labs can’t route around, and taste, judgement and execution discipline (point 5 again) is what the humans are for.</p>
+<p>AI Native Services as a model is capped by needing humans in the loop. If no humans are needed in the loop anymore, most of the rules above stop holding and the frontier labs come eat your lunch - and that’s assuming the global economy hasn’t collapsed from humans not being needed anymore. Which is to say the cap is also the moat - the human requirement is the thing the labs can’t route around, and taste, judgement and execution discipline (<a href="#segment-users-by-cognitive-load">cognitive load</a> again) is what the humans are for.</p>
 
 <p>So talent is always a core pillar of any AI Native Services strategy. Without it, it’s just sparkling B2B SaaS.</p>
 
