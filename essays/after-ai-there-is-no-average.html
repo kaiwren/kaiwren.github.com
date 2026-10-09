@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Sans&family=Montserrat:ital,wght@1,700&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+
+  <style>
+      :root {
+          --html-font-size: 18px;
+          --title-font-family: 'Playfair Display';
+          --title-font-style: italic;
+          --title-font-size: 3rem;
+          --title-font-weight: 400;
+          --header-font-family: 'Montserrat';
+          --header-font-weight: 700;
+          --header-font-style: italic;
+          --header-2-padding-bottom: 0.25em;
+          --header-2-font-size: 2rem;
+          --header-3-font-size: 1.6818rem;
+          --header-4-font-size: 1.4142rem;
+          --header-5-font-size: 1.1892rem;
+          --header-line-height: 1.25;
+          --header-margin-top: 1.7rem;
+          --header-2-margin-top: 2.5rem;
+          --header-margin-bottom: 0.8em;
+          --header-margin-left: -2px;
+          --content-width-large-screen: 720px;
+          --content-font-family: 'Fira Sans';
+          --content-line-height: 1.5em;
+          --content-font-weight: 400;
+          --paragraph-spacing: 1.5rem;
+          --paragaph-font-size: 1rem;
+          --toc-font-weight: 400;
+
+          /* Light mode colors */
+          --bg-color: #ffffff;
+          --text-color: #000000;
+          --border-color: #eaeaea;
+          --border-color-light: #bbbbbb;
+          --table-header-bg: #eeeeee;
+          --blockquote-bg: #eeeeee;
+          --blockquote-border: #cccccc;
+          --link-color: #0066cc;
+          --aside-bg: #f7f5f0;
+          --cta-color: #bbbbbb;
+          --dateline-color: #888888;
+          --scroll-shadow: rgba(0, 0, 0, 0.18);
+      }
+
+      /* Auto dark mode based on system preference */
+      @media (prefers-color-scheme: dark) {
+          :root:not([data-theme="light"]) {
+              /* Dark mode colors */
+              --bg-color: #1a1a1a;
+              --text-color: #e0e0e0;
+              --border-color: #404040;
+              --border-color-light: #555555;
+              --table-header-bg: #2a2a2a;
+              --blockquote-bg: #2a2a2a;
+              --blockquote-border: #505050;
+              --link-color: #7aa3e0;
+              --aside-bg: #2a2520;
+              --cta-color: #666666;
+              --dateline-color: #777777;
+              --scroll-shadow: rgba(255, 255, 255, 0.18);
+          }
+      }
+
+      /* Manual dark mode toggle */
+      :root[data-theme="dark"] {
+          --bg-color: #1a1a1a;
+          --text-color: #e0e0e0;
+          --border-color: #404040;
+          --border-color-light: #555555;
+          --table-header-bg: #2a2a2a;
+          --blockquote-bg: #2a2a2a;
+          --blockquote-border: #505050;
+          --link-color: #7aa3e0;
+          --aside-bg: #2a2520;
+          --cta-color: #666666;
+          --dateline-color: #777777;
+          --scroll-shadow: rgba(255, 255, 255, 0.18);
+      }
+
+      *, *::before, *::after {
+          box-sizing: border-box;
+      }
+
+      body {
+          margin: 0;
+      }
+
+      div.body {
+          max-width: var(--content-width-large-screen);
+          margin: 0 auto;
+          padding: 0 1.25rem;
+      }
+
+      @media (max-width: 40em) {
+          :root {
+              --paragaph-font-size: 0.9rem;
+              --title-font-size: 2rem;
+              --header-2-font-size: 1.5rem;
+              --header-3-font-size: 1.25rem;
+              --header-4-font-size: 1.1rem;
+              --header-5-font-size: 1rem;
+          }
+
+          div.content p {
+              text-align: justify;
+              hyphens: auto;
+          }
+      }
+
+      div.x-comparison {
+          font-size: 32px;
+      }
+
+      div.x-comparison span.x-comparison-title {
+          font-family: var(--title-font-family);
+          font-weight: var(--title-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-header {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+      }
+
+      div.x-comparison span.x-comparison-body {
+          font-family: var(--content-font-family);
+          font-weight: var(--content-font-weight);
+      }
+
+      html {
+          font-size: var(--html-font-size);
+      }
+
+      html {
+          background-color: var(--bg-color);
+      }
+
+      body {
+          font-family: sans-serif;
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      div.content {
+          line-height: var(--content-line-height);
+          font-weight: var(--content-font-weight);
+          font-family: var(--content-font-family);
+      }
+
+      a {
+          color: var(--link-color);
+      }
+
+      h1 {
+          font-family: var(--title-font-family);
+          font-style: var(--title-font-style);
+          font-size: var(--title-font-size);
+          font-weight: var(--title-font-weight);
+          line-height: 1.15;
+          margin-top: 0.5em;
+          margin-bottom: 0.5em;
+      }
+
+      h2 {
+          font-size: var(--header-2-font-size);
+          padding-bottom: var(--header-2-padding-bottom);
+          border-bottom: 1px solid var(--border-color);
+          margin-top: var(--header-2-margin-top);
+      }
+
+      h3 {
+          font-size: var(--header-3-font-size);
+      }
+
+      h4 {
+          font-size: var(--header-4-font-size);
+      }
+
+      h5 {
+          font-size: var(--header-5-font-size);
+      }
+
+      h2, h3, h4, h5 {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+          font-style: var(--header-font-style);
+          line-height: var(--header-line-height);
+          margin-left: var(--header-margin-left);
+          margin-bottom: var(--header-margin-bottom);
+      }
+
+      h3, h4, h5 {
+          margin-top: var(--header-margin-top);
+      }
+
+      h2 a.header-anchor, h3 a.header-anchor,
+      h4 a.header-anchor, h5 a.header-anchor {
+          float: left;
+          margin-left: -20px;
+          text-decoration: none;
+          outline: none;
+          position: relative;
+      }
+
+      h2 a.header-anchor:after, h3 a.header-anchor:after,
+      h4 a.header-anchor:after, h5 a.header-anchor:after {
+          content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23333' fill-rule='evenodd' d='M9.683 6.676l-.047-.048C8.27 5.26 6.07 5.243 4.726 6.588l-2.29 2.29c-1.344 1.344-1.328 3.544.04 4.91 1.366 1.368 3.564 1.385 4.908.04l1.753-1.752c-.695.074-1.457-.078-2.176-.444L5.934 12.66c-.634.634-1.67.625-2.312-.017-.642-.643-.65-1.677-.017-2.312L6.035 7.9c.634-.634 1.67-.625 2.312.017.024.024.048.05.07.075l.003-.002c.36.36.943.366 1.3.01.355-.356.35-.938-.01-1.3l-.027-.024zM6.58 9.586l.048.05c1.367 1.366 3.565 1.384 4.91.04l2.29-2.292c1.344-1.343 1.328-3.542-.04-4.91-1.366-1.366-3.564-1.384-4.908-.04L7.127 4.187c.695-.074 1.457.078 2.176.444l1.028-1.027c.635-.634 1.67-.624 2.313.017.643.644.652 1.678.018 2.312l-2.43 2.432c-.635.634-1.67.624-2.313-.018-.024-.024-.048-.05-.07-.075l-.003.004c-.36-.362-.943-.367-1.3-.01-.355.355-.35.937.01 1.3.01.007.018.015.027.023z'/%3E%3C/svg%3E");
+          box-sizing: border-box;
+          font-size: medium;
+          visibility: hidden;
+      }
+
+      h2:hover a.header-anchor:after, h3:hover a.header-anchor:after,
+      h4:hover a.header-anchor:after, h5:hover a.header-anchor:after {
+          visibility: visible;
+      }
+
+      div.content p, div.content ul, div.content ol {
+          font-size: var(--paragaph-font-size);
+      }
+
+      div.content p {
+          margin-bottom: var(--paragraph-spacing);
+      }
+
+      ol#markdown-toc {
+          font-weight: var(--toc-font-weight);
+      }
+
+      div.after-h1 {
+          border-bottom: 1px solid var(--border-color-light);
+          margin-bottom: 1.5em;
+      }
+
+      span.dateline {
+          font-family: var(--content-font-family);
+          font-style: italic;
+          font-weight: var(--content-font-weight);
+          color: var(--dateline-color);
+      }
+
+      div.embed {
+          margin-top: 2.5rem;
+          margin-bottom: 2.5rem;
+          width: 100%;
+          justify-content: center;
+          display: flex;
+      }
+
+      div.footer {
+          display: flex;
+          justify-content: center;
+          margin: 0.5em 0 0.5em 0;
+      }
+
+      div.bhook-cta {
+          display: flex;
+          justify-content: center;
+      }
+
+      div.bhook-cta a {
+          font-size: x-small;
+          text-decoration: none;
+          margin-bottom: 1.5em;
+          color: var(--cta-color);
+      }
+
+      /* Tables: editorial, type-forward. Capped break-out on desktop so
+         prose-heavy matrices can breathe beyond the 720px reading column.
+         Mobile: horizontal scroll within the column with a subtle right-edge
+         fade as a scrollability hint. */
+      table {
+          width: 100%;
+          margin: 2em 0;
+          border-collapse: collapse;
+          font-size: 0.95rem;
+          line-height: 1.45;
+      }
+
+      @media (min-width: 48em) {
+          table {
+              width: calc(100% + 240px);
+              margin-left: -120px;
+              margin-right: -120px;
+          }
+      }
+
+      table thead th {
+          background: var(--aside-bg);
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          text-align: center;
+          border-bottom: 2px solid var(--border-color-light);
+      }
+
+      table thead th:first-child {
+          background: transparent;
+      }
+
+      table td, table th {
+          padding: 0.85em 1.1em;
+          border-bottom: 1px solid var(--border-color);
+          vertical-align: top;
+      }
+
+      table tbody td:first-child {
+          font-family: var(--header-font-family);
+          font-style: italic;
+          font-weight: 600;
+          border-right: 1px solid var(--border-color);
+          background: var(--aside-bg);
+      }
+
+      table tbody td:first-child strong {
+          font-weight: 600;
+      }
+
+      table tbody tr:last-child td {
+          border-bottom: none;
+      }
+
+      /* Mobile: bleed the table edge-to-edge, table itself is the
+         horizontal scroll container. Inner table layout flows naturally
+         at content width — Safari and Chrome both respect this when the
+         display: block table has overflow-x: auto.
+
+         Scroll-shadow affordance: two layered gradients use mixed
+         background-attachment to communicate scrollability. The "cover"
+         gradients (--bg-color → transparent) are local-attached so they
+         move with the content and hide the shadow when scrolled to that
+         edge. The "shadow" gradients are scroll-attached so they stay
+         pinned to the viewport edges. Net effect: shadow appears on
+         either side when more content lies that way; fades when you hit
+         the end. The Roma Komarov 2012 pattern, dark-mode adapted. */
+      @media (max-width: 48em) {
+          table {
+              display: block;
+              overflow-x: auto;
+              -webkit-overflow-scrolling: touch;
+              margin: 1.5em -1.25rem;
+              width: calc(100% + 2.5rem);
+              font-size: 0.85rem;
+              background:
+                  linear-gradient(to right, var(--bg-color) 30%, rgba(0, 0, 0, 0)) left center / 2.5rem 100% no-repeat local,
+                  linear-gradient(to left, var(--bg-color) 30%, rgba(0, 0, 0, 0)) right center / 2.5rem 100% no-repeat local,
+                  radial-gradient(farthest-side at 0 50%, var(--scroll-shadow), rgba(0, 0, 0, 0)) left center / 1rem 100% no-repeat scroll,
+                  radial-gradient(farthest-side at 100% 50%, var(--scroll-shadow), rgba(0, 0, 0, 0)) right center / 1rem 100% no-repeat scroll;
+          }
+          table > * {
+              min-width: 44rem;
+          }
+      }
+
+      blockquote {
+          border-left: 10px solid var(--blockquote-border);
+          background: var(--blockquote-bg);
+          display: inline-block;
+          padding: 1em;
+      }
+
+      /* Callout: key insights and critical concepts the author wants the reader to retain.
+         Visually distinct from blockquote (which is for cited/attributed material).
+         Must not be mistaken for a blockquote — no left border, no grey background.
+         Uses Montserrat bold italic (same family as H2-H5) for an authoritative
+         declaration register; distinguished from body by weight+italic+size, and
+         from headings by a smaller size than H5 (1.1892rem). */
+      aside {
+          font-family: var(--header-font-family);
+          font-weight: var(--header-font-weight);
+          font-style: var(--header-font-style);
+          font-size: 1.15em;
+          padding: 1em 1.5em;
+          margin: 1.5em 0;
+          background: var(--aside-bg);
+          border-radius: 4px;
+      }
+
+      /* Dark mode toggle button */
+      .theme-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background-color: var(--border-color-light);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          transition: background-color 0.3s ease;
+      }
+
+      .theme-toggle:hover {
+          opacity: 0.8;
+      }
+
+      .theme-icon {
+          font-size: 24px;
+          color: var(--bg-color);
+      }
+  </style>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-CT9TWBW0WR');
+  </script>
+  <title>After AI, There Is No Average</title>
+  <meta property="og:title" content="After AI, There Is No Average">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="sidu.in">
+    <meta property="og:description" content="9th October 2026 — I was on Zerodha’s Subtext recently, talking to Pranav and Bhuvan about what an AI-native firm is, and the part people kept DMing me about afterwards was the few minutes on the m...">
+  <meta name="twitter:description" content="9th October 2026 — I was on Zerodha’s Subtext recently, talking to Pranav and Bhuvan about what an AI-native firm is, and the part people kept DMing me about afterwards was the few minutes on the m...">
+      <meta property="og:image" content="https://sidu.in/essays/images/header-no-average.jpg">
+  <meta name="twitter:image" content="https://sidu.in/essays/images/header-no-average.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="After AI, There Is No Average">
+  <meta name="twitter:site" content="@ponnappa">
+</head>
+<body>
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+  <span class="theme-icon">◐</span>
+</div>
+<div class="body">
+  <div class="content">
+    <h1 class="no_toc" id="after-ai-there-is-no-average">After AI, There Is No Average</h1>
+<div class="after-h1">
+<a class="twitter-share-button"
+href="https://twitter.com/intent/tweet?text=After+AI%2C+There+Is+No+Average&via=ponnappa">Tweet</a>
+<a class="twitter-follow-button" href="https://twitter.com/ponnappa">Follow @ponnappa</a>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<div style="width:100vw; position:relative; left:50%; right:50%; margin-left:-50vw; margin-right:-50vw; margin-bottom:1.5em;">
+<picture>
+<source srcset="https://sidu.in/essays/images/header-no-average.webp" type="image/webp" />
+<img src="https://sidu.in/essays/images/header-no-average.jpg" alt="A lone figure standing in the empty middle of a white bell curve, its colour drained out to a low spill on one side and a tall bright spike on the other" style="width:100%; height:26vw; min-height:200px; object-fit:cover; object-position:center 37%; display:block;" />
+</picture>
+</div>
+
+
+
+<p><span class="dateline">9th October 2026 —</span> <em>I was on Zerodha’s <a href="https://www.youtube.com/watch?v=CPISElKbFFg">Subtext</a> recently, talking to Pranav and Bhuvan about what an AI-native firm is, and the part people kept DMing me about afterwards was the few minutes on the middle tier of talent disappearing. This essay is the longer answer.</em></p>
+
+<p>The enterprise playbook treats AI as a rising tide that lifts the median employee to where the best one used to be and turns the best into small gods. But an agent amplifies whoever is using it, so good judgement produces superhuman results, and poor judgement, slop.</p>
+
+<p>Nobody using AI remains merely average.</p>
+
+<h2 id="the-world-runs-on-good-enough">The World Runs on Good Enough<a href="#the-world-runs-on-good-enough" class="header-anchor"></a></h2>
+
+<p>So far, human endeavour has scaled on the back of a simple principle: in order to do more work, we need more people. And since exceptional talent is, by definition, exceptional, all <em>economically viable</em> scaling is based on a second, equally important principle: the organization must be scaled such that <em>most</em> of it consists of <em>good enough</em> people doing <em>good enough</em> work. It is the essential difference between a small startup and a large enterprise.</p>
+
+<p>In practice, every organization at scale runs on one rule: exceptional talent for the important problems, good-enough talent for the routine ones, and a steady churn for the bad. And managers routinely make the call that holds it all up: <em>for this problem, for this team, for this workflow, for this output, I am okay with average talent and average results.</em> Education systems have evolved to supply that demand in volume, and while some graduates rise above average and a few well above, the bulk of every graduating class sits squarely on good enough.</p>
+
+<p>In outsourced services, good enough has a price: $30 an hour, plus a certain amount of management, buys an adequate outcome. The org chart, the pay bands and the review cycle all rest on the middle of the bell curve delivering that outcome at that price, year after year.</p>
+
+<h2 id="agents-magnify-their-human">Agents Magnify Their Human<a href="#agents-magnify-their-human" class="header-anchor"></a></h2>
+
+<p>Now, however, the enterprise built on that bell curve has set out to become AI-native. As it sees things, that means putting AI alongside each of its people to do the work. Taste, judgement and operating discipline remain the responsibility of whoever the model is working for, and will for as long as models glaze their users, telling them their work is good.</p>
+
+<p>Whatever that person brings to the work - their intent, their standards, their blind spots - the agent builds into everything it produces, at a speed and volume no colleague could match. An agent is you, and it is only as good as you are. So in setting out to become AI-native, an enterprise stakes the quality of all its work on the judgement of every one of its people, including the good-enough middle it was built on.</p>
+
+<h2 id="median-judgement-runs-out-before-lunch">Median Judgement Runs Out Before Lunch<a href="#median-judgement-runs-out-before-lunch" class="header-anchor"></a></h2>
+
+<p>As things stand today, the effective use of AI <em>requires</em> there be a human in the loop. And this human in the loop needs to have a high capacity for quality decision making, because if you and your agent do a month’s worth of work in a day, you now have to make a month’s worth of decisions in a day.</p>
+
+<p>And this, it turns out, is not a majority trait in the workforce. When faced with having to make nuanced, thoughtful and consequential decisions several times an hour, most folk start to fade.</p>
+
+<p>The second, compounding, factor is self-awareness. AI agents aim to please the human in their loop and in the process, magnify every bias in that human’s judgement. As a role, human-in-the-loop demands self-awareness paired with a skeptic’s mindset. 
+This is exactly the kind of mindset that craftspeople serious about elevating their craft cultivate.</p>
+
+<p>And so, when you arm a human who is low decision-making stamina, or low self-awareness or low craft with an agent… you get slop.</p>
+
+<p>An hour with an agent can spend a whole day’s worth of decision-making stamina, so the same person who does their best work at ten in the morning can be waving slop through by noon. The good-enough middle gets there first and most often, because by and large it lacks the discipline to keep passing judgement at that pace, and it stops judging long before it stops using the agent.</p>
+
+<p>The best people build systems that make good work happen sustainably, rather than holding up exceptional performance through brute effort alone. They introspect until they can name their own craft. Then they externalise it into the standards, checks and workflows an agent can follow, so their judgement goes only where it counts. In the middle, that ability is almost always missing.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Saying this for months<br /><br />the cognitive intensity required will cause AI burnout in a large chunk of the workforce</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2021491355483242961">February 11, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<p>Every bit of slop waved through compounds, the next day and the day after, eating at the integrity of the system until the system can no longer do its job. In marketing, each campaign drifts a little further off the brand pillars, every one of them waved through because the human was too tired to demand better, until the brand stands for nothing in particular. In finance, one unchecked assumption in a model gets copied into every plan built on it, and in sales, a proposal with a delivery date nobody checked with the team becomes the template for the next ten. We used to call this technical debt, but it is not technical anymore, it is just debt.</p>
+
+<h2 id="the-middle-cannot-hold">The Middle Cannot Hold<a href="#the-middle-cannot-hold" class="header-anchor"></a></h2>
+
+<p>Tech learned well before agents that mediocre talent can cost more than it contributes, and the hiring curve I drew in 2022 puts it below zero:</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Hiring bars in tech can be counterintuitive.<br /><br />Intuitive:<br />Low skill=Low impact, High skill=High impact, linear-ish curve i.e <br /><br />Mediocre talent=Medium impact on metrics.<br /><br />Actuality:<br />Low skill=Negative impact on metrics, power curve i.e <br /><br />Mediocre talent is often NEGATIVE impact. <a href="https://t.co/00JnLuWEYc">pic.twitter.com/00JnLuWEYc</a></p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/1534058703451607040">June 7, 2022</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+<p>Back then, this was the curve of tech companies that had chosen speed as their entire edge and paid for talent to match, while everyone else could still run on good enough. Agents put everyone else on that curve.</p>
+
+<p>Adding AI to an organization breaks the HR bell curve and polarizes it into a power law: exceptional talent become 100x more productive and impactful, average talent become slop cannons.</p>
+
+<div class="embed">
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/CPISElKbFFg?start=4806" title="What is an AI-native firm? ft. Sidu Ponnappa | Subtext by Zerodha" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
+</div>
+
+
+
+<h2 id="nobody-pays-for-good-enough">Nobody Pays for Good Enough<a href="#nobody-pays-for-good-enough" class="header-anchor"></a></h2>
+
+<p>The $30 an hour that used to buy an adequate outcome no longer does, because good-enough judgement with an agent in hand turns out slop at volume. That slop compounds into debt, which the buyer pays down in rework on everything built on top of it. Buyers now either pay next to nothing for trivial prototypes, or fight OpenAI, Anthropic, Google and the who’s who of the industry for the few people who can be trusted with an agent.</p>
+
+<p>For two and a half years, our mission at realfast was to supercharge India’s median export, the roughly $30-an-hour services work it sells by the hundreds of billions of dollars a year. Then we made a U-turn. There is nothing we can do at that price point. Our game now is ninety-ninth percentile talent, and nothing else.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr"><a href="https://twitter.com/ankitdaf">@ankitdaf</a> Exactly. Millions of people making lakhs transitioning to lakhs of people making millions is my current thesis.</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2050169291400773672">May 1, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<p>San Francisco’s figures already show fewer people in tech jobs than in 2022, sharing a bigger tech payroll than ever.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">the polarization of workforce comp starts in SF (of course)</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2105479267954172365">October 1, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<p>Between the people paid next to nothing for trivial prototypes and the few trusted with an agent, the middle has no price.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">The killer AI interface is a purchase order.</p>&mdash; Patch (@patchwanders) <a href="https://twitter.com/patchwanders/status/2106672899872764226">October 4, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<h2 id="conviction-is-earned-first-hand">Conviction Is Earned First Hand<a href="#conviction-is-earned-first-hand" class="header-anchor"></a></h2>
+
+<p>And this happens across the organizational hierarchy. From the board, to the C-suite, to middle management and on to the juniormost IC - all of the average talent flips from doing acceptable work to ruining everything they touch.</p>
+
+<p>At the top, the board’s job is to drive the AI transformation itself. That transformation is a change management problem of epic proportions, which takes will to see through. Will comes from conviction. Boards usually borrow theirs from an enterprise that has gone first, and with agents, nobody has yet. The board has to believe that average performers get worse with AI, and that comp bands have to go up fourfold, when everything it knows about scaling an organization says the opposite. A report won’t persuade a board of that.</p>
+
+<p>A board member who has used an agent themselves is convinced, because the individual acceleration is obvious. Use one seriously, and you also find out how fast your own judgement runs out at that pace. The good-enough middle, with less decision-making stamina to spend, runs out well before lunch.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr"><a href="https://twitter.com/cto_junior">@cto_junior</a> I&#39;m only seeing ICs accelerate 100x<br /><br />Companies? I haven&#39;t seen even 2x.<br /><br />(excluding startups, parts of big tech and frontier labs)</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2095406984547942494">September 3, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<p>A push from the board and the C-suite is enough to start an AI rollout, but borrowed belief gives way in the first quarter that brings real spend and no proof. Board members without first-hand conviction will not drive in the right direction.</p>
+
+<h2 id="its-not-a-skill-issue">It’s Not a Skill Issue<a href="#its-not-a-skill-issue" class="header-anchor"></a></h2>
+
+<p>Any enterprise scale AI transformation strategy <em>has</em> to solve for slop.
+And solving for slop is a HR problem, not a tech problem.</p>
+
+
+
+<p>The usual HR answer to a capability gap is a training programme, but you can’t train people to be productive with AI. You learn about AI by asking the AI to teach you about AI, which seems so simple and is so hard. No course can hand anyone the decision-making stamina, self-awareness or craft that takes. The people who get there teach themselves, so an enterprise can only hire for it.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">few seem to understand that AI slop is a problem caused by mediocre humans, not mediocre AI</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2082483396127953078">July 29, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<p>To hire for it and keep the people you hire, you have to 4x the comp bands, because those bands were cut for a bell curve and the people you need are the ones OpenAI, Anthropic and Google are bidding for. You have to drop review cycles to one quarter, because slop compounds by the day, and the quarter after a rollout is when you need to see whether it is working. And you have to move this work out into a new management structure that reports directly to the CEO and the board. No team becomes AI-native inside the hierarchy, comp bands and review process built for the bell curve, and the board is where the transformation has to be driven from.</p>
+
+<div class="embed">
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Enterprises are going to struggle with adapting their HR.<br /><br />Their best people have gone from 2X potential impact to 100X, and the biggest blockers to delivering that 100X are everyone else in the org.<br /><br />The evolution of the enterprise performance review process is the bottleneck.</p>&mdash; Sidu Ponnappa (@ponnappa) <a href="https://twitter.com/ponnappa/status/2065335402261889038">June 12, 2026</a></blockquote> <script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+
+
+<p>An enterprise that puts an agent alongside every one of its people gets back whatever those people bring, magnified, so its AI transformation will succeed or fail on who it hires, how often it reviews them and what it pays them.</p>
+
+
+  </div>
+  <div class="footer">
+    <div>
+                    v. c25698a5,
+            2026-10-10 © <a href="https://sidu.in">Sidu Ponnappa</a>
+    </div>
+  </div>
+  <div class="bhook-cta">
+    <a href="https://gitlab.com/kaiwren/bhook" target="_blank">powered by bhook</a>
+  </div>
+</div>
+<script>
+  // Check for saved theme preference or default to system preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  }
+
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+  }
+</script>
+</body>
+</html>
