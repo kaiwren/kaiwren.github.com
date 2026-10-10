@@ -484,7 +484,7 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
 
 <h2 id="the-rebuild-trap-is-the-ux-not-the-architecture">The rebuild trap is the UX, not the architecture<a href="#the-rebuild-trap-is-the-ux-not-the-architecture" class="header-anchor"></a></h2>
 
-<p>Whatever you build has to be re-engineerable to take advantage of the next step change without starting over. Everyone thinks the hard part of that constraint is the architecture or the technology, but architectures survive model swaps surprisingly well. What doesn’t survive is the UX - the workflow assumptions, the interaction grain, the places where the product quietly encoded how capable the model <em>used</em> to be. That’s where the ground-up rebuilds come from, and it’s the part nobody budgets for.</p>
+<p>Whatever you build has to be re-engineerable to take advantage of the next step change without starting over. Everyone thinks the hard part of that constraint is the architecture or the technology, but architectures survive model swaps surprisingly well. <a href="dont-go-ai-native.html#the-wrong-decomposition">What doesn’t survive</a> is the UX - the workflow assumptions, the interaction grain, the places where the product quietly encoded how capable the model <em>used</em> to be. That’s where the ground-up rebuilds come from, and it’s the part nobody budgets for.</p>
 
 <p>In 2023 and 2024 we were building a unit test writing harness for Salesforce Apex code, before the term ‘harness’ came into use - and we spent 4 months of it solving for accurate diffs, because bad diffs shift the burden to the human, which is bad UX. Then 4o dropped and solved the problem. 4 months wasted.</p>
 
@@ -506,7 +506,7 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
 
 <p>The Lovables and Emergents of the world genuinely start in the first category, and it genuinely works. But there’s a boundary, and the boundary is <a href="https://en.wikipedia.org/wiki/Lindy_effect">lindy</a> output. Anything meant to survive and be built upon - a codebase, a large piece of copy - starts demanding cognitive load from the user, usually at an exponential rate. Small snippets of high-quality copy, fine. Lindy larger pieces, demanding. Otherwise code, copy, whatever - it all turns to slop.</p>
 
-<p>And since models and agents glazing their users is now a bedrock feature of the stack, self awareness, taste, judgement and execution discipline are all the responsibility of the human in the loop.</p>
+<p>And since models and agents glazing their users is now a bedrock feature of the stack, self awareness, taste, judgement and execution discipline are all <a href="after-ai-there-is-no-average.html#median-judgement-runs-out-before-lunch">the responsibility of the human in the loop</a>.</p>
 
 <h2 id="dont-sell-ai-native-services-like-b2b-saas">Don’t sell AI Native Services like B2B SaaS<a href="#dont-sell-ai-native-services-like-b2b-saas" class="header-anchor"></a></h2>
 
@@ -516,7 +516,7 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
 
 <h2 id="if-it-matters-it-matters-this-quarter">If it matters, it matters this quarter<a href="#if-it-matters-it-matters-this-quarter" class="header-anchor"></a></h2>
 
-<p>The key value prop of AI Native is humanly impossible speed and quality. Here’s the uncomfortable part: enterprises mostly don’t want it. Speed and quality matter at the top, if at all - and there are industries like banking and insurance where speed is viewed as a serious risk even at the top, and rightly so. Below that, in the middle and bottom layers of the enterprise you find demand in occasional pockets, and usually capped by limited risk-taking ability.</p>
+<p>The key value prop of AI Native is <a href="dont-go-ai-native.html">humanly impossible speed and quality</a>. Here’s the uncomfortable part: enterprises mostly don’t want it. Speed and quality matter at the top, if at all - and there are industries like banking and insurance where speed is viewed as a serious risk even at the top, and rightly so. Below that, in the middle and bottom layers of the enterprise you find demand in occasional pockets, and usually capped by limited risk-taking ability.</p>
 
 <p>So you sell speed and quality to the segments and the individual decision makers to whom it matters. And there’s a clean test for whether it actually matters to them: if it matters, it matters this quarter. Something that matters next year is by definition slow.</p>
 
@@ -541,8 +541,8 @@ href="https://twitter.com/intent/tweet?text=When+the+Models+Get+Better%2C+Your+T
   </div>
   <div class="footer">
     <div>
-                    v. ff970abb,
-            2026-08-08 © <a href="https://sidu.in">Sidu Ponnappa</a>
+                    v. e1adf0b7,
+            2026-10-10 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
   <div class="bhook-cta">
