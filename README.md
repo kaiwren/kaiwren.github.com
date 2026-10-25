@@ -84,19 +84,19 @@ Bhook only processes `.md` files — it does not copy images or other static ass
 
 Compress PNGs before committing: `pngquant --quality=65-80 --force --output file.png file.png`
 
-## Testing with Playwright
+## Testing with Chrome DevTools MCP
 
-Start a local server and use Playwright MCP to verify rendered pages, OG meta tags, layout, and links.
+Start a local server and use the chrome-devtools MCP to verify rendered pages, OG meta tags, layout, and links. (Replaces the old Playwright MCP workflow — Playwright MCP was removed in favour of chrome-devtools in April 2026.)
 
 ```bash
 # Start local server from website/
 python3 -m http.server 8080
 ```
 
-Then via Playwright:
-- **Navigate**: `browser_navigate` to `http://localhost:8080/essays/after-ai-there-is-no-product.html`
-- **Inspect structure**: `browser_snapshot` returns the full accessibility tree (headings, links, images, text)
-- **Verify OG tags**: `browser_evaluate` with JS to extract meta tags:
+Then via chrome-devtools MCP tools:
+- **Navigate**: `mcp__chrome-devtools__navigate_page` → `http://localhost:8080/essays/after-ai-there-is-no-product.html`
+- **Inspect structure**: `mcp__chrome-devtools__take_snapshot` returns the full accessibility tree (headings, links, images, text)
+- **Verify OG tags**: `mcp__chrome-devtools__evaluate_script` with JS to extract meta tags:
   ```js
   () => {
     const metas = document.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]');
@@ -105,7 +105,8 @@ Then via Playwright:
     ).join('\n');
   }
   ```
-- **Screenshot**: `browser_take_screenshot` for visual verification
+- **Screenshot**: `mcp__chrome-devtools__take_screenshot` (viewport-only by default — do NOT use `fullPage: true` on long essays; see bhook's `docs/OUR_CHROME_DEVTOOLS_FOR_VISUAL_ITERATION.md` for the size discipline)
+- **Set mobile viewport**: `mcp__chrome-devtools__emulate` with `viewport: "375x812x2,mobile,touch"` (do NOT use `resize_page` — it has a ~500px floor on desktop hosts and will silently give wrong width)
 
 This is faster than deploying to GitHub Pages and checking manually. Use it to verify OG images are absolute URLs, descriptions are populated, and page structure is correct before pushing.
 
