@@ -34,7 +34,7 @@
     { off: -46, hues: [0.76, 0.93], power: 0.45, radius: 0.24 },
     { off: 110, hues: [0.44, 0.56], power: 0.45, radius: 0.24 }
   ];
-  const DUST = [0.95, 0.56, 0.31];
+  const SKY_AMB = [0.42, 0.58, 0.9];   // average colour of a clear sky, for the light it throws into shade
 
   const NOISE = `
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -60,16 +60,19 @@
   uniform vec3 uAmb;
   const float PI = 3.14159265;
   float hg(float c, float g) { float k = 1.0 + g * g - 2.0 * g * c; return (1.0 - g * g) / (4.0 * PI * k * sqrt(k)); }
+  // Humid, living air, like ours: Rayleigh scattering makes the sky blue overhead
+  // and pale toward the horizon, where the long path scatters every colour; water
+  // haze makes a white glow around each sun. Each sun lights this sky in its own
+  // colour, so a blue sun deepens it and a red one barely touches it.
   vec3 sky(vec3 d) {
     float h = max(d.y, 0.0);
-    float depth = 1.0 / (h * 1.7 + 0.1);
+    float depth = 1.0 / (h + 0.07);
+    vec3 ray = 1.0 - exp(-vec3(0.17, 0.4, 1.0) * 0.33 * depth);
+    float mie = 1.0 - exp(-0.1 * depth);
     vec3 col = vec3(0.0);
     for (int i = 0; i < 7; i++) {
       float c = dot(d, uL[i]);
-      // Mars-like dust: butterscotch scatter, thicker toward the horizon, and a
-      // tight bluish aureole close to each sun
-      col += uEs[i] * vec3(${DUST.join(', ')}) * (hg(c, 0.6) * 0.55 + 0.035) * (1.0 - exp(-depth * 0.5));
-      col += uEs[i] * vec3(0.55, 0.74, 1.0) * hg(c, 0.94) * 0.035;
+      col += uEs[i] * (ray * 0.42 * (1.0 + c * c) + mie * (hg(c, 0.78) * 0.45 + 0.03) + hg(c, 0.97) * 0.02);
     }
     return col;
   }`;
@@ -219,7 +222,7 @@
         float g;
         vec3 alb = marble(p.xz, g);
         float wild = smoothstep(edge - 0.3, edge + 0.3, r);
-        vec3 floorAlb = vec3(0.1, 0.11, 0.1) * (0.6 + 0.8 * fbm(p.xz * 2.7));
+        vec3 floorAlb = mix(vec3(0.05, 0.09, 0.03), vec3(0.12, 0.2, 0.06), fbm(p.xz * 2.7)) * (0.7 + 0.6 * fbm(p.xz * 9.0));   // moss and leaf litter
         col = lit(p, n, mix(alb, floorAlb, wild), g * (1.0 - wild), d);
       } else if (mat == 2) {
         // snow-white stone, weathered in faint vertical streaks
@@ -405,12 +408,12 @@
       const y = dir[1];
       const air = Math.min(1 / (Math.max(y, 0) + 0.06), 16);
       const ground = smooth(-0.012, 0.02, y), skyFade = smooth(-0.2, 0.03, y);
-      const tau = [0.05, 0.085, 0.16];   // dust takes blue first, so low suns redden
+      const tau = [0.02, 0.05, 0.12];   // air takes blue first, so low suns turn gold and red
       for (let c = 0; c < 3; c++) {
         const t = Math.exp(-tau[c] * air);
         E[i * 3 + c] = colour[c] * sun.power * t * ground;
         Es[i * 3 + c] = colour[c] * sun.power * t * skyFade;
-        amb[c] += Es[i * 3 + c] * DUST[c] * 0.32 * (0.25 + Math.max(y, 0));
+        amb[c] += Es[i * 3 + c] * SKY_AMB[c] * 0.3 * (0.25 + Math.max(y, 0));
       }
       lum += (0.2126 * E[i * 3] + 0.7152 * E[i * 3 + 1] + 0.0722 * E[i * 3 + 2]) * (0.3 + Math.max(y, 0));
     });
