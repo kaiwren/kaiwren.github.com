@@ -38,12 +38,14 @@
   out vec4 vCol;
   out float vDisc;
 
-  // one day's road: horizon to horizon, a little higher or lower each day
+  // one day's road: horizon to horizon, a little higher or lower each day. On a tall
+  // screen the road runs wider than the screen, so it stays a dome rather than an arch
   vec2 arc(float u, float amp, float day) {
     float W = uRes.x, H = uRes.y;
-    float x = W * (-0.08 + 1.16 * u);
-    float a = amp * (0.86 + 0.28 * day);
-    return vec2(x, H * 0.97 - H * a * sin(3.14159 * u));
+    float span = max(W * 1.16, H * 0.9);
+    float x = W * 0.5 + span * (u - 0.5);
+    float a = amp * (0.86 + 0.28 * day) * min(H, span * 0.7);
+    return vec2(x, H * 0.97 - a * sin(3.14159 * u));
   }
 
   float mask(vec2 p) { return texture(uMask, p / uRes).r; }
@@ -65,14 +67,15 @@
       pos += nrm * aSeed.w * 2.0;
       alpha *= smoothstep(0.0, 0.06, u) * smoothstep(1.0, 0.94, u);
       alpha *= 0.65 + 0.35 * sin(u * 40.0 + aSeed.z * 6.283 + uTime * 0.6);  // shimmer
-      len = aKind.w; wid = mix(1.2, 0.9, uNarrow);
+      len = aKind.w * mix(1.0, 0.8, uNarrow); wid = mix(1.2, 1.4, uNarrow);
+      alpha *= mix(1.0, 1.8, uNarrow);
     } else {
       // today's sun on the newest arc, each in its own place on the road: a glow (1) and a disc (2)
       float u = uSweep + aSeed.z;
       pos = arc(u, aKind.z, uExposure);
       tang = vec2(1.0, 0.0);
       alpha *= smoothstep(0.0, 0.05, u) * smoothstep(1.0, 0.95, u);
-      len = wid = aKind.w;
+      len = wid = aKind.w * mix(1.0, 1.4, uNarrow);
     }
 
     // Cursor: the light leans away from you, but never touches
@@ -81,9 +84,12 @@
     float R = 180.0;
     if (uMouseOn > 0.5 && r < R) pos = uMouse + d / r * max(24.0, r - (R - r) * 0.35);
 
-    // Text is a riverbank: push strokes down the mask gradient, then fade whatever is left
+    // Text is a riverbank: push strokes down the mask gradient, then fade whatever is left.
+    // On a phone the text fills the width, so there the light passes behind it, only dimmed
     float m = mask(pos);
-    if (m > 0.01) {
+    if (m > 0.01 && uNarrow > 0.5) {
+      alpha *= 1.0 - 0.55 * m;
+    } else if (m > 0.01) {
       float ex = 6.0;
       vec2 g = vec2(mask(pos + vec2(ex, 0.0)) - mask(pos - vec2(ex, 0.0)),
                     mask(pos + vec2(0.0, ex)) - mask(pos - vec2(0.0, ex)));
@@ -148,7 +154,7 @@
 
   function buildInstances() {
     const narrow = innerWidth < 700;
-    const per = narrow ? 70 : 140;     // strokes per arc
+    const per = narrow ? 100 : 140;    // strokes per arc
     const out = [];
     const push = (seed, kind, color) => out.push(...seed, ...kind, ...color);
     SUNS.forEach((sun, i) => {
@@ -354,5 +360,5 @@
     state = null;
   }
 
-  window.KaiwrenLive = { start, stop };
+  window.KaiwrenLive = { start, stop, state: () => state };
 })();
