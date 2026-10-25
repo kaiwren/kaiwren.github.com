@@ -23,7 +23,7 @@
   <script>
     (function () {
       let theme = localStorage.getItem('theme');
-      if (theme === 'live' && matchMedia('(prefers-reduced-motion: reduce)').matches) theme = 'dark';
+      if (theme === 'live' && (matchMedia('(prefers-reduced-motion: reduce)').matches || localStorage.getItem('liveSlow'))) theme = 'dark';
       if (theme) document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
@@ -446,6 +446,7 @@
   function liveCapable() {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
     if (navigator.connection && navigator.connection.saveData) return false;
+    if (localStorage.getItem('liveSlow')) return false;   // live.js found this device too slow
     if ((navigator.hardwareConcurrency || 8) < 4) return false;
     if (navigator.deviceMemory && navigator.deviceMemory < 4) return false;
     return !!document.createElement('canvas').getContext('webgl2');

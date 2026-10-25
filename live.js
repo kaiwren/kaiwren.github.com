@@ -299,15 +299,14 @@
     const gl = s.gl;
     if (s.maskDirty || s.lastScroll !== scrollY) { s.lastScroll = scrollY; drawMask(s); }
 
-    // Performance guard: halve the splats once if slow, then freeze into a still
-    if (s.last) {
+    // Performance guard: after a warm-up, if this device can't hold ~25fps, give up on live and fall back to dark
+    if (s.last && ++s.seen > 30) {
       s.frames.push(now - s.last);
       if (s.frames.length === 90) {
-        const sorted = s.frames.slice().sort((a, b) => a - b);
-        const median = sorted[45];
-        if (median > 24) {
-          if (s.drawCount === s.count) s.drawCount = Math.floor(s.count / 2);
-          else s.frozen = true;
+        const median = s.frames.slice().sort((a, b) => a - b)[45];
+        if (median > 40) {
+          try { localStorage.setItem('liveSlow', '1'); } catch (e) {}
+          if (window.setTheme) { window.setTheme('dark'); return; }
         }
         s.frames = [];
       }
@@ -361,7 +360,7 @@
     gl.bindVertexArray(s.vao);
     gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, s.drawCount);
 
-    if (!s.frozen && !document.hidden) s.raf = requestAnimationFrame(frame);
+    if (state === s && !document.hidden) s.raf = requestAnimationFrame(frame);
   }
 
   // "(2026/10/02) title": wrap the date so the theme can set it back from the title
@@ -437,7 +436,7 @@
       gl, canvas, prog, uniforms, vao, inst, maskTex, maskCanvas, sky, skyU, skyVao,
       maskCtx: maskCanvas.getContext('2d'),
       mouse: [-9999, -9999], mouseOn: false,
-      t0: performance.now(), frames: [], frozen: false, last: 0
+      t0: performance.now(), frames: [], seen: 0, last: 0
     };
     const s = state;
     resize(s);
@@ -446,7 +445,7 @@
     s.onMove = e => { s.mouse = [e.clientX, e.clientY]; s.mouseOn = true; };
     s.onLeave = () => { s.mouseOn = false; };
     s.onResize = () => { resize(s); upload(s); };
-    s.onVisible = () => { if (!document.hidden && !s.frozen) { s.last = 0; s.raf = requestAnimationFrame(frame); } };
+    s.onVisible = () => { if (!document.hidden) { s.last = 0; s.seen = 0; s.frames = []; s.raf = requestAnimationFrame(frame); } };
     addEventListener('pointermove', s.onMove, { passive: true });
     addEventListener('pointerdown', s.onMove, { passive: true });
     document.addEventListener('pointerleave', s.onLeave);
