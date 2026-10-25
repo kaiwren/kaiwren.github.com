@@ -343,8 +343,25 @@
     if (!s.frozen && !document.hidden) s.raf = requestAnimationFrame(frame);
   }
 
+  // "(2026/10/02) title": wrap the date so the theme can set it back from the title
+  function wrapDates() {
+    document.querySelectorAll('ul.items > li > a').forEach(a => {
+      const t = a.firstChild;
+      if (!t || t.nodeType !== 3) return;
+      const m = t.nodeValue.match(/^(\s*)(\(\d{4}\/\d{2}\/\d{2}\))/);
+      if (!m) return;
+      const span = document.createElement('span');
+      span.className = 'date';
+      span.textContent = m[2];
+      t.nodeValue = t.nodeValue.slice(m[0].length);
+      a.insertBefore(span, t);
+      a.insertBefore(document.createTextNode(' '), t);
+    });
+  }
+
   function start() {
     if (state) return;
+    wrapDates();
     const canvas = document.createElement('canvas');
     canvas.className = 'live-canvas';
     canvas.setAttribute('aria-hidden', 'true');

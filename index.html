@@ -459,9 +459,16 @@
     document.body.appendChild(script);
   }
 
+  // one glyph per state, so the third state is discoverable (︎: text, not emoji)
+  const THEME_ICONS = { light: '☼︎', dark: '☾︎', live: '✺︎' };
+  function showTheme(theme) {
+    document.querySelector('.theme-icon').textContent = THEME_ICONS[theme] || '◐';
+  }
+
   function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    showTheme(theme);
     if (theme === 'live') startLive();
     else if (window.KaiwrenLive) window.KaiwrenLive.stop();
   }
@@ -473,6 +480,8 @@
     setTheme(order[(order.indexOf(current) + 1) % order.length]);
   }
 
+  showTheme(document.documentElement.getAttribute('data-theme') ||
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
   if (document.documentElement.getAttribute('data-theme') === 'live') startLive();
 </script>
 </body>
