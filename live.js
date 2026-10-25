@@ -36,6 +36,7 @@
   uniform sampler2D uMask;
   out vec2 vUv;
   out vec4 vCol;
+  out float vDisc;
 
   // one day's road: horizon to horizon, a little higher or lower each day
   vec2 arc(float u, float amp, float day) {
@@ -64,14 +65,14 @@
       pos += nrm * aSeed.w * 2.0;
       alpha *= smoothstep(0.0, 0.06, u) * smoothstep(1.0, 0.94, u);
       alpha *= 0.65 + 0.35 * sin(u * 40.0 + aSeed.z * 6.283 + uTime * 0.6);  // shimmer
-      len = aKind.w; wid = mix(0.9, 0.7, uNarrow);
+      len = aKind.w; wid = mix(1.2, 0.9, uNarrow);
     } else {
-      // today's sun: a soft cluster riding the newest arc
-      float u = uSweep + aSeed.z;   // each sun keeps its own place on the road
-      pos = arc(u, aKind.z, uExposure) + vec2(aSeed.x, aSeed.w) * aKind.w;
+      // today's sun on the newest arc, each in its own place on the road: a glow (1) and a disc (2)
+      float u = uSweep + aSeed.z;
+      pos = arc(u, aKind.z, uExposure);
       tang = vec2(1.0, 0.0);
       alpha *= smoothstep(0.0, 0.05, u) * smoothstep(1.0, 0.95, u);
-      len = wid = aKind.w * (0.4 + aSeed.y);
+      len = wid = aKind.w;
     }
 
     // Cursor: the light leans away from you, but never touches
@@ -97,15 +98,19 @@
     gl_Position = vec4(corner.x / uRes.x * 2.0 - 1.0, 1.0 - corner.y / uRes.y * 2.0, 0.0, 1.0);
     vUv = aQuad;
     vCol = vec4(aColor.rgb, alpha);
+    vDisc = step(1.5, kind);
   }`;
 
   const FS = `#version 300 es
   precision mediump float;
   in vec2 vUv;
   in vec4 vCol;
+  in float vDisc;
   out vec4 o;
   void main() {
-    float a = exp(-3.5 * dot(vUv, vUv)) * vCol.a;
+    float r2 = dot(vUv, vUv);
+    // strokes and glows fall off softly; a disc has a limb
+    float a = mix(exp(-3.5 * r2), 1.0 - smoothstep(0.55, 0.8, r2), vDisc) * vCol.a;
     if (a < 0.002) discard;
     o = vec4(vCol.rgb * a, a);
   }`;
@@ -152,14 +157,12 @@
         const dayAlpha = 0.5 + 0.5 * rand();           // some days were hazier than others
         for (let k = 0; k < per * (0.5 + sun.weight * 0.5); k++) {
           push([rand(), day, rand(), gauss() * 0.6], [0, i, sun.amp, 5 + rand() * rand() * 22],
-            [...sun.colour, sun.weight * dayAlpha * (0.09 + rand() * 0.14)]);
+            [...sun.colour, (0.45 + 0.55 * sun.weight) * dayAlpha * (0.09 + rand() * 0.14)]);
         }
       }
-      // today's sun
-      const n = Math.round(60 * sun.size);
-      for (let k = 0; k < n; k++) {
-        push([gauss() * 0.5, rand(), sun.lead, gauss() * 0.5], [1, i, sun.amp, 18 * sun.size], [...sun.colour, 0.10 * sun.weight + 0.04]);
-      }
+      // today's sun: a wide faint glow, then the disc
+      push([0, 0, sun.lead, 0], [1, i, sun.amp, 60 * sun.size], [...sun.colour, 0.18 * sun.weight + 0.05]);
+      push([0, 0, sun.lead, 0], [2, i, sun.amp, 7 * sun.size], [...sun.colour, 0.9]);
     });
     return { data: new Float32Array(out), count: out.length / 12 };
   }
