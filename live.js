@@ -258,6 +258,7 @@
   ${LIGHT}
   out vec2 vQ;
   out vec4 vCol;
+  out float vHard;
   void main() {
     vec3 p = a0.xyz;
     vec3 v = p - uEye;
@@ -266,15 +267,30 @@
     if (z < 0.2) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
     vec2 sc = vec2(uRes.x * 0.5 + uF * dot(v, right) / z, uHy - uF * v.y / z);
     float px = max(a0.w * uF / z, 0.6);
-    float ca = cos(a2.w), sa = sin(a2.w);
+    float ang = a2.w;
+    vec3 axis = a3.xyz;
+    if (a3.w > 0.5) {
+      // a piece of branch: stretch the splat along the branch as it appears on screen
+      vec3 v2 = v + axis * 0.3;
+      float z2 = max(dot(v2, fwd), 0.2);
+      vec2 s2 = vec2(uF * dot(v2, right) / z2, -uF * v2.y / z2) - vec2(uF * dot(v, right) / z, -uF * v.y / z);
+      ang = atan(s2.y, s2.x);
+    }
+    float ca = cos(ang), sa = sin(ang);
     vec2 corner = mat2(ca, sa, -sa, ca) * (aQuad * vec2(a2.z, 1.0)) * px * 2.5;
     sc += corner;
     gl_Position = vec4(sc.x / uRes.x * 2.0 - 1.0, 1.0 - sc.y / uRes.y * 2.0, z / ${FAR.toFixed(1)} * 2.0 - 1.0, 1.0);
     vQ = aQuad * 2.5;
+    vHard = a3.w > 0.5 ? 1.0 : 0.0;
 
-    vec3 n = normalize(a3.xyz);
     vec3 lightIn = uAmb;
-    for (int i = 0; i < 7; i++) lightIn += uE[i] * max(dot(n, uL[i]) * 0.5 + 0.5, 0.0);
+    if (a3.w > 0.5) {
+      // a cylinder catches light from every side but its ends
+      for (int i = 0; i < 7; i++) { float c = dot(axis, uL[i]); lightIn += uE[i] * 0.55 * sqrt(max(1.0 - c * c, 0.0)); }
+    } else {
+      vec3 n = normalize(axis);
+      for (int i = 0; i < 7; i++) lightIn += uE[i] * max(dot(n, uL[i]) * 0.5 + 0.5, 0.0);
+    }
     vec3 col = a1.rgb * lightIn;
     vec3 d = normalize(v);
     col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-length(v) / 900.0));
@@ -287,9 +303,11 @@
   precision highp float;
   in vec2 vQ;
   in vec4 vCol;
+  in float vHard;
   out vec4 o;
   void main() {
-    float g = exp(-0.5 * dot(vQ, vQ));
+    float r2 = dot(vQ, vQ);
+    float g = mix(exp(-0.5 * r2), 1.0 - smoothstep(1.4, 4.0, r2), vHard);
     if (g < 0.02) discard;
     float a = abs(vCol.a) * g;
     o = vCol.a < 0.0 ? vec4(vCol.rgb * a, 0.0) : vec4(vCol.rgb * a, a);
@@ -433,14 +451,69 @@
   let seed = 1;
   const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
 
+  const norm = v => { const l = Math.hypot(...v) || 1; return v.map(x => x / l); };
+  const add = (a, b, k = 1) => a.map((x, i) => x + b[i] * k);
+
+  // A tree of the living jungle, partly turned to crystal: a tall trunk on flared
+  // buttress roots, a spreading crown of branches. Each limb is a chain of splats
+  // stretched along it.
+  function tree(push, base, height, frost) {
+    const bark = [0.16, 0.13, 0.09], ice = [0.82, 0.88, 0.92];
+    const limb = (from, dir, len, r0, r1) => {
+      const phase = rand() * 6.28;
+      const steps = Math.max(2, Math.ceil(len / Math.max(0.06, (r0 + r1) * 0.45)));
+      for (let k = 0; k < steps; k++) {
+        const t = (k + 0.5) / steps, r = r0 + (r1 - r0) * t;
+        const p = add(from, dir, len * t);
+        const crystal = Math.max(0, Math.min(1, frost + 0.35 * Math.sin(phase + len * t * 0.9)));   // the sheath thickens and thins along a limb
+        const alb = bark.map((c, i) => c + (ice[i] - c) * crystal);
+        push(p, r * 0.5, alb, 1, 2, Math.max(1, len / steps / r * 0.9), 0, [...dir, 1]);
+      }
+      return add(from, dir, len);
+    };
+    // a limb wanders as it grows: a few short pieces, each turned a little
+    const bough = (from, dir, len, r0, r1, wander) => {
+      const pieces = 4;
+      let p = from, d = dir;
+      for (let k = 0; k < pieces; k++) {
+        const ra = r0 + (r1 - r0) * k / pieces, rb = r0 + (r1 - r0) * (k + 1) / pieces;
+        p = limb(p, d, len / pieces, ra, rb);
+        d = norm(add(d, [(rand() - 0.5) * wander, (rand() - 0.5) * wander * 0.6 + 0.04, (rand() - 0.5) * wander]));
+      }
+      return p;
+    };
+    const branch = (from, dir, len, r, depth) => {
+      const end = bough(from, dir, len, r, r * 0.6, 0.5);
+      if (depth === 0) return;
+      const n = 2 + Math.floor(rand() * 2);
+      for (let j = 0; j < n; j++) {
+        const a = rand() * Math.PI * 2;
+        const d = norm(add(dir, [Math.cos(a) * 0.9, 0.35 + rand() * 0.3, Math.sin(a) * 0.9]));
+        branch(add(from, dir, len * (0.5 + 0.5 * rand())), d, len * (0.55 + rand() * 0.2), r * 0.6, depth - 1);
+      }
+      if (depth === 1) return end;
+    };
+    // buttress roots flare out into the ground
+    for (let j = 0; j < 5; j++) {
+      const a = j / 5 * Math.PI * 2 + rand();
+      limb(add(base, [0, height * 0.06, 0]), norm([Math.cos(a), -0.5, Math.sin(a)]), height * 0.09, height * 0.022, 0.03);
+    }
+    const lean = [(rand() - 0.5) * 0.12, 1, (rand() - 0.5) * 0.12];
+    const top = bough(base, norm(lean), height * 0.62, height * 0.022, height * 0.013, 0.12);
+    // live-oak crown: heavy limbs leave the trunk and spread almost level
+    for (let j = 0; j < 6; j++) {
+      const a = j / 6 * Math.PI * 2 + rand() * 0.8;
+      const d = norm([Math.cos(a), 0.25 + rand() * 0.45, Math.sin(a)]);
+      const from = add(base, norm(lean), height * (0.4 + rand() * 0.22));
+      branch(from, d, height * (0.28 + rand() * 0.14), height * 0.011, 3);
+    }
+    return top;
+  }
+
   function buildInstances() {
     const out = [];
-    const push = (pos, size, alb, alpha, kind, aspect, angle, n) => out.push(...pos, size, ...alb, alpha, kind, rand(), aspect, angle, ...n, 0);
-    // test cluster beside the column
-    for (let j = 0; j < 400; j++) {
-      const n = [rand() - 0.5, rand() - 0.5, rand() - 0.5];
-      push([COLUMN[0] - 4 + n[0] * 3, 1.5 + n[1] * 3, COLUMN[1] + n[2] * 3], 0.12, [0.8, 0.85, 0.9], 0.8, 1, 1, 0, n);
-    }
+    const push = (pos, size, alb, alpha, kind, aspect, angle, n) => out.push(...pos, size, ...alb, alpha, kind, rand(), aspect, angle, ...n);
+    tree(push, [COLUMN[0] - 9, 0, COLUMN[1] - 5], 22, 0.3);
     return new Float32Array(out);
   }
 
