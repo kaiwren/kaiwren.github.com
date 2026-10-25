@@ -38,11 +38,11 @@
   out vec4 vCol;
   out float vDisc;
 
-  // one day's road: horizon to horizon, a little higher or lower each day. On a tall
-  // screen the road runs wider than the screen, so it stays a dome rather than an arch
+  // one day's road: horizon to horizon, a little higher or lower each day. The sky is
+  // never squeezed: a narrow screen is a window onto the middle of the same wide dome
   vec2 arc(float u, float amp, float day) {
     float W = uRes.x, H = uRes.y;
-    float span = max(W * 1.16, H * 0.9);
+    float span = max(W * 1.16, H * 1.6);
     float x = W * 0.5 + span * (u - 0.5);
     float a = amp * (0.86 + 0.28 * day) * min(H, span * 0.95);
     return vec2(x, H * 0.97 - a * sin(3.14159 * u));
@@ -220,7 +220,7 @@
   // the same road as arc() in the shader, for placing each sun's light on the sky
   function arcJS(u, amp, day) {
     const W = innerWidth, H = innerHeight;
-    const span = Math.max(W * 1.16, H * 0.9);
+    const span = Math.max(W * 1.16, H * 1.6);
     const a = amp * (0.86 + 0.28 * day) * Math.min(H, span * 0.95);
     return [W * 0.5 + span * (u - 0.5), H * 0.97 - a * Math.sin(Math.PI * u)];
   }
