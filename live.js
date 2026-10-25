@@ -48,7 +48,17 @@
     return vec2(x, H * 0.97 - a * sin(3.14159 * u));
   }
 
-  float mask(vec2 p) { return texture(uMask, p / uRes).r; }
+  // the mask is soft-sampled here rather than trusting the 2D canvas blur, which some browsers
+  // (Brave on Android) don't apply, leaving hard line-box rectangles in the light
+  float mask(vec2 p) {
+    vec2 q = p / uRes, e = 18.0 / uRes;
+    float m = texture(uMask, q).r * 0.2;
+    m += (texture(uMask, q + vec2(e.x, 0.0)).r + texture(uMask, q - vec2(e.x, 0.0)).r
+        + texture(uMask, q + vec2(0.0, e.y)).r + texture(uMask, q - vec2(0.0, e.y)).r) * 0.12;
+    m += (texture(uMask, q + e).r + texture(uMask, q - e).r
+        + texture(uMask, q + vec2(e.x, -e.y)).r + texture(uMask, q - vec2(e.x, -e.y)).r) * 0.08;
+    return m;
+  }
 
   void main() {
     float kind = aKind.x;
@@ -177,7 +187,15 @@
     col += light * (0.22 + 2.6 * haze);
 
     // keep the type legible: the light under the text is held down
-    float m = texture(uMask, q).r;
+    // gaussian-sampled so the dimming has no edges, whatever the 2D canvas blur did
+    float m = 0.0, wsum = 0.0;
+    for (int j = -3; j <= 3; j++)
+      for (int i = -3; i <= 3; i++) {
+        float w = exp(-float(i * i + j * j) / 4.5);
+        m += texture(uMask, q + vec2(float(i), float(j)) * 10.0 / uRes).r * w;
+        wsum += w;
+      }
+    m /= wsum;
     col *= 1.0 - 0.4 * m;
 
     // vignette
