@@ -20,6 +20,13 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
   <title>Sidu Ponnappa</title>
+  <script>
+    (function () {
+      let theme = localStorage.getItem('theme');
+      if (theme === 'live' && matchMedia('(prefers-reduced-motion: reduce)').matches) theme = 'dark';
+      if (theme) document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CT9TWBW0WR"></script>
   <script>
@@ -35,7 +42,7 @@
   </script>
 </head>
 <body>
-<div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
+<div class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
   <span class="theme-icon">◐</span>
 </div>
 <div class="container kaiwren">
@@ -435,18 +442,38 @@
         integrity="sha256-Sk3nkD6mLTMOF0EOpNtsIry+s1CsaqQC1rVLTAy+0yc= sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ=="
         crossorigin="anonymous"></script>
 <script>
-  // Check for saved theme preference or default to system preference
-  const savedTheme = localStorage.getItem('theme');
-  if (savedTheme) {
-    document.documentElement.setAttribute('data-theme', savedTheme);
+  // light -> dark -> live; live only appears where the device can run it
+  function liveCapable() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    if (navigator.connection && navigator.connection.saveData) return false;
+    if ((navigator.hardwareConcurrency || 8) < 4) return false;
+    if (navigator.deviceMemory && navigator.deviceMemory < 4) return false;
+    return !!document.createElement('canvas').getContext('webgl2');
+  }
+
+  function startLive() {
+    if (window.KaiwrenLive) return window.KaiwrenLive.start();
+    const script = document.createElement('script');
+    script.src = 'live.js';
+    script.onload = () => window.KaiwrenLive.start();
+    document.body.appendChild(script);
+  }
+
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    if (theme === 'live') startLive();
+    else if (window.KaiwrenLive) window.KaiwrenLive.stop();
   }
 
   function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
+    const current = document.documentElement.getAttribute('data-theme') ||
+      (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const order = liveCapable() ? ['light', 'dark', 'live'] : ['light', 'dark'];
+    setTheme(order[(order.indexOf(current) + 1) % order.length]);
   }
+
+  if (document.documentElement.getAttribute('data-theme') === 'live') startLive();
 </script>
 </body>
 </html>
