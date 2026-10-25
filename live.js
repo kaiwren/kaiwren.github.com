@@ -44,7 +44,7 @@
     float W = uRes.x, H = uRes.y;
     float span = max(W * 1.16, H * 0.9);
     float x = W * 0.5 + span * (u - 0.5);
-    float a = amp * (0.86 + 0.28 * day) * min(H, span * 0.7);
+    float a = amp * (0.86 + 0.28 * day) * min(H, span * 0.95);
     return vec2(x, H * 0.97 - a * sin(3.14159 * u));
   }
 
@@ -115,10 +115,75 @@
   out vec4 o;
   void main() {
     float r2 = dot(vUv, vUv);
-    // strokes and glows fall off softly; a disc has a limb
-    float a = mix(exp(-3.5 * r2), 1.0 - smoothstep(0.55, 0.8, r2), vDisc) * vCol.a;
+    // strokes and glows fall off softly; a disc has a limb, and a core too bright for the film
+    float a = mix(exp(-3.5 * r2), 1.0 - smoothstep(0.62, 0.8, r2), vDisc) * vCol.a;
     if (a < 0.002) discard;
-    o = vec4(vCol.rgb * a, a);
+    float core = vDisc * (1.0 - smoothstep(0.0, 0.45, r2));
+    vec3 c = mix(vCol.rgb * (0.75 + 0.25 * sqrt(max(0.0, 1.0 - r2 / 0.8))), vec3(1.0, 0.98, 0.94), core * 0.85);
+    o = vec4(c * a, a);
+  }`;
+
+  // The sky: umber film lit by the suns. Each sun throws a wide glow in its own colour;
+  // two slow veils of haze catch that light, so the dark stays dark and the air near a
+  // sun takes on its colour; a darker zenith and a vignette make it a dome, not a sheet
+  const SKY_VS = `#version 300 es
+  layout(location=0) in vec2 aQuad;
+  void main() { gl_Position = vec4(aQuad, 0.0, 1.0); }`;
+
+  const SKY_FS = `#version 300 es
+  precision highp float;
+  uniform vec2 uRes;
+  uniform float uTime;
+  uniform float uScroll;
+  uniform vec2 uSunPos[7];
+  uniform vec3 uSunCol[7];
+  uniform float uSunR[7];
+  uniform sampler2D uMask;
+  out vec4 o;
+
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float noise(vec2 p) {
+    vec2 i = floor(p), f = fract(p);
+    vec2 w = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), w.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), w.x), w.y);
+  }
+  float fbm(vec2 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.02 + vec2(1.7, 9.2); a *= 0.5; }
+    return v;
+  }
+
+  void main() {
+    vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
+    vec2 q = px / uRes;
+    float scale = min(uRes.x, uRes.y);
+
+    // the film: deep umber, darker at the zenith, a touch warmer toward the horizon
+    vec3 col = mix(vec3(0.050, 0.036, 0.028), vec3(0.085, 0.060, 0.042), smoothstep(0.0, 1.0, q.y));
+
+    // two veils of haze, drifting at different rates and parallaxing with scroll
+    vec2 hp = px / scale;
+    float veil1 = fbm(hp * 2.2 + vec2(uTime * 0.012, uScroll / scale * 0.15));
+    float veil2 = fbm(hp * 5.0 + vec2(-uTime * 0.02, uScroll / scale * 0.35) + 7.3);
+    float haze = smoothstep(0.35, 0.85, veil1) * 0.75 + smoothstep(0.45, 0.9, veil2) * 0.35;
+
+    vec3 light = vec3(0.0);
+    for (int i = 0; i < 7; i++) {
+      float d = length(px - uSunPos[i]) / scale;
+      float r = uSunR[i];
+      vec3 c = uSunCol[i];
+      light += c * (exp(-d / (0.32 * r)) * 1.1 + exp(-d / (0.08 * r)) * 1.4);
+    }
+    col += light * (0.22 + 2.6 * haze);
+
+    // keep the type legible: the light under the text is held down
+    float m = texture(uMask, q).r;
+    col *= 1.0 - 0.4 * m;
+
+    // vignette
+    vec2 v = q - 0.5;
+    col *= 1.0 - 0.45 * dot(v, v) * 1.6;
+    o = vec4(col, 1.0);
   }`;
 
   let state = null;
@@ -152,6 +217,14 @@
     return rects;
   }
 
+  // the same road as arc() in the shader, for placing each sun's light on the sky
+  function arcJS(u, amp, day) {
+    const W = innerWidth, H = innerHeight;
+    const span = Math.max(W * 1.16, H * 0.9);
+    const a = amp * (0.86 + 0.28 * day) * Math.min(H, span * 0.95);
+    return [W * 0.5 + span * (u - 0.5), H * 0.97 - a * Math.sin(Math.PI * u)];
+  }
+
   function buildInstances() {
     const narrow = innerWidth < 700;
     const per = narrow ? 100 : 140;    // strokes per arc
@@ -168,7 +241,7 @@
       }
       // today's sun: a wide faint glow, then the disc
       push([0, 0, sun.lead, 0], [1, i, sun.amp, 60 * sun.size], [...sun.colour, 0.18 * sun.weight + 0.05]);
-      push([0, 0, sun.lead, 0], [2, i, sun.amp, 7 * sun.size], [...sun.colour, 0.9]);
+      push([0, 0, sun.lead, 0], [2, i, sun.amp, 9 * sun.size], [...sun.colour, 1.0]);
     });
     return { data: new Float32Array(out), count: out.length / 12 };
   }
@@ -241,17 +314,44 @@
     }
     s.last = now;
 
-    gl.clearColor(0, 0, 0, 0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    const p = Math.min(1, scrollY / max);
+    const exposure = 0.22 + 0.78 * p;
+    const sweep = (scrollY / innerHeight * 0.5 + 0.35 + (now - s.t0) / 1000 * 0.002) % 1;
+    const t = (now - s.t0) / 1000;
+
+    // the sky, opaque, under everything
+    gl.disable(gl.BLEND);
+    gl.useProgram(s.sky);
+    const k = s.skyU;
+    const pos = [], col = [], rad = [];
+    SUNS.forEach(sun => {
+      const u = sweep + sun.lead;
+      const up = Math.min(1, Math.max(0, u / 0.05)) * Math.min(1, Math.max(0, (1 - u) / 0.05));
+      pos.push(...arcJS(u, sun.amp, exposure));
+      col.push(...sun.colour.map(c => c * sun.weight * up * (sun.weight > 0.9 ? 0.55 : 0.8)));
+      rad.push(sun.weight > 0.9 ? 1.6 : 0.8);
+    });
+    gl.uniform2f(k.uRes, innerWidth, innerHeight);
+    gl.uniform1f(k.uTime, t);
+    gl.uniform1f(k.uScroll, scrollY);
+    gl.uniform2fv(k.uSunPos, pos);
+    gl.uniform3fv(k.uSunCol, col);
+    gl.uniform1fv(k.uSunR, rad);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
+    gl.uniform1i(k.uMask, 0);
+    gl.bindVertexArray(s.skyVao);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    gl.enable(gl.BLEND);
     gl.useProgram(s.prog);
     const u = s.uniforms;
     // scroll is time: the exposure grows down the page, and each screen of scroll is one sweep of the suns
-    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    const p = Math.min(1, scrollY / max);
-    gl.uniform1f(u.uTime, (now - s.t0) / 1000);
+    gl.uniform1f(u.uTime, t);
     gl.uniform2f(u.uRes, innerWidth, innerHeight);
-    gl.uniform1f(u.uExposure, 0.22 + 0.78 * p);
-    gl.uniform1f(u.uSweep, (scrollY / innerHeight * 0.5 + 0.35 + (now - s.t0) / 1000 * 0.002) % 1);
+    gl.uniform1f(u.uExposure, exposure);
+    gl.uniform1f(u.uSweep, sweep);
     gl.uniform2f(u.uMouse, s.mouse[0], s.mouse[1]);
     gl.uniform1f(u.uMouseOn, s.mouseOn ? 1 : 0);
     gl.uniform1f(u.uNarrow, innerWidth < 700 ? 1 : 0);
@@ -296,6 +396,14 @@
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
 
+    const sky = gl.createProgram();
+    gl.attachShader(sky, compile(gl, gl.VERTEX_SHADER, SKY_VS));
+    gl.attachShader(sky, compile(gl, gl.FRAGMENT_SHADER, SKY_FS));
+    gl.linkProgram(sky);
+    if (!gl.getProgramParameter(sky, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(sky));
+    const skyU = {};
+    ['uRes', 'uTime', 'uScroll', 'uSunPos', 'uSunCol', 'uSunR', 'uMask'].forEach(n => { skyU[n] = gl.getUniformLocation(sky, n); });
+
     const uniforms = {};
     ['uTime', 'uRes', 'uExposure', 'uSweep', 'uMouse', 'uMouseOn', 'uNarrow', 'uMask']
       .forEach(n => { uniforms[n] = gl.getUniformLocation(prog, n); });
@@ -308,6 +416,11 @@
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const inst = gl.createBuffer();
+    const skyVao = gl.createVertexArray();
+    gl.bindVertexArray(skyVao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
     const maskTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, maskTex);
@@ -321,7 +434,7 @@
 
     const maskCanvas = document.createElement('canvas');
     state = {
-      gl, canvas, prog, uniforms, vao, inst, maskTex, maskCanvas,
+      gl, canvas, prog, uniforms, vao, inst, maskTex, maskCanvas, sky, skyU, skyVao,
       maskCtx: maskCanvas.getContext('2d'),
       mouse: [-9999, -9999], mouseOn: false,
       t0: performance.now(), frames: [], frozen: false, last: 0
