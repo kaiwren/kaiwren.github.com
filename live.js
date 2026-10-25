@@ -9,6 +9,7 @@
   const DEG = Math.PI / 180;
   const HORIZON = 0.64;          // fraction of viewport height
   const EYE = 1.7;               // camera height, metres
+  const FAR = 800;               // depth range shared by the world and the splats
   const COLUMN = [4, -9, 0.42, 8];           // x, z, radius, height: a small memorial, seen whole
   const VIEW = 17;                            // camera's distance from the column: at the jungle's edge
   const PLAZA = 11;                           // radius of the marble plaza; jungle beyond
@@ -176,7 +177,9 @@
 
   void main() {
     vec2 px = vec2(vUv.x * uRes.x, (1.0 - vUv.y) * uRes.y);
-    vec3 d = normalize(vec3((px.x - uRes.x * 0.5) / uF, (uHy - px.y) / uF, -1.0));
+    vec3 d = vec3((px.x - uRes.x * 0.5) / uF, (uHy - px.y) / uF, -1.0);
+    float zPerT = 1.0 / length(d);   // view depth per unit along the ray
+    d *= zPerT;
     d.xz = mat2(cos(uYaw), sin(uYaw), -sin(uYaw), cos(uYaw)) * d.xz;
     vec3 EYE = uEye;
     // trace: floor, plinth, column
@@ -204,6 +207,7 @@
     }
 
     vec3 col;
+    gl_FragDepth = mat == 0 ? 1.0 : min(t * zPerT / ${FAR.toFixed(1)}, 1.0);
     if (mat == 0) {
       col = sky(d) + discs(d);
     } else {
@@ -231,6 +235,61 @@
       col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-t / 900.0));
     }
     o = vec4(col, 1.0);
+  }`;
+
+  // Gaussian splats in the world, seen by the same camera and lit by the same suns.
+  // a0: position, size (m); a1: albedo, opacity (<0 adds light instead of covering);
+  // a2: kind, seed, aspect, angle; a3: normal, unused
+  const SPLAT_VS = `#version 300 es
+  layout(location=0) in vec2 aQuad;
+  layout(location=1) in vec4 a0;
+  layout(location=2) in vec4 a1;
+  layout(location=3) in vec4 a2;
+  layout(location=4) in vec4 a3;
+  uniform vec2 uRes;
+  uniform float uF;
+  uniform float uHy;
+  uniform vec3 uEye;
+  uniform float uYaw;
+  uniform float uTime;
+  ${LIGHT}
+  out vec2 vQ;
+  out vec4 vCol;
+  void main() {
+    vec3 p = a0.xyz;
+    vec3 v = p - uEye;
+    vec3 right = vec3(cos(uYaw), 0.0, sin(uYaw)), fwd = vec3(sin(uYaw), 0.0, -cos(uYaw));
+    float z = dot(v, fwd);
+    if (z < 0.2) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+    vec2 sc = vec2(uRes.x * 0.5 + uF * dot(v, right) / z, uHy - uF * v.y / z);
+    float px = max(a0.w * uF / z, 0.6);
+    float ca = cos(a2.w), sa = sin(a2.w);
+    vec2 corner = mat2(ca, sa, -sa, ca) * (aQuad * vec2(a2.z, 1.0)) * px * 2.5;
+    sc += corner;
+    gl_Position = vec4(sc.x / uRes.x * 2.0 - 1.0, 1.0 - sc.y / uRes.y * 2.0, z / ${FAR.toFixed(1)} * 2.0 - 1.0, 1.0);
+    vQ = aQuad * 2.5;
+
+    vec3 n = normalize(a3.xyz);
+    vec3 lightIn = uAmb;
+    for (int i = 0; i < 7; i++) lightIn += uE[i] * max(dot(n, uL[i]) * 0.5 + 0.5, 0.0);
+    vec3 col = a1.rgb * lightIn;
+    vec3 d = normalize(v);
+    col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-length(v) / 900.0));
+    vCol = vec4(col, a1.a);
+    // fade the last pixels of a too-small splat instead of letting it shimmer
+    if (a0.w * uF / z < 0.6) vCol.a *= a0.w * uF / z / 0.6;
+  }`;
+
+  const SPLAT_FS = `#version 300 es
+  precision highp float;
+  in vec2 vQ;
+  in vec4 vCol;
+  out vec4 o;
+  void main() {
+    float g = exp(-0.5 * dot(vQ, vQ));
+    if (g < 0.02) discard;
+    float a = abs(vCol.a) * g;
+    o = vCol.a < 0.0 ? vec4(vCol.rgb * a, 0.0) : vec4(vCol.rgb * a, a);
   }`;
 
   // Exposure, tone map, grain, and a soft dark bank behind the text
@@ -367,6 +426,36 @@
     gl.uniform3fv(u.uAmb, sky.amb);
   }
 
+  // Seeded, so the forest grows the same on every visit
+  let seed = 1;
+  const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+  function buildInstances() {
+    const out = [];
+    const push = (pos, size, alb, alpha, kind, aspect, angle, n) => out.push(...pos, size, ...alb, alpha, kind, rand(), aspect, angle, ...n, 0);
+    // test cluster beside the column
+    for (let j = 0; j < 400; j++) {
+      const n = [rand() - 0.5, rand() - 0.5, rand() - 0.5];
+      push([COLUMN[0] - 4 + n[0] * 3, 1.5 + n[1] * 3, COLUMN[1] + n[2] * 3], 0.12, [0.8, 0.85, 0.9], 0.8, 1, 1, 0, n);
+    }
+    return new Float32Array(out);
+  }
+
+  function upload(s) {
+    const gl = s.gl;
+    seed = 1;
+    const data = buildInstances();
+    gl.bindVertexArray(s.vao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, s.inst);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    for (let loc = 1; loc <= 4; loc++) {
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 4, gl.FLOAT, false, 64, (loc - 1) * 16);
+      gl.vertexAttribDivisor(loc, 1);
+    }
+    s.count = data.length / 16;
+  }
+
   function layout(s) {
     const gl = s.gl;
     s.dpr = Math.min(devicePixelRatio || 1, 2);
@@ -385,6 +474,8 @@
     s.h = Math.round(innerHeight * k);
     gl.bindTexture(gl.TEXTURE_2D, s.sceneTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, s.w, s.h, 0, gl.RGBA, gl.HALF_FLOAT, null);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, s.depth);
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, s.w, s.h);
     s.rects = textRects();
     s.maskDirty = true;
   }
@@ -418,6 +509,10 @@
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, s.fbo);
     gl.viewport(0, 0, s.w, s.h);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.ALWAYS);
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
     gl.useProgram(s.world.p);
     let u = s.world.u;
     gl.uniform2f(u.uRes, innerWidth, innerHeight);
@@ -428,6 +523,25 @@
     setLight(gl, u, sky);
     gl.bindVertexArray(s.quadVao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    // splats test against the world's depth but don't write it; premultiplied blending
+    gl.depthFunc(gl.LEQUAL);
+    gl.depthMask(false);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.useProgram(s.splat.p);
+    u = s.splat.u;
+    gl.uniform2f(u.uRes, innerWidth, innerHeight);
+    gl.uniform1f(u.uF, s.f);
+    gl.uniform1f(u.uHy, s.hy);
+    gl.uniform3fv(u.uEye, s.eye);
+    gl.uniform1f(u.uYaw, s.yaw);
+    gl.uniform1f(u.uTime, time);
+    setLight(gl, u, sky);
+    gl.bindVertexArray(s.vao);
+    gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, s.count);
+    gl.disable(gl.BLEND);
+    gl.disable(gl.DEPTH_TEST);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, s.canvas.width, s.canvas.height);
@@ -464,14 +578,23 @@
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
     const sceneTex = texture(gl);
+    const depth = gl.createRenderbuffer();
     const fbo = gl.createFramebuffer();
     const maskCanvas = document.createElement('canvas');
     state = {
-      gl, canvas, quadVao, sceneTex, fbo, maskCanvas,
+      gl, canvas, quadVao, vao, sceneTex, depth, fbo, maskCanvas,
+      inst: gl.createBuffer(),
       maskTex: texture(gl),
       maskCtx: maskCanvas.getContext('2d'),
       world: program(gl, QUAD_VS, WORLD_FS),
+      splat: program(gl, SPLAT_VS, SPLAT_FS),
       post: program(gl, QUAD_VS, POST_FS),
       t0: performance.now(), timeOffset: 0, frames: [], frozen: false, last: 0,
       scroll: 0, exposure: 0.5, scale: 1, dayOverride: null
@@ -480,7 +603,9 @@
     layout(s);
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, sceneTex, 0);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depth);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    upload(s);
     s.scroll = Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight));
 
     s.onResize = () => layout(s);
