@@ -9,9 +9,10 @@
   const DEG = Math.PI / 180;
   const HORIZON = 0.64;          // fraction of viewport height
   const EYE = 1.7;               // camera height, metres
-  const COLUMN = [6.5, -16, 0.55, 11];       // x, z, radius, height: a small memorial, seen whole
-  const PLAZA = 19;                           // radius of the marble plaza; jungle beyond
-  const PLINTH = [2.2, 0.25];                    // the raised circle of worn metal: radius, height
+  const COLUMN = [4, -9, 0.42, 8];           // x, z, radius, height: a small memorial, seen whole
+  const VIEW = 17;                            // camera's distance from the column: at the jungle's edge
+  const PLAZA = 11;                           // radius of the marble plaza; jungle beyond
+  const PLINTH = [1.6, 0.22];                    // the raised circle of worn metal: radius, height
 
   // The road: a great circle that sets on the horizon right of the column and
   // climbs over the top-left of the frame. phi is the angle along it from the
@@ -210,7 +211,7 @@
       if (mat == 1) {
         // the jungle has crept over the plaza's ragged edge
         float r = length(p.xz - COL.xy);
-        float edge = PLAZA - 3.0 * fbm(p.xz * 0.2) - 1.5 * fbm(p.xz * 1.1);
+        float edge = PLAZA - 2.0 * fbm(p.xz * 0.3) - 1.0 * fbm(p.xz * 1.4);
         float g;
         vec3 alb = marble(p.xz, g);
         float wild = smoothstep(edge - 0.3, edge + 0.3, r);
@@ -377,8 +378,7 @@
     // three quarters of the width, then step sideways so the column stands left of it
     s.yaw = SET_AZ - Math.atan(0.25 * innerWidth / s.f);
     const colAz = s.yaw + Math.atan((0.6 - 0.5) * innerWidth / s.f);
-    const dist = Math.hypot(COLUMN[0], COLUMN[1]);
-    s.eye = [COLUMN[0] - Math.sin(colAz) * dist, EYE, COLUMN[1] + Math.cos(colAz) * dist];
+    s.eye = [COLUMN[0] - Math.sin(colAz) * VIEW, EYE, COLUMN[1] + Math.cos(colAz) * VIEW];
     // the scene renders a little below screen resolution
     const k = s.scale * Math.min(s.dpr, 1.25);
     s.w = Math.round(innerWidth * k);
