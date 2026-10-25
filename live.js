@@ -1,122 +1,100 @@
-// Live theme: a full-spectrum force of gaussian splats on a terracotta ground.
-// The "hello." screen gets one big band; each "historically." entry gets a
-// stratum in the margins, coloured by era. Everything flows around the text,
-// never over it. Loaded lazily by index.html only on capable devices.
+// Live theme: a solargraph of Clarke's Seven Suns. A pinhole camera left open
+// burns each day's sun into the film as one thin arc; here every sun sweeps the
+// sky as you scroll, and each sweep stays on the film, so the page records its
+// own long exposure: the further down, the more days. Colour comes only from
+// the suns, the white one pearly, the coloured ones faint. Strokes flow around
+// the text, never over it. Loaded lazily by index.html on capable devices.
 (function () {
   'use strict';
 
-  const PALETTE = {
-    yellow: [1.0, 0.72, 0.11],
-    green: [0.18, 0.9, 0.35],
-    cobalt: [0.12, 0.31, 1.0],
-    magenta: [1.0, 0.18, 0.7],
-    hot: [1.0, 0.96, 0.84]
-  };
-  // Recent years carry the whole spectrum; older years cool toward cobalt
-  const ERA_WEIGHTS = [
-    { from: 2022, weights: { yellow: 0.32, green: 0.3, cobalt: 0.2, magenta: 0.18 } },
-    { from: 2016, weights: { green: 0.45, cobalt: 0.35, yellow: 0.12, magenta: 0.08 } },
-    { from: 0, weights: { cobalt: 0.55, magenta: 0.3, green: 0.15 } }
+  // amp: arc height as a fraction of the viewport (the coloured suns run lower roads);
+  // lead: how far ahead of the white sun each one travels
+  const SUNS = [
+    { colour: [1.0, 0.94, 0.84], weight: 1.0, amp: 0.78, size: 1.0, lead: 0 },    // white, nacreous
+    { colour: [1.0, 0.32, 0.16], weight: 0.34, amp: 0.62, size: 0.7, lead: 0.11 },   // red
+    { colour: [1.0, 0.72, 0.28], weight: 0.34, amp: 0.70, size: 0.7, lead: -0.08 },   // gold
+    { colour: [0.38, 0.55, 1.0], weight: 0.38, amp: 0.55, size: 0.75, lead: 0.2 },  // blue
+    { colour: [0.40, 0.95, 0.55], weight: 0.26, amp: 0.48, size: 0.6, lead: 0.3 },  // green
+    { colour: [0.78, 0.50, 1.0], weight: 0.28, amp: 0.40, size: 0.55, lead: -0.16 },  // elusive, violet
+    { colour: [0.35, 0.92, 0.86], weight: 0.28, amp: 0.33, size: 0.55, lead: 0.38 }  // elusive, teal
   ];
+  const DAYS = 36;         // arcs per sun on a full exposure
 
   const VS = `#version 300 es
   precision highp float;
   layout(location=0) in vec2 aQuad;
-  layout(location=1) in vec4 aSeed;   // u, v, phase, speed
-  layout(location=2) in vec4 aKind;   // kind, entry, side, size
+  layout(location=1) in vec4 aSeed;   // u along the arc, day (0..1), phase, jitter
+  layout(location=2) in vec4 aKind;   // kind (0 trail, 1 sun), sun, amp, size
   layout(location=3) in vec4 aColor;  // rgb, alpha
-  layout(location=4) in vec4 aLine;   // left, right, y, intensity
   uniform float uTime;
   uniform vec2 uRes;
-  uniform float uScroll;
+  uniform float uExposure;            // how many days are on the film (0..1)
+  uniform float uSweep;               // where today's suns are on their arcs (0..1)
   uniform vec2 uMouse;
   uniform float uMouseOn;
-  uniform float uHover;
-  uniform float uBandH;
   uniform float uNarrow;
   uniform sampler2D uMask;
   out vec2 vUv;
   out vec4 vCol;
 
-  vec2 bez(float t, vec2 a, vec2 b, vec2 c, vec2 d) {
-    float s = 1.0 - t;
-    return s*s*s*a + 3.0*s*s*t*b + 3.0*s*t*t*c + t*t*t*d;
+  // one day's road: horizon to horizon, a little higher or lower each day
+  vec2 arc(float u, float amp, float day) {
+    float W = uRes.x, H = uRes.y;
+    float x = W * (-0.08 + 1.16 * u);
+    float a = amp * (0.86 + 0.28 * day);
+    return vec2(x, H * 0.97 - H * a * sin(3.14159 * u));
   }
 
-  float mask(vec2 page) {
-    vec2 uv = vec2(page.x / uRes.x, (page.y - uScroll) / uRes.y);
-    return texture(uMask, uv).r;
-  }
+  float mask(vec2 p) { return texture(uMask, p / uRes).r; }
 
   void main() {
-    float W = uRes.x;
-    float H = uBandH;
-    vec2 pos; vec2 tang; float alpha = aColor.a; float len; float wid;
     float kind = aKind.x;
+    float day = aSeed.y;
+    float alpha = aColor.a;
+    vec2 pos, tang; float len, wid;
 
-    if (kind < 1.5) {
-      // Band (kind 0) and its haze (kind 1): a sweep from bottom-left to top-right
-      float u = fract(aSeed.x + uTime * 0.010 * aSeed.w);
-      vec2 A = vec2(-0.25*W, 1.02*H), B = vec2(0.30*W, 0.95*H);
-      vec2 C = vec2(0.55*W, 0.05*H), D = vec2(1.25*W, -0.10*H);
-      pos = bez(u, A, B, C, D);
-      tang = normalize(bez(u + 0.002, A, B, C, D) - pos);
+    if (kind < 0.5) {
+      // a trail stroke: lies on its day's arc, drifting slowly along it like light on film
+      if (day > uExposure) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
+      alpha *= smoothstep(uExposure, uExposure - 0.04, day);           // the newest day develops in
+      float u = fract(aSeed.x + uTime * 0.004 * (0.5 + aSeed.z));
+      pos = arc(u, aKind.z, day);
+      tang = normalize(arc(u + 0.002, aKind.z, day) - pos);
       vec2 nrm = vec2(-tang.y, tang.x);
-      float width = max(0.10 * W, 90.0) * (0.8 + 0.25 * sin(u * 7.0 + uTime * 0.23));
-      float v = aSeed.y + 0.22 * sin(u * 38.0 + aSeed.z * 6.283 + uTime * 0.5);
-      pos += nrm * v * width;
-      pos += vec2(sin(pos.y * 0.011 + uTime * 0.31 + aSeed.z * 3.0),
-                  cos(pos.x * 0.009 - uTime * 0.27 + aSeed.z * 2.0)) * 14.0;
-      tang = normalize(tang + nrm * 0.18 * sin(aSeed.z * 40.0 + uTime * 0.4));
-      alpha *= smoothstep(0.0, 0.10, u) * smoothstep(1.0, 0.88, u);
-      len = aKind.w; wid = aKind.w * (kind < 0.5 ? 0.16 : 0.7);
+      pos += nrm * aSeed.w * 2.0;
+      alpha *= smoothstep(0.0, 0.06, u) * smoothstep(1.0, 0.94, u);
+      alpha *= 0.65 + 0.35 * sin(u * 40.0 + aSeed.z * 6.283 + uTime * 0.6);  // shimmer
+      len = aKind.w; wid = mix(0.9, 0.7, uNarrow);
     } else {
-      // Strata (kind 2): one per entry, reaching from the screen edge toward its line
-      float side = aKind.z;
-      float hov = 1.0 - step(0.5, abs(aKind.y - uHover));
-      float gap = mix(26.0, 6.0, hov);
-      float bank = side > 0.0 ? aLine.y + gap : aLine.x - gap;
-      float room = side > 0.0 ? W - bank : bank;
-      float reach = room * mix(0.35 + 0.6 * aLine.w, 1.0, hov) + 20.0;
-      float t = fract(aSeed.x + uTime * 0.035 * aSeed.w);
-      float e = 1.0 - pow(1.0 - t, 2.2);
-      float x = bank + side * reach * (1.0 - e);
-      float y = aLine.z + aSeed.y * mix(6.0, 9.0, hov) + sin(x * 0.02 + uTime * 0.9 + aSeed.z * 6.283) * 3.0;
-      pos = vec2(x, y);
-      tang = normalize(vec2(-side, 0.06 * sin(aSeed.z * 20.0 + uTime)));
-      alpha *= pow(sin(3.14159 * t), 0.6) * (0.55 + 0.45 * aLine.w) * mix(1.0, 2.2, hov);
-      alpha *= mix(1.0, 0.45, uNarrow);
-      len = aKind.w * mix(1.0, 1.5, hov); wid = aKind.w * 0.18;
+      // today's sun: a soft cluster riding the newest arc
+      float u = uSweep + aSeed.z;   // each sun keeps its own place on the road
+      pos = arc(u, aKind.z, uExposure) + vec2(aSeed.x, aSeed.w) * aKind.w;
+      tang = vec2(1.0, 0.0);
+      alpha *= smoothstep(0.0, 0.05, u) * smoothstep(1.0, 0.95, u);
+      len = wid = aKind.w * (0.4 + aSeed.y);
     }
 
-    // Cursor: the force leans toward you, but never touches
+    // Cursor: the light leans away from you, but never touches
     vec2 d = pos - uMouse;
     float r = length(d) + 0.001;
-    float R = 220.0;
-    if (uMouseOn > 0.5 && r < R) {
-      float nr = max(30.0, r - (R - r) * 0.4);
-      pos = uMouse + d / r * nr;
-    }
+    float R = 180.0;
+    if (uMouseOn > 0.5 && r < R) pos = uMouse + d / r * max(24.0, r - (R - r) * 0.35);
 
-    // Text is a riverbank: push splats down the mask gradient, then fade whatever is left
+    // Text is a riverbank: push strokes down the mask gradient, then fade whatever is left
     float m = mask(pos);
     if (m > 0.01) {
       float ex = 6.0;
       vec2 g = vec2(mask(pos + vec2(ex, 0.0)) - mask(pos - vec2(ex, 0.0)),
                     mask(pos + vec2(0.0, ex)) - mask(pos - vec2(0.0, ex)));
       float gl = length(g);
-      if (gl > 0.0001) pos -= g / gl * m * 46.0;
-      alpha *= 1.0 - smoothstep(0.12, 0.55, mask(pos)) * mix(1.0, 0.75, uNarrow);
+      if (gl > 0.0001) pos -= g / gl * m * 30.0;
+      alpha *= 1.0 - smoothstep(0.1, 0.5, mask(pos));
     }
 
-    float sy = pos.y - uScroll;
-    if (alpha < 0.003 || sy < -200.0 || sy > uRes.y + 200.0) {
-      gl_Position = vec4(2.0, 2.0, 2.0, 1.0);
-      return;
-    }
+    if (alpha < 0.002) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
     vec2 nrm2 = vec2(-tang.y, tang.x);
     vec2 corner = pos + tang * aQuad.x * len + nrm2 * aQuad.y * wid;
-    gl_Position = vec4(corner.x / W * 2.0 - 1.0, 1.0 - (corner.y - uScroll) / uRes.y * 2.0, 0.0, 1.0);
+    gl_Position = vec4(corner.x / uRes.x * 2.0 - 1.0, 1.0 - corner.y / uRes.y * 2.0, 0.0, 1.0);
     vUv = aQuad;
     vCol = vec4(aColor.rgb, alpha);
   }`;
@@ -127,8 +105,8 @@
   in vec4 vCol;
   out vec4 o;
   void main() {
-    float a = exp(-4.5 * dot(vUv, vUv)) * vCol.a;
-    if (a < 0.003) discard;
+    float a = exp(-3.5 * dot(vUv, vUv)) * vCol.a;
+    if (a < 0.002) discard;
     o = vec4(vCol.rgb * a, a);
   }`;
 
@@ -141,20 +119,6 @@
     while (v === 0) v = rand();
     return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
   }
-  function pick(weights) {
-    let r = rand(), last = null;
-    for (const k in weights) { last = k; r -= weights[k]; if (r <= 0) return PALETTE[k]; }
-    return PALETTE[last];
-  }
-  function bandColour(v) {
-    // Stratified across the band: yellow-orange edge, green, cobalt, a magenta thread
-    const j = v + gauss() * 0.25;
-    if (rand() < 0.05) return PALETTE.hot;
-    if (Math.abs(j - 0.55) < 0.12 && rand() < 0.8) return PALETTE.magenta;
-    if (j < -0.7) return rand() < 0.6 ? PALETTE.yellow : PALETTE.green;
-    if (j < 0.15) return rand() < 0.75 ? PALETTE.green : PALETTE.yellow;
-    return rand() < 0.85 ? PALETTE.cobalt : PALETTE.magenta;
-  }
 
   function compile(gl, type, src) {
     const s = gl.createShader(type);
@@ -162,20 +126,6 @@
     gl.compileShader(s);
     if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
     return s;
-  }
-
-  function collectEntries() {
-    const items = Array.from(document.querySelectorAll('ul.items > li'));
-    const counts = {};
-    const entries = items.map(li => {
-      const m = li.textContent.match(/\((\d{4})\//);
-      const year = m ? parseInt(m[1], 10) : 2000;
-      counts[year] = (counts[year] || 0) + 1;
-      return { li, year };
-    });
-    const max = Math.max(...Object.values(counts));
-    entries.forEach(e => { e.intensity = counts[e.year] / max; });
-    return entries;
   }
 
   // Tight per-line text rects in page coordinates, so the bank follows ragged lines
@@ -191,76 +141,37 @@
     return rects;
   }
 
-  function lineOf(li) {
-    const range = document.createRange();
-    range.selectNodeContents(li.querySelector('a') || li);
-    const rs = Array.from(range.getClientRects()).filter(r => r.width > 0);
-    if (!rs.length) return null;
-    const left = Math.min(...rs.map(r => r.left));
-    const right = Math.max(...rs.map(r => r.right));
-    const top = Math.min(...rs.map(r => r.top));
-    const bottom = Math.max(...rs.map(r => r.bottom));
-    return [left, right, (top + bottom) / 2 + scrollY];
-  }
-
-  function buildInstances(s) {
-    const W = innerWidth;
-    const narrow = W < 700;
-    const scale = narrow ? 0.5 : 1;
+  function buildInstances() {
+    const narrow = innerWidth < 700;
+    const per = narrow ? 70 : 140;     // strokes per arc
     const out = [];
-    const push = (seed, kind, color, line) => out.push(...seed, ...kind, ...color, ...line);
-
-    const bandN = Math.round(42000 * scale);
-    for (let i = 0; i < bandN; i++) {
-      const v = Math.max(-2.2, Math.min(2.2, gauss() * 0.8));
-      const c = bandColour(v);
-      const a = (0.10 + rand() * 0.22) * (1 - Math.min(1, Math.abs(v) / 2.4));
-      const size = (narrow ? 0.7 : 1) * (8 + rand() * rand() * 46);
-      push([rand(), v, rand(), 0.6 + rand() * 0.8], [0, -1, 0, size], [...c, c === PALETTE.hot ? a * 1.4 : a], [0, 0, 0, 0]);
-    }
-    const hazeN = Math.round(1400 * scale);
-    for (let i = 0; i < hazeN; i++) {
-      const v = gauss() * 0.7;
-      const c = bandColour(v);
-      push([rand(), v, rand(), 0.6 + rand() * 0.8], [1, -1, 0, 60 + rand() * 120], [...c, 0.03 + rand() * 0.04], [0, 0, 0, 0]);
-    }
-
-    s.entries.forEach((e, idx) => {
-      const line = lineOf(e.li);
-      if (!line) return;
-      const era = ERA_WEIGHTS.find(w => e.year >= w.from).weights;
-      const n = Math.round((140 + 260 * e.intensity) * scale);
-      for (let i = 0; i < n; i++) {
-        const c = rand() < 0.04 ? PALETTE.hot : pick(era);
-        const side = rand() < 0.5 ? -1 : 1;
-        push([rand(), gauss() * 0.6, rand(), 0.5 + rand()], [2, idx, side, 6 + rand() * rand() * 30],
-          [...c, 0.12 + rand() * 0.25], [line[0], line[1], line[2], e.intensity]);
+    const push = (seed, kind, color) => out.push(...seed, ...kind, ...color);
+    SUNS.forEach((sun, i) => {
+      for (let d = 0; d < DAYS; d++) {
+        const day = (d + rand() * 0.6) / DAYS;
+        const dayAlpha = 0.5 + 0.5 * rand();           // some days were hazier than others
+        for (let k = 0; k < per * (0.5 + sun.weight * 0.5); k++) {
+          push([rand(), day, rand(), gauss() * 0.6], [0, i, sun.amp, 5 + rand() * rand() * 22],
+            [...sun.colour, sun.weight * dayAlpha * (0.09 + rand() * 0.14)]);
+        }
+      }
+      // today's sun
+      const n = Math.round(60 * sun.size);
+      for (let k = 0; k < n; k++) {
+        push([gauss() * 0.5, rand(), sun.lead, gauss() * 0.5], [1, i, sun.amp, 18 * sun.size], [...sun.colour, 0.10 * sun.weight + 0.04]);
       }
     });
-
-    // Shuffle so unsorted alpha blending mixes colours evenly
-    const stride = 16;
-    const count = out.length / stride;
-    const data = new Float32Array(out);
-    for (let i = count - 1; i > 0; i--) {
-      const j = Math.floor(rand() * (i + 1));
-      for (let k = 0; k < stride; k++) {
-        const t = data[i * stride + k];
-        data[i * stride + k] = data[j * stride + k];
-        data[j * stride + k] = t;
-      }
-    }
-    return { data, count };
+    return { data: new Float32Array(out), count: out.length / 12 };
   }
 
   function upload(s) {
     const gl = s.gl;
-    const { data, count } = buildInstances(s);
+    const { data, count } = buildInstances();
     gl.bindVertexArray(s.vao);
     gl.bindBuffer(gl.ARRAY_BUFFER, s.inst);
     gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-    const stride = 16 * 4;
-    for (let loc = 1; loc <= 4; loc++) {
+    const stride = 12 * 4;
+    for (let loc = 1; loc <= 3; loc++) {
       gl.enableVertexAttribArray(loc);
       gl.vertexAttribPointer(loc, 4, gl.FLOAT, false, stride, (loc - 1) * 16);
       gl.vertexAttribDivisor(loc, 1);
@@ -268,7 +179,6 @@
     s.count = count;
     s.drawCount = count;
     s.rects = textRects();
-    s.bandH = innerHeight;
     s.maskDirty = true;
   }
 
@@ -326,13 +236,15 @@
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(s.prog);
     const u = s.uniforms;
+    // scroll is time: the exposure grows down the page, and each screen of scroll is one sweep of the suns
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+    const p = Math.min(1, scrollY / max);
     gl.uniform1f(u.uTime, (now - s.t0) / 1000);
     gl.uniform2f(u.uRes, innerWidth, innerHeight);
-    gl.uniform1f(u.uScroll, scrollY);
-    gl.uniform2f(u.uMouse, s.mouse[0], s.mouse[1] + scrollY);
+    gl.uniform1f(u.uExposure, 0.22 + 0.78 * p);
+    gl.uniform1f(u.uSweep, (scrollY / innerHeight * 0.5 + 0.35 + (now - s.t0) / 1000 * 0.002) % 1);
+    gl.uniform2f(u.uMouse, s.mouse[0], s.mouse[1]);
     gl.uniform1f(u.uMouseOn, s.mouseOn ? 1 : 0);
-    gl.uniform1f(u.uHover, s.hover);
-    gl.uniform1f(u.uBandH, s.bandH);
     gl.uniform1f(u.uNarrow, innerWidth < 700 ? 1 : 0);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
@@ -376,7 +288,7 @@
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
 
     const uniforms = {};
-    ['uTime', 'uRes', 'uScroll', 'uMouse', 'uMouseOn', 'uHover', 'uBandH', 'uNarrow', 'uMask']
+    ['uTime', 'uRes', 'uExposure', 'uSweep', 'uMouse', 'uMouseOn', 'uNarrow', 'uMask']
       .forEach(n => { uniforms[n] = gl.getUniformLocation(prog, n); });
 
     const vao = gl.createVertexArray();
@@ -396,14 +308,13 @@
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.blendFunc(gl.ONE, gl.ONE);   // light on film adds up
 
     const maskCanvas = document.createElement('canvas');
     state = {
       gl, canvas, prog, uniforms, vao, inst, maskTex, maskCanvas,
       maskCtx: maskCanvas.getContext('2d'),
-      entries: collectEntries(),
-      mouse: [-9999, -9999], mouseOn: false, hover: -1,
+      mouse: [-9999, -9999], mouseOn: false,
       t0: performance.now(), frames: [], frozen: false, last: 0
     };
     const s = state;
@@ -414,16 +325,11 @@
     s.onLeave = () => { s.mouseOn = false; };
     s.onResize = () => { resize(s); upload(s); };
     s.onVisible = () => { if (!document.hidden && !s.frozen) { s.last = 0; s.raf = requestAnimationFrame(frame); } };
-    s.onOver = e => {
-      const li = e.target.closest && e.target.closest('ul.items > li');
-      s.hover = li ? s.entries.findIndex(en => en.li === li) : -1;
-    };
     addEventListener('pointermove', s.onMove, { passive: true });
     addEventListener('pointerdown', s.onMove, { passive: true });
     document.addEventListener('pointerleave', s.onLeave);
     addEventListener('resize', s.onResize);
     document.addEventListener('visibilitychange', s.onVisible);
-    document.addEventListener('pointerover', s.onOver);
     // Fonts shift the line boxes, so rebuild once they settle
     if (document.fonts) document.fonts.ready.then(() => state === s && upload(s));
 
@@ -439,7 +345,6 @@
     document.removeEventListener('pointerleave', s.onLeave);
     removeEventListener('resize', s.onResize);
     document.removeEventListener('visibilitychange', s.onVisible);
-    document.removeEventListener('pointerover', s.onOver);
     const ext = s.gl.getExtension('WEBGL_lose_context');
     if (ext) ext.loseContext();
     s.canvas.remove();
