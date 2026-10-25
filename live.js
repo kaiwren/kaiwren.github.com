@@ -8,6 +8,8 @@
 
   const DEG = Math.PI / 180;
   const HORIZON = 0.64;          // fraction of viewport height
+  const EYE = 1.7;               // camera height, metres
+  const COLUMN = [12, -32, 3.2, 170];        // x, z, radius, height (a hundred men tall)
 
   // The road: a great circle that sets on the horizon a little right of ahead and
   // climbs over the top-left of the frame. phi is the angle along it from the
@@ -36,6 +38,11 @@
     vec2 i = floor(p), f = fract(p);
     vec2 w = f * f * (3.0 - 2.0 * f);
     return mix(mix(hash(i), hash(i + vec2(1, 0)), w.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), w.x), w.y);
+  }
+  float fbm(vec2 p) {
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.03 + vec2(1.7, 9.2); a *= 0.5; }
+    return v;
   }`;
 
   // uL points toward each sun; uE is what reaches the ground (colour x power x what
@@ -75,7 +82,10 @@
   uniform float uF;
   uniform float uHy;
   out vec4 o;
+  ${NOISE}
   ${LIGHT}
+  const vec3 EYE = vec3(0.0, ${EYE.toFixed(2)}, 0.0);
+  const vec4 COL = vec4(${COLUMN.map(n => n.toFixed(2)).join(', ')});
 
   vec3 discs(vec3 d) {
     vec3 col = vec3(0.0);
@@ -94,12 +104,70 @@
     return col;
   }
 
+  vec3 lit(vec3 p, vec3 n, vec3 albedo, float gloss, vec3 d) {
+    vec3 diff = vec3(0.0), spec = vec3(0.0);
+    for (int i = 0; i < 7; i++) {
+      float nl = dot(n, uL[i]);
+      if (nl <= 0.0) continue;
+      diff += uE[i] * nl;
+      vec3 h = normalize(uL[i] - d);
+      spec += uE[i] * pow(max(dot(n, h), 0.0), 30.0 + gloss * 300.0) * gloss;
+    }
+    vec3 col = albedo * (diff + uAmb) + spec;
+    // worn, polished stone catches a sheen of the sky at grazing angles
+    float fres = 0.03 + 0.97 * pow(1.0 - max(dot(-d, n), 0.0), 5.0);
+    return col + sky(reflect(d, n)) * fres * gloss;
+  }
+
+  // White marble in slabs laid in rings around the column. Each slab is cut from a
+  // different block, so its veins don't line up with its neighbours'; dirt sits in
+  // the joints; cracks where roots heaved the floor
+  vec3 marble(vec2 xz, out float gloss) {
+    vec2 q = xz - COL.xy;
+    float r = length(q);
+    float ring = r / 3.6;
+    float n = max(6.0, floor(6.2832 * (floor(ring) + 0.5) * 3.6 / 3.2));
+    float ang = (atan(q.y, q.x) / 6.2832 + 0.5) * n + hash(vec2(floor(ring), 3.0));
+    vec2 slab = vec2(floor(ring), floor(ang));
+    float h = hash(slab);
+    float ca = cos(h * 6.28), sa = sin(h * 6.28);
+    vec2 v = mat2(ca, sa, -sa, ca) * xz + h * 97.0;
+    float aa = fwidth(xz.x) + fwidth(xz.y);
+    float warp = fbm(v * 0.25);
+    float vein1 = 1.0 - smoothstep(0.0, 0.018 + aa * 0.08, abs(fbm(v * vec2(0.12, 0.05) + warp * 1.6) - 0.5));
+    float vein2 = 1.0 - smoothstep(0.0, 0.01 + aa * 0.12, abs(fbm(v * 0.33 + warp * 2.3 + 5.0) - 0.5));
+    float cloud = fbm(v * 0.6);
+    vec3 col = vec3(0.87, 0.86, 0.83) * (0.94 + 0.08 * cloud) * (0.95 + 0.07 * h);
+    col = mix(col, vec3(0.42, 0.43, 0.46), vein1 * 0.6);
+    col = mix(col, vec3(0.6, 0.6, 0.62), vein2 * 0.35 * smoothstep(0.4, 0.6, fbm(v * 0.08)));
+    float wr = fwidth(ring), wa = fwidth(ang);
+    float jr = abs(fract(ring + 0.5) - 0.5), ja = abs(fract(ang + 0.5) - 0.5);
+    float joint = max(1.0 - smoothstep(0.0, 0.008 + wr, jr), 1.0 - smoothstep(0.0, 0.007 + wa, ja));
+    // grime collects along the joints and fades a hand's width into the slab
+    float grime = max(1.0 - smoothstep(0.0, 0.08 + wr, jr), 1.0 - smoothstep(0.0, 0.07 + wa, ja)) * fbm(xz * 1.3);
+    col *= 1.0 - 0.18 * grime;
+    float crack = (1.0 - smoothstep(0.0, 0.008 + aa * 0.15, abs(fbm(xz * 0.21 + 3.0) - 0.5))) * smoothstep(0.48, 0.66, fbm(xz * 0.04 + 9.0));
+    col *= 1.0 - 0.6 * max(joint * 0.7, crack);
+    // polish survives where feet didn't wear it away
+    gloss = (0.2 + 0.35 * fbm(xz * 0.07 + 2.0)) * (1.0 - joint) * (1.0 - crack) * (1.0 - 0.5 * grime);
+    return col;
+  }
+
   void main() {
     vec2 px = vec2(vUv.x * uRes.x, (1.0 - vUv.y) * uRes.y);
     vec3 d = normalize(vec3((px.x - uRes.x * 0.5) / uF, (uHy - px.y) / uF, -1.0));
     vec3 col;
-    if (d.y > 0.0) col = sky(d) + discs(d);
-    else col = uAmb * 0.6;   // placeholder ground
+    if (d.y >= 0.0) {
+      col = sky(d) + discs(d);
+    } else {
+      float t = -EYE.y / d.y;
+      vec3 p = EYE + t * d;
+      float g;
+      vec3 alb = marble(p.xz, g);
+      col = lit(p, vec3(0.0, 1.0, 0.0), alb, g, d);
+      // haze: distance fades into the sky behind
+      col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-t / 1600.0));
+    }
     o = vec4(col, 1.0);
   }`;
 
