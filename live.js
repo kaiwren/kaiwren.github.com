@@ -292,6 +292,13 @@
       for (int i = 0; i < 7; i++) lightIn += uE[i] * max(dot(n, uL[i]) * 0.5 + 0.5, 0.0);
     }
     vec3 col = a1.rgb * lightIn;
+    if (int(a2.x) == 3) {
+      // a leaf is thin: with a sun behind it, light comes through, greener and brighter
+      vec3 view = normalize(v);
+      vec3 through = vec3(0.0);
+      for (int i = 0; i < 7; i++) through += uE[i] * pow(max(dot(view, uL[i]), 0.0), 4.0);
+      col += a1.rgb * vec3(1.1, 1.6, 0.7) * through * 0.9;
+    }
     vec3 d = normalize(v);
     col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-length(v) / 900.0));
     vCol = vec4(col, a1.a);
@@ -482,9 +489,26 @@
       }
       return p;
     };
+    // a cluster of living leaves at a twig's end; leaves deep inside the crown get
+    // less sky, so they're darker
+    const crownCentre = add(base, [0, height * 0.75, 0]);
+    const leaves = (at, size) => {
+      const count = 110;
+      for (let j = 0; j < count; j++) {
+        const n = norm([rand() - 0.5, rand() - 0.3, rand() - 0.5]);
+        const p = add(at, n, size * Math.cbrt(rand()));
+        const out = norm(add(p, crownCentre, -1));
+        // self-shadowing: leaves low in the crown or tucked behind others get far less light
+        const high = Math.max(0, Math.min(1, (p[1] - base[1]) / height - 0.35)) / 0.65;
+        const shade = (0.08 + 0.92 * Math.pow(rand(), 1.6)) * (0.35 + 0.65 * high);
+        const g = 0.7 + rand() * 0.6;
+        const alb = [0.06 * g, 0.17 * g, 0.04 * g + 0.01].map(c => c * shade);
+        push(p, height * 0.006 * (0.7 + rand() * 0.6), alb, 0.92, 3, 1.8 + rand(), rand() * Math.PI, norm(add(n, out)).concat(0));
+      }
+    };
     const branch = (from, dir, len, r, depth) => {
       const end = bough(from, dir, len, r, r * 0.6, 0.5);
-      if (depth === 0) return;
+      if (depth === 0) { leaves(end, height * 0.08); return; }
       const n = 2 + Math.floor(rand() * 2);
       for (let j = 0; j < n; j++) {
         const a = rand() * Math.PI * 2;
@@ -513,7 +537,7 @@
   function buildInstances() {
     const out = [];
     const push = (pos, size, alb, alpha, kind, aspect, angle, n) => out.push(...pos, size, ...alb, alpha, kind, rand(), aspect, angle, ...n);
-    tree(push, [COLUMN[0] - 9, 0, COLUMN[1] - 5], 22, 0.3);
+    tree(push, [COLUMN[0] - 8, 0, COLUMN[1] - 16], 20, 0.3);
     return new Float32Array(out);
   }
 
