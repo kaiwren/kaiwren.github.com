@@ -9,12 +9,14 @@
   const DEG = Math.PI / 180;
   const HORIZON = 0.64;          // fraction of viewport height
   const EYE = 1.7;               // camera height, metres
-  const COLUMN = [12, -32, 3.2, 170];        // x, z, radius, height (a hundred men tall)
+  const COLUMN = [6.5, -16, 0.55, 11];       // x, z, radius, height: a small memorial, seen whole
+  const PLAZA = 19;                           // radius of the marble plaza; jungle beyond
+  const PLINTH = [2.2, 0.25];                    // the raised circle of worn metal: radius, height
 
-  // The road: a great circle that sets on the horizon a little right of ahead and
+  // The road: a great circle that sets on the horizon right of the column and
   // climbs over the top-left of the frame. phi is the angle along it from the
   // setting point; the suns move toward smaller phi.
-  const SET_AZ = 12 * DEG, ROAD_TILT = 45 * DEG;
+  const SET_AZ = 30 * DEG, ROAD_TILT = 45 * DEG;
   const S = [Math.sin(SET_AZ), 0, -Math.cos(SET_AZ)];
   const B = [-Math.cos(SET_AZ) * Math.cos(ROAD_TILT), Math.sin(ROAD_TILT), -Math.sin(SET_AZ) * Math.cos(ROAD_TILT)];
 
@@ -23,12 +25,12 @@
   // off is the place on the road relative to the white sun, in degrees.
   const SUNS = [
     { off: 0, colour: [1.0, 0.93, 0.84], power: 7.0, radius: 2.1 },
-    { off: 28, colour: [1.0, 0.16, 0.06], power: 1.4, radius: 0.32 },
-    { off: -22, colour: [1.0, 0.6, 0.12], power: 1.3, radius: 0.28 },
-    { off: 52, colour: [0.12, 0.3, 1.0], power: 1.6, radius: 0.36 },
-    { off: 80, colour: [0.15, 1.0, 0.3], power: 0.7, radius: 0.27 },
-    { off: -46, hues: [0.76, 0.93], power: 1.1, radius: 0.24 },
-    { off: 110, hues: [0.44, 0.56], power: 1.1, radius: 0.24 }
+    { off: 28, colour: [1.0, 0.16, 0.06], power: 0.55, radius: 0.32 },
+    { off: -22, colour: [1.0, 0.6, 0.12], power: 0.5, radius: 0.28 },
+    { off: 52, colour: [0.12, 0.3, 1.0], power: 0.65, radius: 0.36 },
+    { off: 80, colour: [0.15, 1.0, 0.3], power: 0.3, radius: 0.27 },
+    { off: -46, hues: [0.76, 0.93], power: 0.45, radius: 0.24 },
+    { off: 110, hues: [0.44, 0.56], power: 0.45, radius: 0.24 }
   ];
   const DUST = [0.95, 0.56, 0.31];
 
@@ -81,11 +83,27 @@
   uniform vec2 uRes;
   uniform float uF;
   uniform float uHy;
+  uniform vec3 uEye;
+  uniform float uYaw;
   out vec4 o;
   ${NOISE}
   ${LIGHT}
-  const vec3 EYE = vec3(0.0, ${EYE.toFixed(2)}, 0.0);
   const vec4 COL = vec4(${COLUMN.map(n => n.toFixed(2)).join(', ')});
+  const vec2 PLI = vec2(${PLINTH.map(n => n.toFixed(2)).join(', ')});
+  const float PLAZA = ${PLAZA.toFixed(1)};
+
+  // How much of sun L reaches p past the column. Its shadow is sharp near the
+  // base and softens with distance, by the sun's angular size.
+  float visibility(vec3 p, vec3 L, float rad) {
+    vec2 lxz = L.xz;
+    float l2 = dot(lxz, lxz);
+    if (l2 < 1e-6) return 1.0;
+    float s = dot(COL.xy - p.xz, lxz) / l2;
+    if (s <= 0.0 || p.y + s * L.y > COL.w) return 1.0;
+    float dist = length(p.xz + s * lxz - COL.xy);
+    float pen = s * sqrt(l2 + L.y * L.y) * rad * 0.0174533 + 0.02;
+    return smoothstep(COL.z - pen, COL.z + pen, dist);
+  }
 
   vec3 discs(vec3 d) {
     vec3 col = vec3(0.0);
@@ -109,9 +127,10 @@
     for (int i = 0; i < 7; i++) {
       float nl = dot(n, uL[i]);
       if (nl <= 0.0) continue;
-      diff += uE[i] * nl;
+      float v = visibility(p + n * 0.01, uL[i], uRad[i]);
+      diff += uE[i] * nl * v;
       vec3 h = normalize(uL[i] - d);
-      spec += uE[i] * pow(max(dot(n, h), 0.0), 30.0 + gloss * 300.0) * gloss;
+      spec += uE[i] * v * pow(max(dot(n, h), 0.0), 30.0 + gloss * 300.0) * gloss;
     }
     vec3 col = albedo * (diff + uAmb) + spec;
     // worn, polished stone catches a sheen of the sky at grazing angles
@@ -123,6 +142,7 @@
   // different block, so its veins don't line up with its neighbours'; dirt sits in
   // the joints; cracks where roots heaved the floor
   vec3 marble(vec2 xz, out float gloss) {
+    xz = COL.xy + (xz - COL.xy) * 3.3;    // pattern is authored at 3.6m slabs; these are ~1.1m
     vec2 q = xz - COL.xy;
     float r = length(q);
     float ring = r / 3.6;
@@ -156,17 +176,58 @@
   void main() {
     vec2 px = vec2(vUv.x * uRes.x, (1.0 - vUv.y) * uRes.y);
     vec3 d = normalize(vec3((px.x - uRes.x * 0.5) / uF, (uHy - px.y) / uF, -1.0));
+    d.xz = mat2(cos(uYaw), sin(uYaw), -sin(uYaw), cos(uYaw)) * d.xz;
+    vec3 EYE = uEye;
+    // trace: floor, plinth, column
+    float t = 1e9;
+    int mat = 0;
+    vec3 n = vec3(0.0, 1.0, 0.0);
+    if (d.y < 0.0) { t = -EYE.y / d.y; mat = 1; }
+    vec2 q = EYE.xz - COL.xy, D = d.xz;
+    float A = dot(D, D), Bq = dot(q, D);
+    if (d.y < 0.0) {
+      float tp = (PLI.y - EYE.y) / d.y;
+      if (length(EYE.xz + tp * D - COL.xy) < PLI.x) { t = tp; mat = 3; }
+    }
+    float disc = Bq * Bq - A * (dot(q, q) - PLI.x * PLI.x);
+    if (disc > 0.0) {
+      float tc = (-Bq - sqrt(disc)) / A;
+      float y = EYE.y + tc * d.y;
+      if (tc > 0.0 && tc < t && y > 0.0 && y < PLI.y) { t = tc; mat = 3; vec2 nn = normalize(q + tc * D); n = vec3(nn.x, 0.0, nn.y); }
+    }
+    disc = Bq * Bq - A * (dot(q, q) - COL.z * COL.z);
+    if (disc > 0.0) {
+      float tc = (-Bq - sqrt(disc)) / A;
+      float y = EYE.y + tc * d.y;
+      if (tc > 0.0 && tc < t && y > 0.0 && y < COL.w) { t = tc; mat = 2; vec2 nn = normalize(q + tc * D); n = vec3(nn.x, 0.0, nn.y); }
+    }
+
     vec3 col;
-    if (d.y >= 0.0) {
+    if (mat == 0) {
       col = sky(d) + discs(d);
     } else {
-      float t = -EYE.y / d.y;
       vec3 p = EYE + t * d;
-      float g;
-      vec3 alb = marble(p.xz, g);
-      col = lit(p, vec3(0.0, 1.0, 0.0), alb, g, d);
+      if (mat == 1) {
+        // the jungle has crept over the plaza's ragged edge
+        float r = length(p.xz - COL.xy);
+        float edge = PLAZA - 3.0 * fbm(p.xz * 0.2) - 1.5 * fbm(p.xz * 1.1);
+        float g;
+        vec3 alb = marble(p.xz, g);
+        float wild = smoothstep(edge - 0.3, edge + 0.3, r);
+        vec3 floorAlb = vec3(0.1, 0.11, 0.1) * (0.6 + 0.8 * fbm(p.xz * 2.7));
+        col = lit(p, n, mix(alb, floorAlb, wild), g * (1.0 - wild), d);
+      } else if (mat == 2) {
+        // snow-white stone, weathered in faint vertical streaks
+        float a = atan(n.z, n.x);
+        float w = fbm(vec2(a * 9.0, p.y * 0.03)) * 0.7 + fbm(vec2(a * 40.0, p.y * 0.2)) * 0.3;
+        col = lit(p, n, vec3(0.92, 0.91, 0.89) * (0.9 + 0.12 * w), 0.12, d);
+      } else {
+        // metal worn smooth by generations of pilgrims' feet
+        float w = fbm(p.xz * 0.8);
+        col = lit(p, n, vec3(0.36, 0.33, 0.29) * (0.75 + 0.4 * w), 0.6 + 0.3 * w, d);
+      }
       // haze: distance fades into the sky behind
-      col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-t / 1600.0));
+      col = mix(col, sky(normalize(vec3(d.x, 0.01, d.z))), 1.0 - exp(-t / 900.0));
     }
     o = vec4(col, 1.0);
   }`;
@@ -312,6 +373,12 @@
     s.canvas.height = Math.round(innerHeight * s.dpr);
     s.f = Math.max(innerWidth, innerHeight * 1.25) / 2;
     s.hy = innerHeight * HORIZON;
+    // Frame for any screen, phones first: turn so the suns' setting point sits at
+    // three quarters of the width, then step sideways so the column stands left of it
+    s.yaw = SET_AZ - Math.atan(0.25 * innerWidth / s.f);
+    const colAz = s.yaw + Math.atan((0.6 - 0.5) * innerWidth / s.f);
+    const dist = Math.hypot(COLUMN[0], COLUMN[1]);
+    s.eye = [COLUMN[0] - Math.sin(colAz) * dist, EYE, COLUMN[1] + Math.cos(colAz) * dist];
     // the scene renders a little below screen resolution
     const k = s.scale * Math.min(s.dpr, 1.25);
     s.w = Math.round(innerWidth * k);
@@ -356,6 +423,8 @@
     gl.uniform2f(u.uRes, innerWidth, innerHeight);
     gl.uniform1f(u.uF, s.f);
     gl.uniform1f(u.uHy, s.hy);
+    gl.uniform3fv(u.uEye, s.eye);
+    gl.uniform1f(u.uYaw, s.yaw);
     setLight(gl, u, sky);
     gl.bindVertexArray(s.quadVao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
