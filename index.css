@@ -86,9 +86,13 @@
 
 .live-canvas {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
-  height: 100%;
+  /* Paint the largest viewport even while a mobile toolbar covers part of it.
+     Its animation must not uncover pixels outside the WebGL drawing surface. */
+  height: 100vh;
+  height: 100lvh;
   z-index: 0;
   pointer-events: none;
 }

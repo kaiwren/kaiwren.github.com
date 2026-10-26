@@ -453,7 +453,7 @@
 
   function drawMask(s) {
     const c = s.maskCanvas, ctx = s.maskCtx, k = 0.20;
-    const w = Math.ceil(innerWidth * k), h = Math.ceil(innerHeight * k);
+    const w = Math.ceil(s.width * k), h = Math.ceil(s.height * k);
     if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
     ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
@@ -461,7 +461,7 @@
     // Radial gradients work consistently on mobile canvas implementations.
     for (const [x, y, width, height] of s.rects) {
       const top = y - scrollY;
-      if (top + height < -90 || top > innerHeight + 90) continue;
+      if (top + height < -90 || top > s.height + 90) continue;
       ctx.save();
       ctx.translate((x + width / 2) * k, (top + height / 2) * k);
       ctx.scale((width / 2 + 45) * k, (height / 2 + 38) * k);
@@ -511,13 +511,25 @@
   }
 
   function layout(s) {
-    // Resolve thin stone edges and foreground grains at up to 2x density.
-    // Adaptive quality lowers this on slower devices before falling back.
+    // CSS uses the stable large viewport. Measure that surface rather than
+    // innerHeight, which changes while the phone's browser toolbars animate.
+    const bounds = s.canvas.getBoundingClientRect();
+    const width = Math.max(1, Math.round(bounds.width));
+    const height = Math.max(1, Math.round(bounds.height));
     const dpr = Math.min(devicePixelRatio || 1, 2) * s.quality;
-    s.canvas.width = Math.max(1, Math.round(innerWidth * dpr));
-    s.canvas.height = Math.max(1, Math.round(innerHeight * dpr));
-    s.gl.viewport(0, 0, s.canvas.width, s.canvas.height);
+    const bufferWidth = Math.max(1, Math.round(width * dpr));
+    const bufferHeight = Math.max(1, Math.round(height * dpr));
+    const changed = s.width !== width || s.height !== height ||
+      s.canvas.width !== bufferWidth || s.canvas.height !== bufferHeight;
+    if (!changed) return false;
+    s.width = width; s.height = height;
+    // Updating either attribute can clear WebGL. Only write changed dimensions,
+    // and have the caller draw the new buffer in the same animation frame.
+    if (s.canvas.width !== bufferWidth) s.canvas.width = bufferWidth;
+    if (s.canvas.height !== bufferHeight) s.canvas.height = bufferHeight;
+    s.gl.viewport(0, 0, bufferWidth, bufferHeight);
     s.rects = textRects(); s.maskDirty = true;
+    return true;
   }
 
   function lights(s) {
@@ -557,17 +569,31 @@
     s.lens += ((s.pointerOn ? 1 : 0) - s.lens) * (1 - Math.exp(-dt / 0.13));
     s.mouse[0] += (s.targetMouse[0] - s.mouse[0]) * (1 - Math.exp(-dt / 0.045));
     s.mouse[1] += (s.targetMouse[1] - s.mouse[1]) * (1 - Math.exp(-dt / 0.045));
+    // Allow shader compilation to settle, then lower resolution before giving up.
+    // Background tabs are excluded and the decision expires after one day.
+    if (++s.warmup > 90 && elapsed > 0) {
+      s.frames.push(elapsed);
+      if (s.frames.length === 120) {
+        const median = s.frames.slice().sort((a, b) => a - b)[60];
+        if (median > 38) {
+          if (s.quality > 0.60) { s.quality *= 0.75; layout(s); s.warmup = 0; }
+          else { saved(SLOW_KEY, String(Date.now())); fallback(); return; }
+        }
+        s.frames.length = 0;
+      }
+    }
+
     if (s.maskDirty || s.lastScroll !== scrollY) drawMask(s);
     s.materialReady += (s.materialTarget - s.materialReady) * ease;
     s.marbleReady += (s.marbleTarget - s.marbleReady) * ease;
     lights(s);
     const gl = s.gl, u = s.uniforms;
     gl.useProgram(s.program);
-    gl.uniform2f(u.uRes, innerWidth, innerHeight);
+    gl.uniform2f(u.uRes, s.width, s.height);
     gl.uniform2f(u.uBuffer, s.canvas.width, s.canvas.height);
     gl.uniform1f(u.uTime, s.time);
     gl.uniform1f(u.uDay, s.day);
-    gl.uniform1f(u.uPortrait, smooth(1.10, 0.65, innerWidth / innerHeight));
+    gl.uniform1f(u.uPortrait, smooth(1.10, 0.65, s.width / s.height));
     gl.uniform3fv(u.uLight, s.directions);
     gl.uniform3fv(u.uEnergy, s.energy);
     gl.uniform1fv(u.uRadius, s.radii);
@@ -584,19 +610,6 @@
     gl.bindVertexArray(s.vao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    // Allow shader compilation to settle, then lower resolution before giving up.
-    // Background tabs are excluded and the decision expires after one day.
-    if (++s.warmup > 90 && elapsed > 0) {
-      s.frames.push(elapsed);
-      if (s.frames.length === 120) {
-        const median = s.frames.slice().sort((a, b) => a - b)[60];
-        if (median > 38) {
-          if (s.quality > 0.60) { s.quality *= 0.75; layout(s); s.warmup = 0; }
-          else { saved(SLOW_KEY, String(Date.now())); fallback(); return; }
-        }
-        s.frames.length = 0;
-      }
-    }
     s.raf = requestAnimationFrame(frame);
   }
 
@@ -658,7 +671,14 @@
         s.targetMouse = [e.clientX, e.clientY]; s.pointerOn = true;
       };
       s.onLeave = () => { s.pointerOn = false; };
-      s.onResize = () => layout(s);
+      s.onResize = () => {
+        if (!layout(s)) return;
+        // Real resizes (rotation, window size, display density) must never leave
+        // a cleared buffer waiting for the browser's next animation callback.
+        cancelAnimationFrame(s.raf);
+        s.last = 0; s.warmup = 0; s.frames.length = 0;
+        frame(performance.now());
+      };
       s.onVisibility = () => {
         cancelAnimationFrame(s.raf); s.last = 0; s.warmup = 0; s.frames.length = 0;
         if (!document.hidden) s.raf = requestAnimationFrame(frame);
