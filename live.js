@@ -6,13 +6,13 @@
 
   const SLOW_KEY = 'liveSlow:seven-suns-2';
   const SUNS = [
-    { offset: 0, colour: [1, 0.92, 0.80], power: 1.35, radius: 0.019 },
-    { offset: 0.38, colour: [1, 0.25, 0.10], power: 0.62, radius: 0.009 },
-    { offset: -0.32, colour: [1, 0.64, 0.20], power: 0.66, radius: 0.010 },
-    { offset: 0.78, colour: [0.27, 0.49, 1], power: 0.72, radius: 0.011 },
-    { offset: -0.76, colour: [0.35, 0.78, 0.48], power: 0.43, radius: 0.007 },
-    { offset: 1.16, colour: [0.68, 0.42, 0.92], power: 0.47, radius: 0.008 },
-    { offset: -1.12, colour: [0.25, 0.72, 0.76], power: 0.44, radius: 0.008 }
+    { offset: 0, declination: 0, colour: [1, 0.92, 0.80], power: 1.35, radius: 0.019 },
+    { offset: 0.38, declination: -0.095, colour: [1, 0.25, 0.10], power: 0.62, radius: 0.009 },
+    { offset: -0.32, declination: 0.105, colour: [1, 0.64, 0.20], power: 0.66, radius: 0.010 },
+    { offset: 0.78, declination: 0.075, colour: [0.27, 0.49, 1], power: 0.72, radius: 0.011 },
+    { offset: -0.76, declination: -0.045, colour: [0.35, 0.78, 0.48], power: 0.43, radius: 0.007 },
+    { offset: 1.16, declination: -0.13, colour: [0.68, 0.42, 0.92], power: 0.47, radius: 0.008 },
+    { offset: -1.12, declination: 0.16, colour: [0.25, 0.72, 0.76], power: 0.44, radius: 0.008 }
   ];
 
   const VS = `#version 300 es
@@ -75,26 +75,44 @@
   vec3 atmosphere(vec3 d, bool discs) {
     float az = atan(d.x, -d.z);
     float el = asin(clamp(d.y, -1.0, 1.0));
-    float weather = uTime * 0.014 + uDay * 1.7;
-    vec2 p = vec2(az * 2.1 * mix(1.0, 0.43, uPortrait), el * 3.7);
-    // Wind shears two separate layers. Their light is scattered from the actual
-    // sun directions, rather than painting coloured blobs onto a noise overlay.
-    float warp = fbm(p * 0.65 + vec2(weather * 0.18, 2.0));
-    float low = fbm(p * vec2(1.4, 2.7) + vec2(weather, warp * 1.3));
-    float high = fbm(p * vec2(2.1, 6.0) + vec2(-weather * 0.43, warp * 2.1 + 7.0));
-    float cloud = smoothstep(0.30, 0.78, low * 0.72 + high * 0.28);
-    float filaments = smoothstep(0.37, 0.75, high) * 0.32;
-    float horizon = exp(-max(d.y, 0.0) * 7.0);
-    vec3 col = mix(vec3(0.009, 0.014, 0.020), vec3(0.038, 0.030, 0.025), horizon);
-    col += vec3(0.014, 0.018, 0.021) * cloud;
+    float weather = uTime * 0.010 + uDay * 0.65;
+    // Two cloud decks in world space: the long sightline near the horizon
+    // compresses distant structure, while nearby filaments pass overhead.
+    // Portrait uses the same layers with its established panoramic framing.
+    vec2 horizonPoint = d.xz / max(d.y + 0.20, 0.08);
+    horizonPoint.x *= mix(1.0, 0.54, uPortrait);
+    vec2 p = horizonPoint * 1.45 + vec2(weather, weather * 0.24);
+    float warp = fbm(p * 0.32 + 8.2);
+    float body = fbm(p * vec2(1.0, 1.55) + warp * 1.7);
+    float detail = fbm(p * 4.2 - vec2(weather * 0.22, 1.7));
+    float cloud = smoothstep(0.39, 0.67, body - (1.0 - detail) * 0.12);
+    float thin = fbm(horizonPoint * vec2(1.8, 5.5) + vec2(-weather * 0.38, 7.4));
+    float filaments = smoothstep(0.46, 0.74, thin) * 0.32;
+    float depth = 1.0 / (max(d.y, 0.0) + 0.25);
+    float optical = (cloud * 0.68 + filaments * 0.25) * min(depth, 2.4);
+    float transmission = exp(-optical);
+    float horizon = exp(-max(d.y, 0.0) * 5.0);
+    vec3 col = mix(vec3(0.006, 0.012, 0.021), vec3(0.036, 0.037, 0.040), horizon);
+    // Density gradients give the cloud a lit face and a shaded underside.
+    float ex = 0.12;
+    vec2 grad = vec2(noise(p + vec2(ex, 0)) - noise(p - vec2(ex, 0)),
+                     noise(p + vec2(0, ex)) - noise(p - vec2(0, ex)));
+    vec3 cloudNormal = normalize(vec3(-grad.x * 2.0, -0.34, -grad.y * 2.0));
+    vec3 cloudLight = vec3(0.014, 0.019, 0.028);
     for (int i = 0; i < 7; i++) {
       float c = clamp(dot(d, uLight[i]), -1.0, 1.0);
       float angle = length(d - uLight[i]);
-      float broad = 0.012 / pow(1.04 - c, 0.85);
-      float forward = exp(-angle * 5.5) * 0.23;
-      // A cloud has an illuminated edge and a denser, absorbing interior.
-      float edge = cloud * (0.8 + filaments * 3.0);
-      col += uEnergy[i] * (broad * (0.16 + edge * 0.40) + forward * (0.10 + edge * 0.28));
+      // Forward scattering belongs to the air, and is strongest along a sun's
+      // direction. The cloud itself mostly scatters a quieter, broader light.
+      float mieBase = 1.0 + 0.72 * 0.72 - 2.0 * 0.72 * c;
+      float mie = (1.0 - 0.72 * 0.72) / pow(mieBase, 1.5);
+      float broad = 0.010 * mie * (0.38 + horizon * 0.18);
+      float aureole = exp(-angle * 12.0) * 0.055;
+      col += uEnergy[i] * (broad + aureole);
+      float face = dot(cloudNormal, uLight[i]) * 0.5 + 0.5;
+      float silver = pow(max(c, 0.0), 12.0) * (0.12 + filaments);
+      float shade = 0.38 + face * 0.62;
+      cloudLight += uEnergy[i] * (shade * 0.025 + silver * 0.11);
       if (discs) {
         // Use projected pixel distance for circular suns in either camera frame.
         float sunAz = atan(uLight[i].x, -uLight[i].z);
@@ -110,12 +128,13 @@
         float disc = 1.0 - smoothstep(radius - aa, radius + aa, r);
         float limb = sqrt(max(0.0, 1.0 - pow(r / max(radius, 0.1), 2.0)));
         float envelope = exp(-r * r / max(1.0, radius * radius * 5.0));
-        float transmission = exp(-cloud * 0.75);
+        float sunTransmission = exp(-optical * 0.8);
         vec3 core = mix(normalize(uEnergy[i] + 0.001), vec3(1.0, 0.97, 0.90), i == 0 ? 0.88 : 0.48);
         float risen = smoothstep(-0.035, 0.035, uLight[i].y);
-        col += (core * disc * (0.42 + limb * 2.20) + uEnergy[i] * (envelope * 0.30 + exp(-r / max(radius, 1.0)) * 0.18)) * transmission * risen;
+        col += (core * disc * (0.42 + limb * 2.20) + uEnergy[i] * (envelope * 0.30 + exp(-r / max(radius, 1.0)) * 0.18)) * sunTransmission * risen;
       }
     }
+    col = col * transmission + cloudLight * (1.0 - transmission);
     // Sparse distant stars are part of the sky. Lensing samples them and the
     // haze together; there are no independent particles to shove around.
     vec2 st = vec2(az, el) * 220.0;
@@ -220,7 +239,7 @@
       float az = atan(d.x, -d.z);
       float ridge = 0.003 + noise(vec2(az * 9.0, 4.0)) * noise(vec2(az * 3.0, 1.0)) * 0.022;
       float edge = max(fwidth(d.y), 0.001);
-      return mix(vec3(0.020, 0.023, 0.027), sky, smoothstep(ridge - edge, ridge + edge, d.y));
+      return mix(mix(sky, vec3(0.020, 0.023, 0.027), 0.50), sky, smoothstep(ridge - edge, ridge + edge, d.y));
     }
     if (stone) {
       // Refine the analytic hit against an actually rounded stone edge. This is
@@ -259,12 +278,13 @@
       vec4 normalMap = relief(uv, dx, dy);
       vec2 xy = (normalMap.rg * 2.0 - 1.0) * 0.72;
       n = normalize(vec3(xy.x, sqrt(max(0.05, 1.0 - dot(xy, xy))), -xy.y));
-      albedo = mix(vec3(0.16, 0.14, 0.11), pow(colourMap.rgb, vec3(2.2)) * 1.35, uMaterialReady);
+      albedo = mix(vec3(0.16, 0.14, 0.11), pow(colourMap.rgb, vec3(2.2)) * 1.05, uMaterialReady);
       ao = mix(1.0, 0.28 + 0.72 * normalMap.b, uMaterialReady);
       roughness = 0.78 + (1.0 - normalMap.b) * 0.16;
     }
     vec3 lit = stone ? vec3(0.43, 0.445, 0.46) : vec3(0.024, 0.030, 0.040);
     vec3 glint = vec3(0.0);
+    vec3 distantAir = vec3(0.026, 0.033, 0.043);
     float shadowDensity = 0.0;
     for (int i = 0; i < 7; i++) {
       float v = stone ? 1.0 : visibility(p, uLight[i], uRadius[i]);
@@ -273,6 +293,7 @@
       lit += uEnergy[i] * diffuse * v * 0.68;
       glint += uEnergy[i] * specular(n, -d, uLight[i], roughness) * v * (stone ? 1.0 : 0.35);
       shadowDensity += (1.0 - v) * min(length(uEnergy[i]), 1.0);
+      distantAir += uEnergy[i] * 0.009;
     }
     // Modest local contrast keeps the secondary shadows visible at page exposure.
     vec3 surface = (albedo * lit * ao + glint) * exp(-shadowDensity * 0.35);
@@ -282,7 +303,7 @@
     }
     // Air perspective joins land to sky instead of leaving a hard stage edge.
     float fog = 1.0 - exp(-t * 0.009);
-    surface = mix(surface, sky * 0.62, fog);
+    surface = mix(surface, distantAir, fog);
     float horizonFade = smoothstep(0.0, 0.024, -d.y);
     return stone ? surface : mix(sky, surface, horizonFade);
   }
@@ -415,13 +436,21 @@
   }
 
   function lights(s) {
-    // No modulo/wrap: reversing scroll retraces the same day without teleporting
-    // suns, resetting trails or snapping shadows back to a starting position.
-    const phase = -0.60 + s.day * 2.30 + Math.sin(s.time * 0.045) * 0.025;
+    // Over one planetary day the stellar configuration is nearly fixed. One
+    // rotation of the planet moves every direction around the same tilted spin
+    // axis; distinct declinations produce distinct tracks, rather than a parade.
+    // This is an authored sky configuration, not a seven-body orbital solution.
+    const axis = [0.10, 0.90, Math.sqrt(0.18)];
+    const rotation = -(s.day * 2.30 + Math.sin(s.time * 0.045) * 0.025);
+    const cosine = Math.cos(rotation), sine = Math.sin(rotation);
     SUNS.forEach((sun, i) => {
-      const az = phase + sun.offset;
-      const el = 0.10 + 0.50 * Math.cos(az);
-      const direction = [Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el)];
+      const az = -0.60 + sun.offset;
+      const el = 0.10 + 0.50 * Math.cos(az) + sun.declination;
+      const initial = [Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el)];
+      const dot = axis.reduce((sum, n, j) => sum + n * initial[j], 0);
+      const cross = [axis[1] * initial[2] - axis[2] * initial[1],
+        axis[2] * initial[0] - axis[0] * initial[2], axis[0] * initial[1] - axis[1] * initial[0]];
+      const direction = initial.map((n, j) => n * cosine + cross[j] * sine + axis[j] * dot * (1 - cosine));
       s.directions.set(direction, i * 3);
       s.radii[i] = sun.radius;
       const air = 1 / (Math.max(direction[1], 0) + 0.15);
