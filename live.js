@@ -165,6 +165,40 @@
   }
 
 
+  const float PLAZA_RADIUS = 4.2;
+
+  // A central stone, three concentric courses of wedge-cut slabs, then a narrow
+  // perimeter course. Stagger the joints instead of drawing a rectangular tile
+  // grid over a circle. All dimensions below are metres in the existing world.
+  void paving(vec2 q, out vec2 uv, out float seed, out float edge) {
+    float r = length(q);
+    float centre = 0.55, rim = 0.25;
+    float width = (PLAZA_RADIUS - rim - centre) / 3.0;
+    if (r < centre) {
+      uv = q / (centre * 2.0) + 0.5;
+      seed = 0.41; edge = centre - r;
+      return;
+    }
+    float ring = floor((r - centre) / width);
+    float inner = centre + ring * width;
+    if (r > PLAZA_RADIUS - rim) { ring = 3.0; inner = PLAZA_RADIUS - rim; width = rim; }
+    float count = max(6.0, floor(2.0 * PI * (inner + width * 0.5) / 1.45 + 0.5));
+    float phase = (atan(q.y, q.x) / (2.0 * PI) + 0.5) * count + mod(ring, 2.0) * 0.5;
+    float across = fract(phase);
+    float angular = min(across, 1.0 - across) * (2.0 * PI * r / count);
+    edge = min(angular, min(r - inner, inner + width - r));
+    seed = hash(vec2(ring + 12.0, mod(floor(phase), count)));
+    uv = vec2(across, (r - inner) / width);
+  }
+
+  vec3 surfaceNormal(vec3 p, vec3 n, float height) {
+    vec3 px = dFdx(p), py = dFdy(p);
+    vec3 a = cross(py, n), b = cross(n, px);
+    float determinant = dot(px, a);
+    vec3 gradient = sign(determinant) * (dFdx(height) * a + dFdy(height) * b);
+    return normalize(abs(determinant) * n - gradient);
+  }
+
   // A four-metre photogrammetry tile. Trilinear mipmaps and anisotropic sampling
   // preserve gravel and cracks at grazing angles without distant shimmer.
   vec2 groundUV(vec3 p) { return p.xz * vec2(0.25, -0.25); }
@@ -285,24 +319,50 @@
       ao = mix(1.0, 0.28 + 0.72 * normalMap.b, uMaterialReady);
       roughness = 0.78 + (1.0 - normalMap.b) * 0.16;
 
-      // A flush marble plaza around the unchanged pillar. Its circular footprint
-      // stays at the edge of the scene; the surrounding landscape remains visible.
-      float radius = 7.0;
-      float distance = length(p.xz - col.xy);
-      float aa = max(0.025, fwidth(distance));
-      plaza = 1.0 - smoothstep(radius - aa, radius + aa, distance);
-      vec2 marbleUV = (p.xz - col.xy) * vec2(1.0, -1.0) / 1.5;
-      vec4 marble = textureGrad(uMarble, marbleUV, dx * (4.0 / 1.5), dy * (4.0 / 1.5));
+      vec2 local = p.xz - col.xy;
+      float distance = length(local);
+      float aa = max(0.012, fwidth(distance));
+      // Small chips at the exposed rim; the footprint remains a true circle.
+      float chips = noise(local * 24.0) * 0.024;
+      plaza = 1.0 - smoothstep(PLAZA_RADIUS - chips - aa, PLAZA_RADIUS - chips + aa, distance);
+
+      vec2 slabUV;
+      float slabSeed, edge;
+      paving(local, slabUV, slabSeed, edge);
+      float turn = floor(slabSeed * 4.0) * PI * 0.5;
+      mat2 rotation = mat2(cos(turn), -sin(turn), sin(turn), cos(turn));
+      vec2 marbleUV = clamp(rotation * (slabUV - 0.5) + 0.5, 0.015, 0.985);
+      // Explicit gradients do not mistake a change of slab for a huge footprint.
+      vec4 marble = textureGrad(uMarble, marbleUV, rotation * dx * 3.0, rotation * dy * 3.0);
       vec3 scan = pow(marble.rgb, vec3(2.2));
       float grey = dot(scan, vec3(0.2126, 0.7152, 0.0722));
-      // Neutralise the scan's warm indoor white balance so the missing light of
-      // each sun, rather than a yellow surface tint, determines its shadow colour.
       vec3 marbleColour = min(vec3(0.88), mix(vec3(grey), scan, 0.10) * 2.3);
       marbleColour = mix(vec3(0.74, 0.75, 0.74), marbleColour, uMarbleReady);
+      // Each quarried block has its own quiet ivory/pearl cast and mineral grain.
+      marbleColour *= 0.92 + slabSeed * 0.12;
+      marbleColour *= mix(vec3(0.98, 0.99, 1.0), vec3(1.0, 0.99, 0.965), slabSeed);
+
+      float edgeAA = max(0.004, fwidth(edge) * 0.65);
+      float joint = 1.0 - smoothstep(0.009 - edgeAA, 0.009 + edgeAA, edge);
+      float worn = 1.0 - smoothstep(0.015, 0.085, edge);
+      float patina = (1.0 - smoothstep(0.025, 0.19, edge)) * noise(local * 6.0);
+      // A few hairline fractures, with intact expanses between them. They belong
+      // to a particular slab, so they stop at the joints instead of crossing all.
+      float fracturePath = 0.25 + slabUV.x * 0.36 + noise(vec2(slabUV.x * 7.0, slabSeed * 31.0)) * 0.08;
+      float fractureDistance = abs(slabUV.y - fracturePath);
+      float crackAA = max(0.001, fwidth(fractureDistance) * 0.65);
+      float crack = (1.0 - smoothstep(0.001 - crackAA, 0.001 + crackAA, fractureDistance))
+                    * step(0.82, slabSeed) * (1.0 - smoothstep(0.45, 0.9, slabUV.x));
+      marbleColour *= 1.0 - patina * 0.16;
+      marbleColour = mix(marbleColour, vec3(0.14, 0.145, 0.14), joint * 0.72);
+      marbleColour *= 1.0 - crack * 0.34;
+      float height = -joint * 0.006 - worn * 0.003 - crack * 0.002 + slabSeed * 0.001;
+      vec3 marbleNormal = surfaceNormal(p, vec3(0, 1, 0), height);
       albedo = mix(albedo, marbleColour, plaza);
-      n = normalize(mix(n, vec3(0, 1, 0), plaza));
-      ao = mix(ao, 0.98, plaza);
-      roughness = mix(roughness, mix(0.40, clamp(marble.a * 0.55, 0.28, 0.48), uMarbleReady), plaza);
+      n = normalize(mix(n, marbleNormal, plaza));
+      ao = mix(ao, 0.98 - joint * 0.27 - crack * 0.10, plaza);
+      float polish = mix(0.36, clamp(marble.a * 0.50, 0.28, 0.42), uMarbleReady);
+      roughness = mix(roughness, polish + worn * 0.17 + patina * 0.10 + crack * 0.08, plaza);
     }
     vec3 lit = stone ? vec3(0.43, 0.445, 0.46) : vec3(0.024, 0.030, 0.040);
     vec3 glint = vec3(0.0);

@@ -13,6 +13,7 @@ https://polyhaven.com/a/marble_01
 License: CC0 1.0 Universal (public domain)
 https://creativecommons.org/publicdomain/zero/1.0/
 
-marble.webp: 1024 x 1024, RGB diffuse, alpha roughness (quantized to 4 bits).
-Derived from the 1K diffuse and roughness maps; 1.5-metre physical tile width.
+marble.webp: 512 x 512, RGB diffuse, alpha roughness (quantized to 4 bits).
+Derived from an individual slab cropped from the 1K diffuse and roughness maps.
+The shader arranges and rotates these stone faces into concentric circular courses.
 The shader neutralises the warm source white balance for the pale outdoor plaza.
