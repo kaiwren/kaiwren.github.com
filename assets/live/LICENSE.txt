@@ -7,3 +7,12 @@ Derived locally from the 2K diffuse, AO, OpenGL normal and displacement maps.
 Physical tile width: 4 metres.
 ground-colour.webp: RGB diffuse, 2048 x 2048.
 ground-relief.webp: RG tangent normal XY, B ambient occlusion, alpha height (quantized to 6 bits), 1024 x 1024.
+
+Marble 01 by Rob Tuytel / Poly Haven
+https://polyhaven.com/a/marble_01
+License: CC0 1.0 Universal (public domain)
+https://creativecommons.org/publicdomain/zero/1.0/
+
+marble.webp: 1024 x 1024, RGB diffuse, alpha roughness (quantized to 4 bits).
+Derived from the 1K diffuse and roughness maps; 1.5-metre physical tile width.
+The shader neutralises the warm source white balance for the pale outdoor plaza.

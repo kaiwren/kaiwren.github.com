@@ -36,6 +36,8 @@
   uniform sampler2D uMask;
   uniform sampler2D uGroundColour;
   uniform sampler2D uGroundRelief;
+  uniform sampler2D uMarble;
+  uniform float uMarbleReady;
   uniform float uMaterialReady;
   out vec4 o;
   const float PI = 3.14159265359;
@@ -261,6 +263,7 @@
     vec2 uv = groundUV(p), dx = dFdx(uv), dy = dFdy(uv);
     vec3 albedo;
     float ao = 1.0, roughness = 0.72;
+    float plaza = 0.0;
     if (stone) {
       // Subtle mineral variation at actual stone scale, with a softly rounded
       // arris catching the light at the top. The silhouette and dimensions stay put.
@@ -281,6 +284,25 @@
       albedo = mix(vec3(0.16, 0.14, 0.11), pow(colourMap.rgb, vec3(2.2)) * 1.05, uMaterialReady);
       ao = mix(1.0, 0.28 + 0.72 * normalMap.b, uMaterialReady);
       roughness = 0.78 + (1.0 - normalMap.b) * 0.16;
+
+      // A flush marble plaza around the unchanged pillar. Its circular footprint
+      // stays at the edge of the scene; the surrounding landscape remains visible.
+      float radius = 7.0;
+      float distance = length(p.xz - col.xy);
+      float aa = max(0.025, fwidth(distance));
+      plaza = 1.0 - smoothstep(radius - aa, radius + aa, distance);
+      vec2 marbleUV = (p.xz - col.xy) * vec2(1.0, -1.0) / 1.5;
+      vec4 marble = textureGrad(uMarble, marbleUV, dx * (4.0 / 1.5), dy * (4.0 / 1.5));
+      vec3 scan = pow(marble.rgb, vec3(2.2));
+      float grey = dot(scan, vec3(0.2126, 0.7152, 0.0722));
+      // Neutralise the scan's warm indoor white balance so the missing light of
+      // each sun, rather than a yellow surface tint, determines its shadow colour.
+      vec3 marbleColour = min(vec3(0.88), mix(vec3(grey), scan, 0.10) * 2.3);
+      marbleColour = mix(vec3(0.74, 0.75, 0.74), marbleColour, uMarbleReady);
+      albedo = mix(albedo, marbleColour, plaza);
+      n = normalize(mix(n, vec3(0, 1, 0), plaza));
+      ao = mix(ao, 0.98, plaza);
+      roughness = mix(roughness, mix(0.40, clamp(marble.a * 0.55, 0.28, 0.48), uMarbleReady), plaza);
     }
     vec3 lit = stone ? vec3(0.43, 0.445, 0.46) : vec3(0.024, 0.030, 0.040);
     vec3 glint = vec3(0.0);
@@ -291,12 +313,12 @@
       float diffuse = max(dot(n, uLight[i]), 0.0);
       if (stone) lit += uEnergy[i] * (dot(n, uLight[i]) * 0.5 + 0.5) * 0.08;
       lit += uEnergy[i] * diffuse * v * 0.68;
-      glint += uEnergy[i] * specular(n, -d, uLight[i], roughness) * v * (stone ? 1.0 : 0.35);
+      glint += uEnergy[i] * specular(n, -d, uLight[i], roughness) * v * (stone ? 1.0 : mix(0.35, 0.70, plaza));
       shadowDensity += (1.0 - v) * min(length(uEnergy[i]), 1.0);
       distantAir += uEnergy[i] * 0.009;
     }
     // Modest local contrast keeps the secondary shadows visible at page exposure.
-    vec3 surface = (albedo * lit * ao + glint) * exp(-shadowDensity * 0.35);
+    vec3 surface = (albedo * lit * ao + glint) * exp(-shadowDensity * mix(0.35, 0.10, plaza));
     if (!stone) {
       float contact = exp(-length(p.xz - col.xy) * 3.0);
       surface *= 1.0 - contact * 0.5;
@@ -418,8 +440,11 @@
       const ext = gl.getExtension('EXT_texture_filter_anisotropic');
       if (ext) gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT,
         Math.min(8, gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
-      s.materialsLoaded++;
-      if (s.materialsLoaded === 2) s.materialTarget = 1;
+      if (unit === 3) s.marbleTarget = 1;
+      else {
+        s.materialsLoaded++;
+        if (s.materialsLoaded === 2) s.materialTarget = 1;
+      }
     };
     image.src = url;
     return texture;
@@ -474,6 +499,7 @@
     s.mouse[1] += (s.targetMouse[1] - s.mouse[1]) * (1 - Math.exp(-dt / 0.045));
     if (s.maskDirty || s.lastScroll !== scrollY) drawMask(s);
     s.materialReady += (s.materialTarget - s.materialReady) * ease;
+    s.marbleReady += (s.marbleTarget - s.marbleReady) * ease;
     lights(s);
     const gl = s.gl, u = s.uniforms;
     gl.useProgram(s.program);
@@ -493,6 +519,8 @@
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, s.groundColour); gl.uniform1i(u.uGroundColour, 1);
     gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, s.groundRelief); gl.uniform1i(u.uGroundRelief, 2);
     gl.uniform1f(u.uMaterialReady, s.materialReady);
+    gl.activeTexture(gl.TEXTURE3); gl.bindTexture(gl.TEXTURE_2D, s.marble); gl.uniform1i(u.uMarble, 3);
+    gl.uniform1f(u.uMarbleReady, s.marbleReady);
     gl.bindVertexArray(s.vao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
@@ -544,7 +572,7 @@
       gl.deleteShader(vert); gl.deleteShader(frag);
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
       const uniforms = {};
-      ['uRes', 'uBuffer', 'uTime', 'uDay', 'uPortrait', 'uLight', 'uEnergy', 'uRadius', 'uMouse', 'uLens', 'uMask', 'uGroundColour', 'uGroundRelief', 'uMaterialReady'].forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
+      ['uRes', 'uBuffer', 'uTime', 'uDay', 'uPortrait', 'uLight', 'uEnergy', 'uRadius', 'uMouse', 'uLens', 'uMask', 'uGroundColour', 'uGroundRelief', 'uMaterialReady', 'uMarble', 'uMarbleReady'].forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
       const vao = gl.createVertexArray(), quad = gl.createBuffer();
       gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
@@ -556,12 +584,13 @@
       const s = state = {
         canvas, gl, program, uniforms, vao, quad, maskTex, maskCanvas, maskCtx: maskCanvas.getContext('2d'),
         directions: new Float32Array(21), energy: new Float32Array(21), radii: new Float32Array(7),
-        materialReady: 0, materialTarget: 0, materialsLoaded: 0,
+        materialReady: 0, materialTarget: 0, materialsLoaded: 0, marbleReady: 0, marbleTarget: 0,
         time: 0, day: progress(), dayOverride: null, quality: 1, last: 0, frames: [], warmup: 0,
         mouse: [innerWidth / 2, innerHeight / 2], targetMouse: [innerWidth / 2, innerHeight / 2], lens: 0, pointerOn: false
       };
       s.groundColour = materialTexture(s, 'assets/live/ground-colour.webp', 1, [128, 111, 85, 255]);
       s.groundRelief = materialTexture(s, 'assets/live/ground-relief.webp', 2, [128, 128, 220, 128]);
+      s.marble = materialTexture(s, 'assets/live/marble.webp', 3, [205, 205, 202, 180]);
       document.body.prepend(canvas); wrapDates(); layout(s);
       s.onMove = e => {
         if (e.pointerType !== 'mouse') return;
@@ -603,7 +632,7 @@
     if (s.motion) s.motion.removeEventListener('change', s.onMotion);
     s.canvas.removeEventListener('webglcontextlost', s.onLost);
     s.gl.deleteBuffer(s.quad); s.gl.deleteVertexArray(s.vao);
-    s.gl.deleteTexture(s.maskTex); s.gl.deleteTexture(s.groundColour); s.gl.deleteTexture(s.groundRelief); s.gl.deleteProgram(s.program);
+    s.gl.deleteTexture(s.maskTex); s.gl.deleteTexture(s.groundColour); s.gl.deleteTexture(s.groundRelief); s.gl.deleteTexture(s.marble); s.gl.deleteProgram(s.program);
     const ext = s.gl.getExtension('WEBGL_lose_context'); if (ext) ext.loseContext();
     s.canvas.remove();
   }
