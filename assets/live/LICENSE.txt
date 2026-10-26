@@ -1,0 +1,9 @@
+Dry Ground Rocks by Rob Tuytel / Poly Haven
+https://polyhaven.com/a/dry_ground_rocks
+License: CC0 1.0 Universal (public domain)
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Derived locally from the 2K diffuse, AO, OpenGL normal and displacement maps.
+Physical tile width: 4 metres.
+ground-colour.webp: RGB diffuse, 2048 x 2048.
+ground-relief.webp: RG tangent normal XY, B ambient occlusion, alpha height (quantized to 6 bits), 1024 x 1024.

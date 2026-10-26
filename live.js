@@ -1,6 +1,6 @@
 // Seven Suns: one celestial clock, seven lights, one quiet landscape.
 // Scroll turns the day. The sky, haze, stone and shadows share the same lights.
-// No scene assets, particle simulation, framework, or floating-point render target.
+// Locally hosted CC0 ground scan; no particle simulation or rendering framework.
 (function () {
   'use strict';
 
@@ -34,6 +34,9 @@
   uniform vec2 uMouse;
   uniform float uLens;
   uniform sampler2D uMask;
+  uniform sampler2D uGroundColour;
+  uniform sampler2D uGroundRelief;
+  uniform float uMaterialReady;
   out vec4 o;
   const float PI = 3.14159265359;
 
@@ -140,10 +143,60 @@
     return 1.0 - body * end;
   }
 
+
+  // A four-metre photogrammetry tile. Trilinear mipmaps and anisotropic sampling
+  // preserve gravel and cracks at grazing angles without distant shimmer.
+  vec2 groundUV(vec3 p) { return p.xz * vec2(0.25, -0.25); }
+  vec4 relief(vec2 uv, vec2 dx, vec2 dy) { return textureGrad(uGroundRelief, uv, dx, dy); }
+  vec2 surfaceUV(vec3 p, vec3 d, vec2 dx, vec2 dy) {
+    vec2 uv = groundUV(p);
+    float depth = 0.010 * exp(-length(p.xz) * 0.015) * uMaterialReady;
+    vec2 travel = d.xz * vec2(1.0, -1.0) / max(-d.y, 0.10) * depth;
+    vec2 at = uv - travel;
+    float layer = 0.0, stepSize = 1.0 / 10.0;
+    float height = 1.0 - relief(at, dx, dy).a;
+    vec2 previous = at;
+    float previousHeight = height;
+    for (int j = 0; j < 10; j++) {
+      if (layer >= height) break;
+      previous = at; previousHeight = height;
+      at += travel * stepSize;
+      layer += stepSize;
+      height = 1.0 - relief(at, dx, dy).a;
+    }
+    float after = height - layer;
+    float before = previousHeight - (layer - stepSize);
+    return mix(at, previous, clamp(after / min(after - before, -0.0001), 0.0, 1.0));
+  }
+
+  // A rough dielectric BRDF: each sun can catch the stone's curved edge, while
+  // the body remains matte. No painted highlight that stays fixed as day moves.
+  vec3 specular(vec3 n, vec3 view, vec3 light, float roughness) {
+    vec3 h = normalize(view + light);
+    float nv = max(dot(n, view), 0.001), nl = max(dot(n, light), 0.0);
+    float nh = max(dot(n, h), 0.0), vh = max(dot(view, h), 0.0);
+    float a = roughness * roughness, a2 = a * a;
+    float denominator = nh * nh * (a2 - 1.0) + 1.0;
+    float distribution = a2 / max(PI * denominator * denominator, 0.00001);
+    float k = (roughness + 1.0) * (roughness + 1.0) / 8.0;
+    float geometry = nv / (nv * (1.0 - k) + k) * nl / (nl * (1.0 - k) + k);
+    vec3 fresnel = vec3(0.035) + vec3(0.965) * pow(1.0 - vh, 5.0);
+    return fresnel * distribution * geometry / max(4.0 * nv, 0.001);
+  }
+
+  float pillarDistance(vec3 p) {
+    vec4 col = pillar();
+    float bevel = 0.018;
+    vec2 q = vec2(length(p.xz - col.xy) - (col.z - bevel),
+                  abs(p.y - col.w * 0.5) - (col.w * 0.5 - bevel));
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - bevel;
+  }
+
   vec3 landscape(vec3 d, vec3 sky) {
     vec3 eye = vec3(0.0, 1.35, 0.0);
     vec4 col = pillar();
     float t = d.y < -0.0001 ? -eye.y / d.y : 1e5;
+    float groundT = t;
     vec3 n = vec3(0, 1, 0);
     bool stone = false;
     vec2 q = eye.xz - col.xy;
@@ -169,35 +222,66 @@
       float edge = max(fwidth(d.y), 0.001);
       return mix(vec3(0.020, 0.023, 0.027), sky, smoothstep(ridge - edge, ridge + edge, d.y));
     }
-    vec3 p = eye + d * t;
-    float texture = fbm(p.xz * 2.4);
-    vec3 albedo = mix(vec3(0.14, 0.13, 0.115), vec3(0.18, 0.165, 0.14), texture);
-    if (stone) albedo = vec3(0.83, 0.82, 0.77) * (0.94 + 0.06 * noise(vec2(atan(n.z, n.x) * 13.0, p.y * 2.0)));
-    else {
-      // Weathered ground: fine, subdued strata, no plaza or decorative platform.
-      float strata = noise(vec2(p.x * 0.25 + noise(p.xz * 0.12), p.z * 2.8));
-      albedo *= 0.93 + 0.12 * strata;
-      float ex = 0.06;
-      vec2 grain = p.xz * 1.7;
-      n = normalize(vec3((noise(grain - vec2(ex, 0)) - noise(grain + vec2(ex, 0))) * 0.5,
-                         1.0, (noise(grain - vec2(0, ex)) - noise(grain + vec2(0, ex))) * 0.5));
+    if (stone) {
+      // Refine the analytic hit against an actually rounded stone edge. This is
+      // confined to the pillar's few pixels, rather than marching the whole sky.
+      for (int j = 0; j < 8; j++) {
+        float distance = pillarDistance(eye + d * t);
+        if (distance < 0.0005) break;
+        t += distance;
+      }
+      vec3 at = eye + d * t;
+      if (pillarDistance(at) > 0.003) { stone = false; t = groundT; }
+      vec2 e = vec2(0.002, 0.0);
+      n = normalize(vec3(pillarDistance(at + e.xyy) - pillarDistance(at - e.xyy),
+                         pillarDistance(at + e.yxy) - pillarDistance(at - e.yxy),
+                         pillarDistance(at + e.yyx) - pillarDistance(at - e.yyx)));
     }
-    vec3 lit = stone ? vec3(0.36, 0.37, 0.39) : vec3(0.027, 0.031, 0.038);
+    if (!stone) n = vec3(0, 1, 0);
+    vec3 p = eye + d * t;
+    vec2 uv = groundUV(p), dx = dFdx(uv), dy = dFdy(uv);
+    vec3 albedo;
+    float ao = 1.0, roughness = 0.72;
+    if (stone) {
+      // Subtle mineral variation at actual stone scale, with a softly rounded
+      // arris catching the light at the top. The silhouette and dimensions stay put.
+      float angle = atan(n.z, n.x);
+      vec2 mineral = vec2(angle * 4.0, p.y * 6.0);
+      float pores = noise(mineral * 15.0);
+      float vein = smoothstep(0.44, 0.51, fbm(mineral * vec2(0.7, 0.15)));
+      albedo = mix(vec3(0.76, 0.75, 0.71), vec3(0.88, 0.865, 0.82), vein * 0.45) * (0.97 + 0.03 * pores);
+      roughness = 0.34 + pores * 0.11;
+      // Small ground bounce warms the foot; the exposed top sees cooler sky.
+      ao = 0.78 + 0.22 * smoothstep(0.0, 0.22, p.y);
+    } else {
+      uv = surfaceUV(p, d, dx, dy);
+      vec4 colourMap = textureGrad(uGroundColour, uv, dx, dy);
+      vec4 normalMap = relief(uv, dx, dy);
+      vec2 xy = (normalMap.rg * 2.0 - 1.0) * 0.72;
+      n = normalize(vec3(xy.x, sqrt(max(0.05, 1.0 - dot(xy, xy))), -xy.y));
+      albedo = mix(vec3(0.16, 0.14, 0.11), pow(colourMap.rgb, vec3(2.2)) * 1.35, uMaterialReady);
+      ao = mix(1.0, 0.28 + 0.72 * normalMap.b, uMaterialReady);
+      roughness = 0.78 + (1.0 - normalMap.b) * 0.16;
+    }
+    vec3 lit = stone ? vec3(0.43, 0.445, 0.46) : vec3(0.024, 0.030, 0.040);
+    vec3 glint = vec3(0.0);
     float shadowDensity = 0.0;
     for (int i = 0; i < 7; i++) {
       float v = stone ? 1.0 : visibility(p, uLight[i], uRadius[i]);
-      float diffuse = stone ? max(0.0, dot(n, uLight[i]) * 0.65 + 0.35) : max(dot(n, uLight[i]), 0.0);
-      lit += uEnergy[i] * diffuse * v * 0.60;
+      float diffuse = max(dot(n, uLight[i]), 0.0);
+      if (stone) lit += uEnergy[i] * (dot(n, uLight[i]) * 0.5 + 0.5) * 0.08;
+      lit += uEnergy[i] * diffuse * v * 0.68;
+      glint += uEnergy[i] * specular(n, -d, uLight[i], roughness) * v * (stone ? 1.0 : 0.35);
       shadowDensity += (1.0 - v) * min(length(uEnergy[i]), 1.0);
     }
     // Modest local contrast keeps the secondary shadows visible at page exposure.
-    vec3 surface = albedo * lit * exp(-shadowDensity * 0.35);
+    vec3 surface = (albedo * lit * ao + glint) * exp(-shadowDensity * 0.35);
     if (!stone) {
       float contact = exp(-length(p.xz - col.xy) * 3.0);
       surface *= 1.0 - contact * 0.5;
     }
     // Air perspective joins land to sky instead of leaving a hard stage edge.
-    float fog = 1.0 - exp(-t * 0.014);
+    float fog = 1.0 - exp(-t * 0.009);
     surface = mix(surface, sky * 0.62, fog);
     float horizonFade = smoothstep(0.0, 0.024, -d.y);
     return stone ? surface : mix(sky, surface, horizonFade);
@@ -284,15 +368,46 @@
       ctx.restore();
     }
     const gl = s.gl;
+    gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
     s.maskDirty = false; s.lastScroll = scrollY;
   }
 
+
+  function materialTexture(s, url, unit, initial) {
+    const gl = s.gl, texture = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(initial));
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    const image = new Image();
+    image.onload = () => {
+      if (state !== s) return;
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      const ext = gl.getExtension('EXT_texture_filter_anisotropic');
+      if (ext) gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT,
+        Math.min(8, gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT)));
+      s.materialsLoaded++;
+      if (s.materialsLoaded === 2) s.materialTarget = 1;
+    };
+    image.src = url;
+    return texture;
+  }
+
   function layout(s) {
-    // The shader works at CSS-like resolution; a 3x phone does not pay for 9x
-    // as many atmospheric samples. Adaptive quality lowers this before fallback.
-    const dpr = Math.min(devicePixelRatio || 1, 1.25) * s.quality;
+    // Resolve thin stone edges and foreground grains at up to 2x density.
+    // Adaptive quality lowers this on slower devices before falling back.
+    const dpr = Math.min(devicePixelRatio || 1, 2) * s.quality;
     s.canvas.width = Math.max(1, Math.round(innerWidth * dpr));
     s.canvas.height = Math.max(1, Math.round(innerHeight * dpr));
     s.gl.viewport(0, 0, s.canvas.width, s.canvas.height);
@@ -329,6 +444,7 @@
     s.mouse[0] += (s.targetMouse[0] - s.mouse[0]) * (1 - Math.exp(-dt / 0.045));
     s.mouse[1] += (s.targetMouse[1] - s.mouse[1]) * (1 - Math.exp(-dt / 0.045));
     if (s.maskDirty || s.lastScroll !== scrollY) drawMask(s);
+    s.materialReady += (s.materialTarget - s.materialReady) * ease;
     lights(s);
     const gl = s.gl, u = s.uniforms;
     gl.useProgram(s.program);
@@ -345,6 +461,9 @@
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
     gl.uniform1i(u.uMask, 0);
+    gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, s.groundColour); gl.uniform1i(u.uGroundColour, 1);
+    gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, s.groundRelief); gl.uniform1i(u.uGroundRelief, 2);
+    gl.uniform1f(u.uMaterialReady, s.materialReady);
     gl.bindVertexArray(s.vao);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
@@ -396,7 +515,7 @@
       gl.deleteShader(vert); gl.deleteShader(frag);
       if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
       const uniforms = {};
-      ['uRes', 'uBuffer', 'uTime', 'uDay', 'uPortrait', 'uLight', 'uEnergy', 'uRadius', 'uMouse', 'uLens', 'uMask'].forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
+      ['uRes', 'uBuffer', 'uTime', 'uDay', 'uPortrait', 'uLight', 'uEnergy', 'uRadius', 'uMouse', 'uLens', 'uMask', 'uGroundColour', 'uGroundRelief', 'uMaterialReady'].forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
       const vao = gl.createVertexArray(), quad = gl.createBuffer();
       gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
@@ -408,9 +527,12 @@
       const s = state = {
         canvas, gl, program, uniforms, vao, quad, maskTex, maskCanvas, maskCtx: maskCanvas.getContext('2d'),
         directions: new Float32Array(21), energy: new Float32Array(21), radii: new Float32Array(7),
+        materialReady: 0, materialTarget: 0, materialsLoaded: 0,
         time: 0, day: progress(), dayOverride: null, quality: 1, last: 0, frames: [], warmup: 0,
         mouse: [innerWidth / 2, innerHeight / 2], targetMouse: [innerWidth / 2, innerHeight / 2], lens: 0, pointerOn: false
       };
+      s.groundColour = materialTexture(s, 'assets/live/ground-colour.webp', 1, [128, 111, 85, 255]);
+      s.groundRelief = materialTexture(s, 'assets/live/ground-relief.webp', 2, [128, 128, 220, 128]);
       document.body.prepend(canvas); wrapDates(); layout(s);
       s.onMove = e => {
         if (e.pointerType !== 'mouse') return;
@@ -452,7 +574,7 @@
     if (s.motion) s.motion.removeEventListener('change', s.onMotion);
     s.canvas.removeEventListener('webglcontextlost', s.onLost);
     s.gl.deleteBuffer(s.quad); s.gl.deleteVertexArray(s.vao);
-    s.gl.deleteTexture(s.maskTex); s.gl.deleteProgram(s.program);
+    s.gl.deleteTexture(s.maskTex); s.gl.deleteTexture(s.groundColour); s.gl.deleteTexture(s.groundRelief); s.gl.deleteProgram(s.program);
     const ext = s.gl.getExtension('WEBGL_lose_context'); if (ext) ext.loseContext();
     s.canvas.remove();
   }
