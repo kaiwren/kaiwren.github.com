@@ -1,500 +1,466 @@
-// Live theme: a solargraph of Clarke's Seven Suns. A pinhole camera left open
-// burns each day's sun into the film as one thin arc; here every sun sweeps the
-// sky as you scroll, and each sweep stays on the film, so the page records its
-// own long exposure: the further down, the more days. Colour comes only from
-// the suns, the white one pearly, the coloured ones faint. Strokes flow around
-// the text, never over it. Loaded lazily by index.html on capable devices.
+// Seven Suns: one celestial clock, seven lights, one quiet landscape.
+// Scroll turns the day. The sky, haze, stone and shadows share the same lights.
+// No scene assets, particle simulation, framework, or floating-point render target.
 (function () {
   'use strict';
 
-  // amp: arc height as a fraction of the viewport (the coloured suns run lower roads);
-  // lead: how far ahead of the white sun each one travels
+  const SLOW_KEY = 'liveSlow:seven-suns-2';
   const SUNS = [
-    { colour: [1.0, 0.94, 0.84], weight: 1.0, amp: 0.78, size: 1.0, lead: 0 },    // white, nacreous
-    { colour: [1.0, 0.32, 0.16], weight: 0.34, amp: 0.62, size: 0.7, lead: 0.11 },   // red
-    { colour: [1.0, 0.72, 0.28], weight: 0.34, amp: 0.70, size: 0.7, lead: -0.08 },   // gold
-    { colour: [0.38, 0.55, 1.0], weight: 0.38, amp: 0.55, size: 0.75, lead: 0.2 },  // blue
-    { colour: [0.40, 0.95, 0.55], weight: 0.26, amp: 0.48, size: 0.6, lead: 0.3 },  // green
-    { colour: [0.78, 0.50, 1.0], weight: 0.28, amp: 0.40, size: 0.55, lead: -0.16 },  // elusive, violet
-    { colour: [0.35, 0.92, 0.86], weight: 0.28, amp: 0.33, size: 0.55, lead: 0.38 }  // elusive, teal
+    { offset: 0, colour: [1, 0.92, 0.80], power: 1.35, radius: 0.019 },
+    { offset: 0.38, colour: [1, 0.25, 0.10], power: 0.62, radius: 0.009 },
+    { offset: -0.32, colour: [1, 0.64, 0.20], power: 0.66, radius: 0.010 },
+    { offset: 0.78, colour: [0.27, 0.49, 1], power: 0.72, radius: 0.011 },
+    { offset: -0.76, colour: [0.35, 0.78, 0.48], power: 0.43, radius: 0.007 },
+    { offset: 1.16, colour: [0.68, 0.42, 0.92], power: 0.47, radius: 0.008 },
+    { offset: -1.12, colour: [0.25, 0.72, 0.76], power: 0.44, radius: 0.008 }
   ];
-  const DAYS = 36;         // arcs per sun on a full exposure
 
   const VS = `#version 300 es
-  precision highp float;
   layout(location=0) in vec2 aQuad;
-  layout(location=1) in vec4 aSeed;   // u along the arc, day (0..1), phase, jitter
-  layout(location=2) in vec4 aKind;   // kind (0 trail, 1 sun), sun, amp, size
-  layout(location=3) in vec4 aColor;  // rgb, alpha
-  uniform float uTime;
-  uniform vec2 uRes;
-  uniform float uExposure;            // how many days are on the film (0..1)
-  uniform float uSweep;               // where today's suns are on their arcs (0..1)
-  uniform vec2 uMouse;
-  uniform float uMouseOn;
-  uniform float uNarrow;
-  uniform sampler2D uMask;
   out vec2 vUv;
-  out vec4 vCol;
-  out float vDisc;
-
-  // one day's road: horizon to horizon, a little higher or lower each day. The sky is
-  // never squeezed: a narrow screen is a window onto the middle of the same wide dome
-  vec2 arc(float u, float amp, float day) {
-    float W = uRes.x, H = uRes.y;
-    float span = max(W * 1.16, H * 1.6);
-    float x = W * 0.5 + span * (u - 0.5);
-    float a = amp * (0.86 + 0.28 * day) * min(H, span * 0.95);
-    return vec2(x, H * 0.97 - a * sin(3.14159 * u));
-  }
-
-  // the mask is soft-sampled here rather than trusting the 2D canvas blur, which some browsers
-  // (Brave on Android) don't apply, leaving hard line-box rectangles in the light
-  float mask(vec2 p) {
-    vec2 q = p / uRes, e = 18.0 / uRes;
-    float m = texture(uMask, q).r * 0.2;
-    m += (texture(uMask, q + vec2(e.x, 0.0)).r + texture(uMask, q - vec2(e.x, 0.0)).r
-        + texture(uMask, q + vec2(0.0, e.y)).r + texture(uMask, q - vec2(0.0, e.y)).r) * 0.12;
-    m += (texture(uMask, q + e).r + texture(uMask, q - e).r
-        + texture(uMask, q + vec2(e.x, -e.y)).r + texture(uMask, q - vec2(e.x, -e.y)).r) * 0.08;
-    return m;
-  }
-
-  void main() {
-    float kind = aKind.x;
-    float day = aSeed.y;
-    float alpha = aColor.a;
-    vec2 pos, tang; float len, wid;
-
-    if (kind < 0.5) {
-      // a trail stroke: lies on its day's arc, drifting slowly along it like light on film
-      if (day > uExposure) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
-      alpha *= smoothstep(uExposure, uExposure - 0.04, day);           // the newest day develops in
-      float u = fract(aSeed.x + uTime * 0.004 * (0.5 + aSeed.z));
-      pos = arc(u, aKind.z, day);
-      tang = normalize(arc(u + 0.002, aKind.z, day) - pos);
-      vec2 nrm = vec2(-tang.y, tang.x);
-      pos += nrm * aSeed.w * 2.0;
-      alpha *= smoothstep(0.0, 0.06, u) * smoothstep(1.0, 0.94, u);
-      alpha *= 0.65 + 0.35 * sin(u * 40.0 + aSeed.z * 6.283 + uTime * 0.6);  // shimmer
-      len = aKind.w * mix(1.0, 0.8, uNarrow); wid = mix(1.2, 1.4, uNarrow);
-      alpha *= mix(1.0, 1.8, uNarrow);
-    } else {
-      // today's sun on the newest arc, each in its own place on the road: a glow (1) and a disc (2)
-      float u = uSweep + aSeed.z;
-      pos = arc(u, aKind.z, uExposure);
-      tang = vec2(1.0, 0.0);
-      alpha *= smoothstep(0.0, 0.05, u) * smoothstep(1.0, 0.95, u);
-      len = wid = aKind.w * mix(1.0, 1.4, uNarrow);
-    }
-
-    // Cursor: the light leans away from you, but never touches
-    vec2 d = pos - uMouse;
-    float r = length(d) + 0.001;
-    float R = 180.0;
-    if (uMouseOn > 0.5 && r < R) pos = uMouse + d / r * max(24.0, r - (R - r) * 0.35);
-
-    // Text is a riverbank: push strokes down the mask gradient, then fade whatever is left.
-    // On a phone the text fills the width, so there the light passes behind it, only dimmed
-    float m = mask(pos);
-    if (m > 0.01 && uNarrow > 0.5) {
-      alpha *= 1.0 - 0.55 * m;
-    } else if (m > 0.01) {
-      float ex = 6.0;
-      vec2 g = vec2(mask(pos + vec2(ex, 0.0)) - mask(pos - vec2(ex, 0.0)),
-                    mask(pos + vec2(0.0, ex)) - mask(pos - vec2(0.0, ex)));
-      float gl = length(g);
-      if (gl > 0.0001) pos -= g / gl * m * 30.0;
-      alpha *= 1.0 - smoothstep(0.1, 0.5, mask(pos));
-    }
-
-    if (alpha < 0.002) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); return; }
-    vec2 nrm2 = vec2(-tang.y, tang.x);
-    vec2 corner = pos + tang * aQuad.x * len + nrm2 * aQuad.y * wid;
-    gl_Position = vec4(corner.x / uRes.x * 2.0 - 1.0, 1.0 - corner.y / uRes.y * 2.0, 0.0, 1.0);
-    vUv = aQuad;
-    vCol = vec4(aColor.rgb, alpha);
-    vDisc = step(1.5, kind);
-  }`;
+  void main() { vUv = aQuad * 0.5 + 0.5; gl_Position = vec4(aQuad, 0.0, 1.0); }`;
 
   const FS = `#version 300 es
-  precision mediump float;
-  in vec2 vUv;
-  in vec4 vCol;
-  in float vDisc;
-  out vec4 o;
-  void main() {
-    float r2 = dot(vUv, vUv);
-    // strokes and glows fall off softly; a disc has a limb, and a core too bright for the film
-    float a = mix(exp(-3.5 * r2), 1.0 - smoothstep(0.62, 0.8, r2), vDisc) * vCol.a;
-    if (a < 0.002) discard;
-    float core = vDisc * (1.0 - smoothstep(0.0, 0.45, r2));
-    vec3 c = mix(vCol.rgb * (0.75 + 0.25 * sqrt(max(0.0, 1.0 - r2 / 0.8))), vec3(1.0, 0.98, 0.94), core * 0.85);
-    o = vec4(c * a, a);
-  }`;
-
-  // The sky: umber film lit by the suns. Each sun throws a wide glow in its own colour;
-  // two slow veils of haze catch that light, so the dark stays dark and the air near a
-  // sun takes on its colour; a darker zenith and a vignette make it a dome, not a sheet
-  const SKY_VS = `#version 300 es
-  layout(location=0) in vec2 aQuad;
-  void main() { gl_Position = vec4(aQuad, 0.0, 1.0); }`;
-
-  const SKY_FS = `#version 300 es
   precision highp float;
+  in vec2 vUv;
   uniform vec2 uRes;
+  uniform vec2 uBuffer;
   uniform float uTime;
-  uniform float uScroll;
-  uniform vec2 uSunPos[7];
-  uniform vec3 uSunCol[7];
-  uniform float uSunR[7];
+  uniform float uDay;
+  uniform float uPortrait;
+  uniform vec3 uLight[7];
+  uniform vec3 uEnergy[7];
+  uniform float uRadius[7];
+  uniform vec2 uMouse;
+  uniform float uLens;
   uniform sampler2D uMask;
   out vec4 o;
+  const float PI = 3.14159265359;
 
-  // sin-free hash (Hoskins): phone GPUs lose precision in sin() of large arguments,
-  // which turns the haze into flat blocky cells
+  // Hoskins hash avoids the sin precision artifacts of some mobile GPUs.
   float hash(vec2 p) {
-    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
-    p3 += dot(p3, p3.yzx + 33.33);
-    return fract((p3.x + p3.y) * p3.z);
+    vec3 q = fract(vec3(p.xyx) * 0.1031);
+    q += dot(q, q.yzx + 33.33);
+    return fract((q.x + q.y) * q.z);
   }
   float noise(vec2 p) {
     vec2 i = floor(p), f = fract(p);
-    vec2 w = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash(i), hash(i + vec2(1, 0)), w.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), w.x), w.y);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x),
+               mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
   }
   float fbm(vec2 p) {
-    float v = 0.0, a = 0.5;
-    for (int i = 0; i < 5; i++) { v += a * noise(p); p = p * 2.02 + vec2(1.7, 9.2); a *= 0.5; }
-    return v;
+    float n = 0.0, a = 0.5;
+    mat2 turn = mat2(0.8, -0.6, 0.6, 0.8);
+    for (int i = 0; i < 4; i++) {
+      n += noise(p) * a;
+      p = turn * p * 2.04 + vec2(3.7, 8.2);
+      a *= 0.5;
+    }
+    return n;
+  }
+
+  // A panoramic camera gives portrait its own field of view, without squashing
+  // a desktop canvas. The ground and sky use this same projection.
+  vec3 ray(vec2 px) {
+    float az = (px.x / uRes.x - 0.5) * mix(2.55, 2.18, uPortrait);
+    float horizon = mix(0.66, 0.69, uPortrait) * uRes.y;
+    float el = atan((horizon - px.y) / (uRes.y * 0.65));
+    return vec3(sin(az) * cos(el), sin(el), -cos(az) * cos(el));
+  }
+
+  vec3 atmosphere(vec3 d, bool discs) {
+    float az = atan(d.x, -d.z);
+    float el = asin(clamp(d.y, -1.0, 1.0));
+    float weather = uTime * 0.014 + uDay * 1.7;
+    vec2 p = vec2(az * 2.1 * mix(1.0, 0.43, uPortrait), el * 3.7);
+    // Wind shears two separate layers. Their light is scattered from the actual
+    // sun directions, rather than painting coloured blobs onto a noise overlay.
+    float warp = fbm(p * 0.65 + vec2(weather * 0.18, 2.0));
+    float low = fbm(p * vec2(1.4, 2.7) + vec2(weather, warp * 1.3));
+    float high = fbm(p * vec2(2.1, 6.0) + vec2(-weather * 0.43, warp * 2.1 + 7.0));
+    float cloud = smoothstep(0.30, 0.78, low * 0.72 + high * 0.28);
+    float filaments = smoothstep(0.37, 0.75, high) * 0.32;
+    float horizon = exp(-max(d.y, 0.0) * 7.0);
+    vec3 col = mix(vec3(0.009, 0.014, 0.020), vec3(0.038, 0.030, 0.025), horizon);
+    col += vec3(0.014, 0.018, 0.021) * cloud;
+    for (int i = 0; i < 7; i++) {
+      float c = clamp(dot(d, uLight[i]), -1.0, 1.0);
+      float angle = length(d - uLight[i]);
+      float broad = 0.012 / pow(1.04 - c, 0.85);
+      float forward = exp(-angle * 5.5) * 0.23;
+      // A cloud has an illuminated edge and a denser, absorbing interior.
+      float edge = cloud * (0.8 + filaments * 3.0);
+      col += uEnergy[i] * (broad * (0.16 + edge * 0.40) + forward * (0.10 + edge * 0.28));
+      if (discs) {
+        // Use projected pixel distance for circular suns in either camera frame.
+        float sunAz = atan(uLight[i].x, -uLight[i].z);
+        float sunEl = asin(uLight[i].y);
+        vec2 sunPx = vec2((sunAz / mix(2.55, 2.18, uPortrait) + 0.5) * uRes.x,
+          mix(0.66, 0.69, uPortrait) * uRes.y - tan(sunEl) * uRes.y * 0.65);
+        vec2 pointPx = vec2((az / mix(2.55, 2.18, uPortrait) + 0.5) * uRes.x,
+          mix(0.66, 0.69, uPortrait) * uRes.y - tan(el) * uRes.y * 0.65);
+        float radius = uRadius[i] * uRes.y * 0.65 / max(0.3, cos(sunEl) * cos(sunEl));
+        radius = min(radius, i == 0 ? 14.0 : 7.0);
+        float r = length(pointPx - sunPx);
+        float aa = max(0.65, uRes.y / uBuffer.y);
+        float disc = 1.0 - smoothstep(radius - aa, radius + aa, r);
+        float limb = sqrt(max(0.0, 1.0 - pow(r / max(radius, 0.1), 2.0)));
+        float envelope = exp(-r * r / max(1.0, radius * radius * 5.0));
+        float transmission = exp(-cloud * 0.75);
+        vec3 core = mix(normalize(uEnergy[i] + 0.001), vec3(1.0, 0.97, 0.90), i == 0 ? 0.88 : 0.48);
+        float risen = smoothstep(-0.035, 0.035, uLight[i].y);
+        col += (core * disc * (0.42 + limb * 2.20) + uEnergy[i] * (envelope * 0.30 + exp(-r / max(radius, 1.0)) * 0.18)) * transmission * risen;
+      }
+    }
+    // Sparse distant stars are part of the sky. Lensing samples them and the
+    // haze together; there are no independent particles to shove around.
+    vec2 st = vec2(az, el) * 220.0;
+    vec2 cell = floor(st);
+    vec2 at = vec2(hash(cell), hash(cell + 41.7));
+    float star = (1.0 - smoothstep(0.03, 0.16, length(fract(st) - at))) * step(0.991, hash(cell + 9.1));
+    col += vec3(0.32, 0.37, 0.43) * star * exp(-cloud * 3.0) * smoothstep(0.08, 0.4, d.y);
+    return col;
+  }
+
+  // Cylinder geometry and its seven projected shadows share the same position.
+  vec4 pillar() { return mix(vec4(-11.0, -11.5, 0.16, 1.75), vec4(-12.4, -10.5, 0.18, 1.75), uPortrait); }
+
+  float visibility(vec3 p, vec3 light, float radius) {
+    vec4 col = pillar();
+    float horizontal = dot(light.xz, light.xz);
+    float along = dot(col.xy - p.xz, light.xz) / max(horizontal, 0.0001);
+    if (along < 0.0 || light.y < 0.0) return 1.0;
+    float height = p.y + along * light.y;
+    float width = col.z + max(0.0, along) * radius * 0.6;
+    float dist = length(p.xz + along * light.xz - col.xy);
+    float penumbra = max(0.025, along * radius * 0.8);
+    float body = 1.0 - smoothstep(width - penumbra, width + penumbra, dist);
+    float end = 1.0 - smoothstep(col.w - penumbra, col.w + penumbra, height);
+    return 1.0 - body * end;
+  }
+
+  vec3 landscape(vec3 d, vec3 sky) {
+    vec3 eye = vec3(0.0, 1.35, 0.0);
+    vec4 col = pillar();
+    float t = d.y < -0.0001 ? -eye.y / d.y : 1e5;
+    vec3 n = vec3(0, 1, 0);
+    bool stone = false;
+    vec2 q = eye.xz - col.xy;
+    float A = dot(d.xz, d.xz), B = dot(q, d.xz);
+    float discriminant = B * B - A * (dot(q, q) - col.z * col.z);
+    if (discriminant > 0.0) {
+      float tc = (-B - sqrt(discriminant)) / A;
+      float y = eye.y + tc * d.y;
+      if (tc > 0.0 && tc < t && y > 0.0 && y < col.w) {
+        t = tc; stone = true;
+        n = normalize(vec3(q.x + tc * d.x, 0.0, q.y + tc * d.z));
+      }
+    }
+    if (abs(d.y) > 0.0001) {
+      float cap = (col.w - eye.y) / d.y;
+      if (cap > 0.0 && cap < t && length(eye.xz + cap * d.xz - col.xy) < col.z) {
+        t = cap; stone = true; n = vec3(0, 1, 0);
+      }
+    }
+    if (t > 900.0) {
+      float az = atan(d.x, -d.z);
+      float ridge = 0.003 + noise(vec2(az * 9.0, 4.0)) * noise(vec2(az * 3.0, 1.0)) * 0.022;
+      float edge = max(fwidth(d.y), 0.001);
+      return mix(vec3(0.020, 0.023, 0.027), sky, smoothstep(ridge - edge, ridge + edge, d.y));
+    }
+    vec3 p = eye + d * t;
+    float texture = fbm(p.xz * 2.4);
+    vec3 albedo = mix(vec3(0.14, 0.13, 0.115), vec3(0.18, 0.165, 0.14), texture);
+    if (stone) albedo = vec3(0.83, 0.82, 0.77) * (0.94 + 0.06 * noise(vec2(atan(n.z, n.x) * 13.0, p.y * 2.0)));
+    else {
+      // Weathered ground: fine, subdued strata, no plaza or decorative platform.
+      float strata = noise(vec2(p.x * 0.25 + noise(p.xz * 0.12), p.z * 2.8));
+      albedo *= 0.93 + 0.12 * strata;
+      float ex = 0.06;
+      vec2 grain = p.xz * 1.7;
+      n = normalize(vec3((noise(grain - vec2(ex, 0)) - noise(grain + vec2(ex, 0))) * 0.5,
+                         1.0, (noise(grain - vec2(0, ex)) - noise(grain + vec2(0, ex))) * 0.5));
+    }
+    vec3 lit = stone ? vec3(0.36, 0.37, 0.39) : vec3(0.027, 0.031, 0.038);
+    float shadowDensity = 0.0;
+    for (int i = 0; i < 7; i++) {
+      float v = stone ? 1.0 : visibility(p, uLight[i], uRadius[i]);
+      float diffuse = stone ? max(0.0, dot(n, uLight[i]) * 0.65 + 0.35) : max(dot(n, uLight[i]), 0.0);
+      lit += uEnergy[i] * diffuse * v * 0.60;
+      shadowDensity += (1.0 - v) * min(length(uEnergy[i]), 1.0);
+    }
+    // Modest local contrast keeps the secondary shadows visible at page exposure.
+    vec3 surface = albedo * lit * exp(-shadowDensity * 0.35);
+    if (!stone) {
+      float contact = exp(-length(p.xz - col.xy) * 3.0);
+      surface *= 1.0 - contact * 0.5;
+    }
+    // Air perspective joins land to sky instead of leaving a hard stage edge.
+    float fog = 1.0 - exp(-t * 0.014);
+    surface = mix(surface, sky * 0.62, fog);
+    float horizonFade = smoothstep(0.0, 0.024, -d.y);
+    return stone ? surface : mix(sky, surface, horizonFade);
   }
 
   void main() {
-    vec2 px = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y);
-    vec2 q = px / uRes;
-    float scale = min(uRes.x, uRes.y);
+    vec2 px = vec2(vUv.x, 1.0 - vUv.y) * uRes;
+    vec3 d = ray(px);
+    vec2 delta = px - uMouse;
+    float r = length(delta);
+    float lensRadius = min(125.0, uRes.x * 0.24);
+    float falloff = 1.0 - smoothstep(lensRadius * 0.50, lensRadius, r);
+    // Soft-core thin-lens mapping: bend the sampled sky, not the objects. Sources
+    // passing behind the pointer form small arcs; there is no drawn lens bubble.
+    float einstein = 16.0;
+    vec2 bent = px - delta * (einstein * einstein / (dot(delta, delta) + 38.0)) * falloff * uLens;
+    vec3 skyRay = ray(mix(px, bent, smoothstep(0.0, 0.13, d.y)));
+    vec3 sky = atmosphere(skyRay, true);
+    vec3 colour = landscape(d, sky);
 
-    // the film: deep umber, darker at the zenith, a touch warmer toward the horizon
-    vec3 col = mix(vec3(0.050, 0.036, 0.028), vec3(0.085, 0.060, 0.042), smoothstep(0.0, 1.0, q.y));
-
-    // two veils of haze, drifting at different rates and parallaxing with scroll
-    vec2 hp = px / scale;
-    float veil1 = fbm(hp * 2.2 + vec2(uTime * 0.012, uScroll / scale * 0.15));
-    float veil2 = fbm(hp * 5.0 + vec2(-uTime * 0.02, uScroll / scale * 0.35) + 7.3);
-    float haze = smoothstep(0.35, 0.85, veil1) * 0.75 + smoothstep(0.45, 0.9, veil2) * 0.35;
-
-    vec3 light = vec3(0.0);
-    for (int i = 0; i < 7; i++) {
-      float d = length(px - uSunPos[i]) / scale;
-      float r = uSunR[i];
-      vec3 c = uSunCol[i];
-      light += c * (exp(-d / (0.32 * r)) * 1.1 + exp(-d / (0.08 * r)) * 1.4);
-    }
-    col += light * (0.22 + 2.6 * haze);
-
-    // keep the type legible: the light under the text is held down
-    // gaussian-sampled so the dimming has no edges, whatever the 2D canvas blur did
-    float m = 0.0, wsum = 0.0;
-    for (int j = -3; j <= 3; j++)
-      for (int i = -3; i <= 3; i++) {
-        float w = exp(-float(i * i + j * j) / 4.5);
-        m += texture(uMask, q + vec2(float(i), float(j)) * 10.0 / uRes).r * w;
-        wsum += w;
-      }
-    m /= wsum;
-    col *= 1.0 - 0.4 * m;
-
-    // vignette
-    vec2 v = q - 0.5;
-    col *= 1.0 - 0.45 * dot(v, v) * 1.6;
-    o = vec4(col, 1.0);
+    // A soft, low-resolution text mask is sampled in screen space AFTER lensing,
+    // so letters stay still and light never creates hard line-box rectangles.
+    vec2 uv = px / uRes, e = 15.0 / uRes;
+    float mask = texture(uMask, uv).r * 0.28;
+    mask += (texture(uMask, uv + vec2(e.x, 0)).r + texture(uMask, uv - vec2(e.x, 0)).r
+           + texture(uMask, uv + vec2(0, e.y)).r + texture(uMask, uv - vec2(0, e.y)).r) * 0.12;
+    mask += (texture(uMask, uv + e).r + texture(uMask, uv - e).r
+           + texture(uMask, uv + vec2(e.x, -e.y)).r + texture(uMask, uv - vec2(e.x, -e.y)).r) * 0.06;
+    colour *= 1.0 - mask * 0.67;
+    // Gentle filmic shoulder preserves a hot sun without lifting the whole page.
+    colour = 1.0 - exp(-colour * 1.35);
+    colour = pow(max(colour, vec3(0)), vec3(0.85));
+    vec2 v = uv - 0.5;
+    colour *= 1.0 - 0.35 * dot(v, v);
+    colour += (hash(px) - 0.5) / 255.0;
+    o = vec4(colour, 1.0);
   }`;
 
   let state = null;
+  const clamp = (n, a = 0, b = 1) => Math.max(a, Math.min(b, n));
+  const smooth = (a, b, n) => { const t = clamp((n - a) / (b - a)); return t * t * (3 - 2 * t); };
+  const saved = (key, value) => { try { localStorage.setItem(key, value); } catch (_) {} };
+  const progress = () => clamp(scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight));
 
-  function rand() { return Math.random(); }
-  function gauss() {
-    let u = 0, v = 0;
-    while (u === 0) u = rand();
-    while (v === 0) v = rand();
-    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  function compile(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      const message = gl.getShaderInfoLog(shader);
+      gl.deleteShader(shader);
+      throw new Error(message);
+    }
+    return shader;
   }
 
-  function compile(gl, type, src) {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src);
-    gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-    return s;
-  }
-
-  // Tight per-line text rects in page coordinates, so the bank follows ragged lines
   function textRects() {
     const rects = [];
     const range = document.createRange();
     document.querySelectorAll('.kaiwren h1, .kaiwren a').forEach(el => {
       range.selectNodeContents(el);
-      for (const r of range.getClientRects()) {
-        if (r.width > 0 && r.height > 0) rects.push([r.left, r.top + scrollY, r.width, r.height]);
-      }
+      for (const r of range.getClientRects()) if (r.width && r.height) rects.push([r.left, r.top + scrollY, r.width, r.height]);
     });
     return rects;
   }
 
-  // the same road as arc() in the shader, for placing each sun's light on the sky
-  function arcJS(u, amp, day) {
-    const W = innerWidth, H = innerHeight;
-    const span = Math.max(W * 1.16, H * 1.6);
-    const a = amp * (0.86 + 0.28 * day) * Math.min(H, span * 0.95);
-    return [W * 0.5 + span * (u - 0.5), H * 0.97 - a * Math.sin(Math.PI * u)];
-  }
-
-  function buildInstances() {
-    const narrow = innerWidth < 700;
-    const per = narrow ? 100 : 140;    // strokes per arc
-    const out = [];
-    const push = (seed, kind, color) => out.push(...seed, ...kind, ...color);
-    SUNS.forEach((sun, i) => {
-      for (let d = 0; d < DAYS; d++) {
-        const day = (d + rand() * 0.6) / DAYS;
-        const dayAlpha = 0.5 + 0.5 * rand();           // some days were hazier than others
-        for (let k = 0; k < per * (0.5 + sun.weight * 0.5); k++) {
-          push([rand(), day, rand(), gauss() * 0.6], [0, i, sun.amp, 5 + rand() * rand() * 22],
-            [...sun.colour, (0.45 + 0.55 * sun.weight) * dayAlpha * (0.09 + rand() * 0.14)]);
-        }
-      }
-      // today's sun: a wide faint glow, then the disc
-      push([0, 0, sun.lead, 0], [1, i, sun.amp, 60 * sun.size], [...sun.colour, 0.18 * sun.weight + 0.05]);
-      push([0, 0, sun.lead, 0], [2, i, sun.amp, 9 * sun.size], [...sun.colour, 1.0]);
-    });
-    return { data: new Float32Array(out), count: out.length / 12 };
-  }
-
-  function upload(s) {
-    const gl = s.gl;
-    const { data, count } = buildInstances();
-    gl.bindVertexArray(s.vao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, s.inst);
-    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
-    const stride = 12 * 4;
-    for (let loc = 1; loc <= 3; loc++) {
-      gl.enableVertexAttribArray(loc);
-      gl.vertexAttribPointer(loc, 4, gl.FLOAT, false, stride, (loc - 1) * 16);
-      gl.vertexAttribDivisor(loc, 1);
-    }
-    s.count = count;
-    s.drawCount = count;
-    s.rects = textRects();
-    s.maskDirty = true;
-  }
-
   function drawMask(s) {
-    const mc = s.maskCanvas, ctx = s.maskCtx;
-    const k = 0.25;
-    mc.width = Math.ceil(innerWidth * k);
-    mc.height = Math.ceil(innerHeight * k);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, mc.width, mc.height);
-    ctx.fillStyle = '#fff';
-    ctx.shadowColor = '#fff';
-    ctx.shadowBlur = 22 * k;
-    const pad = 8;
-    for (const [x, y, w, h] of s.rects) {
-      const vy = y - scrollY;
-      if (vy + h < -60 || vy > innerHeight + 60) continue;
-      ctx.fillRect((x - pad) * k, (vy - pad) * k, (w + pad * 2) * k, (h + pad * 2) * k);
+    const c = s.maskCanvas, ctx = s.maskCtx, k = 0.20;
+    const w = Math.ceil(innerWidth * k), h = Math.ceil(innerHeight * k);
+    if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = 'lighten';
+    // Radial gradients work consistently on mobile canvas implementations.
+    for (const [x, y, width, height] of s.rects) {
+      const top = y - scrollY;
+      if (top + height < -90 || top > innerHeight + 90) continue;
+      ctx.save();
+      ctx.translate((x + width / 2) * k, (top + height / 2) * k);
+      ctx.scale((width / 2 + 45) * k, (height / 2 + 38) * k);
+      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 1);
+      gradient.addColorStop(0, '#fff'); gradient.addColorStop(0.55, '#ddd'); gradient.addColorStop(1, '#000');
+      ctx.fillStyle = gradient; ctx.fillRect(-1, -1, 2, 2);
+      ctx.restore();
     }
     const gl = s.gl;
     gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, mc);
-    s.maskDirty = false;
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+    s.maskDirty = false; s.lastScroll = scrollY;
   }
 
-  function resize(s) {
-    const dpr = Math.min(devicePixelRatio || 1, innerWidth < 700 ? 1.5 : 2);
-    s.canvas.width = Math.round(innerWidth * dpr);
-    s.canvas.height = Math.round(innerHeight * dpr);
+  function layout(s) {
+    // The shader works at CSS-like resolution; a 3x phone does not pay for 9x
+    // as many atmospheric samples. Adaptive quality lowers this before fallback.
+    const dpr = Math.min(devicePixelRatio || 1, 1.25) * s.quality;
+    s.canvas.width = Math.max(1, Math.round(innerWidth * dpr));
+    s.canvas.height = Math.max(1, Math.round(innerHeight * dpr));
     s.gl.viewport(0, 0, s.canvas.width, s.canvas.height);
+    s.rects = textRects(); s.maskDirty = true;
+  }
+
+  function lights(s) {
+    // No modulo/wrap: reversing scroll retraces the same day without teleporting
+    // suns, resetting trails or snapping shadows back to a starting position.
+    const phase = -0.60 + s.day * 2.30 + Math.sin(s.time * 0.045) * 0.025;
+    SUNS.forEach((sun, i) => {
+      const az = phase + sun.offset;
+      const el = 0.10 + 0.50 * Math.cos(az);
+      const direction = [Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el)];
+      s.directions.set(direction, i * 3);
+      s.radii[i] = sun.radius;
+      const air = 1 / (Math.max(direction[1], 0) + 0.15);
+      const risen = smooth(-0.09, 0.08, direction[1]);
+      sun.colour.forEach((c, j) => {
+        s.energy[i * 3 + j] = c * sun.power * Math.exp(-[0.025, 0.045, 0.080][j] * air) * risen;
+      });
+    });
   }
 
   function frame(now) {
     const s = state;
-    if (!s) return;
-    const gl = s.gl;
-    if (s.maskDirty || s.lastScroll !== scrollY) { s.lastScroll = scrollY; drawMask(s); }
-
-    // Performance guard: after a warm-up, if this device can't hold ~25fps, give up on live and fall back to dark
-    if (s.last && ++s.seen > 30) {
-      s.frames.push(now - s.last);
-      if (s.frames.length === 90) {
-        const median = s.frames.slice().sort((a, b) => a - b)[45];
-        if (median > 40) {
-          try { localStorage.setItem('liveSlow', '1'); } catch (e) {}
-          if (window.setTheme) { window.setTheme('dark'); return; }
-        }
-        s.frames = [];
-      }
-    }
-    s.last = now;
-
-    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
-    const p = Math.min(1, scrollY / max);
-    const exposure = 0.22 + 0.78 * p;
-    const sweep = (scrollY / innerHeight * 0.5 + 0.35 + (now - s.t0) / 1000 * 0.002) % 1;
-    const t = (now - s.t0) / 1000;
-
-    // the sky, opaque, under everything
-    gl.disable(gl.BLEND);
-    gl.useProgram(s.sky);
-    const k = s.skyU;
-    const pos = [], col = [], rad = [];
-    SUNS.forEach(sun => {
-      const u = sweep + sun.lead;
-      const up = Math.min(1, Math.max(0, u / 0.05)) * Math.min(1, Math.max(0, (1 - u) / 0.05));
-      pos.push(...arcJS(u, sun.amp, exposure));
-      col.push(...sun.colour.map(c => c * sun.weight * up * (sun.weight > 0.9 ? 0.55 : 0.8)));
-      rad.push(sun.weight > 0.9 ? 1.6 : 0.8);
-    });
-    gl.uniform2f(k.uRes, innerWidth, innerHeight);
-    gl.uniform1f(k.uTime, t);
-    gl.uniform1f(k.uScroll, scrollY);
-    gl.uniform2fv(k.uSunPos, pos);
-    gl.uniform3fv(k.uSunCol, col);
-    gl.uniform1fv(k.uSunR, rad);
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
-    gl.uniform1i(k.uMask, 0);
-    gl.bindVertexArray(s.skyVao);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
-    gl.enable(gl.BLEND);
-    gl.useProgram(s.prog);
-    const u = s.uniforms;
-    // scroll is time: the exposure grows down the page, and each screen of scroll is one sweep of the suns
-    gl.uniform1f(u.uTime, t);
+    if (!s || document.hidden) return;
+    const dt = Math.min(0.05, Math.max(0, (now - (s.last || now)) / 1000));
+    const elapsed = s.last ? now - s.last : 0;
+    s.last = now; s.time += dt;
+    const ease = 1 - Math.exp(-dt / 0.16);
+    s.day += ((s.dayOverride === null ? progress() : s.dayOverride) - s.day) * ease;
+    s.lens += ((s.pointerOn ? 1 : 0) - s.lens) * (1 - Math.exp(-dt / 0.13));
+    s.mouse[0] += (s.targetMouse[0] - s.mouse[0]) * (1 - Math.exp(-dt / 0.045));
+    s.mouse[1] += (s.targetMouse[1] - s.mouse[1]) * (1 - Math.exp(-dt / 0.045));
+    if (s.maskDirty || s.lastScroll !== scrollY) drawMask(s);
+    lights(s);
+    const gl = s.gl, u = s.uniforms;
+    gl.useProgram(s.program);
     gl.uniform2f(u.uRes, innerWidth, innerHeight);
-    gl.uniform1f(u.uExposure, exposure);
-    gl.uniform1f(u.uSweep, sweep);
-    gl.uniform2f(u.uMouse, s.mouse[0], s.mouse[1]);
-    gl.uniform1f(u.uMouseOn, s.mouseOn ? 1 : 0);
-    gl.uniform1f(u.uNarrow, innerWidth < 700 ? 1 : 0);
+    gl.uniform2f(u.uBuffer, s.canvas.width, s.canvas.height);
+    gl.uniform1f(u.uTime, s.time);
+    gl.uniform1f(u.uDay, s.day);
+    gl.uniform1f(u.uPortrait, smooth(1.10, 0.65, innerWidth / innerHeight));
+    gl.uniform3fv(u.uLight, s.directions);
+    gl.uniform3fv(u.uEnergy, s.energy);
+    gl.uniform1fv(u.uRadius, s.radii);
+    gl.uniform2fv(u.uMouse, s.mouse);
+    gl.uniform1f(u.uLens, s.lens);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, s.maskTex);
     gl.uniform1i(u.uMask, 0);
     gl.bindVertexArray(s.vao);
-    gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, s.drawCount);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-    if (state === s && !document.hidden) s.raf = requestAnimationFrame(frame);
+    // Allow shader compilation to settle, then lower resolution before giving up.
+    // Background tabs are excluded and the decision expires after one day.
+    if (++s.warmup > 90 && elapsed > 0) {
+      s.frames.push(elapsed);
+      if (s.frames.length === 120) {
+        const median = s.frames.slice().sort((a, b) => a - b)[60];
+        if (median > 38) {
+          if (s.quality > 0.60) { s.quality *= 0.75; layout(s); s.warmup = 0; }
+          else { saved(SLOW_KEY, String(Date.now())); fallback(); return; }
+        }
+        s.frames.length = 0;
+      }
+    }
+    s.raf = requestAnimationFrame(frame);
   }
 
-  // "(2026/10/02) title": wrap the date so the theme can set it back from the title
   function wrapDates() {
     document.querySelectorAll('ul.items > li > a').forEach(a => {
       const t = a.firstChild;
       if (!t || t.nodeType !== 3) return;
       const m = t.nodeValue.match(/^(\s*)(\(\d{4}\/\d{2}\/\d{2}\))/);
       if (!m) return;
-      const span = document.createElement('span');
-      span.className = 'date';
-      span.textContent = m[2];
-      t.nodeValue = t.nodeValue.slice(m[0].length);
-      a.insertBefore(span, t);
-      a.insertBefore(document.createTextNode(' '), t);
+      const date = document.createElement('span'); date.className = 'date'; date.textContent = m[2];
+      t.nodeValue = ' ' + t.nodeValue.slice(m[0].length);
+      a.insertBefore(date, t);
     });
+  }
+
+  function fallback() {
+    stop();
+    if (typeof window.setTheme === 'function') window.setTheme('dark');
+    else { document.documentElement.dataset.theme = 'dark'; saved('theme', 'dark'); }
   }
 
   function start() {
     if (state) return;
-    wrapDates();
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData)) { fallback(); return; }
     const canvas = document.createElement('canvas');
-    canvas.className = 'live-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.prepend(canvas);
-    const gl = canvas.getContext('webgl2', { premultipliedAlpha: true, antialias: false, alpha: true });
-    if (!gl) { canvas.remove(); return; }
-
-    const prog = gl.createProgram();
-    gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VS));
-    gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FS));
-    gl.linkProgram(prog);
-    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-
-    const sky = gl.createProgram();
-    gl.attachShader(sky, compile(gl, gl.VERTEX_SHADER, SKY_VS));
-    gl.attachShader(sky, compile(gl, gl.FRAGMENT_SHADER, SKY_FS));
-    gl.linkProgram(sky);
-    if (!gl.getProgramParameter(sky, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(sky));
-    const skyU = {};
-    ['uRes', 'uTime', 'uScroll', 'uSunPos', 'uSunCol', 'uSunR', 'uMask'].forEach(n => { skyU[n] = gl.getUniformLocation(sky, n); });
-
-    const uniforms = {};
-    ['uTime', 'uRes', 'uExposure', 'uSweep', 'uMouse', 'uMouseOn', 'uNarrow', 'uMask']
-      .forEach(n => { uniforms[n] = gl.getUniformLocation(prog, n); });
-
-    const vao = gl.createVertexArray();
-    gl.bindVertexArray(vao);
-    const quad = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    const inst = gl.createBuffer();
-    const skyVao = gl.createVertexArray();
-    gl.bindVertexArray(skyVao);
-    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
-    gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-
-    const maskTex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, maskTex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.ONE, gl.ONE);   // light on film adds up
-
-    const maskCanvas = document.createElement('canvas');
-    state = {
-      gl, canvas, prog, uniforms, vao, inst, maskTex, maskCanvas, sky, skyU, skyVao,
-      maskCtx: maskCanvas.getContext('2d'),
-      mouse: [-9999, -9999], mouseOn: false,
-      t0: performance.now(), frames: [], seen: 0, last: 0
-    };
-    const s = state;
-    resize(s);
-    upload(s);
-
-    s.onMove = e => { s.mouse = [e.clientX, e.clientY]; s.mouseOn = true; };
-    s.onLeave = () => { s.mouseOn = false; };
-    s.onResize = () => { resize(s); upload(s); };
-    s.onVisible = () => { if (!document.hidden) { s.last = 0; s.seen = 0; s.frames = []; s.raf = requestAnimationFrame(frame); } };
-    addEventListener('pointermove', s.onMove, { passive: true });
-    addEventListener('pointerdown', s.onMove, { passive: true });
-    document.addEventListener('pointerleave', s.onLeave);
-    addEventListener('resize', s.onResize);
-    document.addEventListener('visibilitychange', s.onVisible);
-    // Fonts shift the line boxes, so rebuild once they settle
-    if (document.fonts) document.fonts.ready.then(() => state === s && upload(s));
-
-    s.raf = requestAnimationFrame(frame);
+    canvas.className = 'live-canvas'; canvas.setAttribute('aria-hidden', 'true');
+    const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, depth: false, powerPreference: 'low-power' });
+    if (!gl) { fallback(); return; }
+    try {
+      const vert = compile(gl, gl.VERTEX_SHADER, VS), frag = compile(gl, gl.FRAGMENT_SHADER, FS);
+      const program = gl.createProgram();
+      gl.attachShader(program, vert); gl.attachShader(program, frag); gl.linkProgram(program);
+      gl.deleteShader(vert); gl.deleteShader(frag);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+      const uniforms = {};
+      ['uRes', 'uBuffer', 'uTime', 'uDay', 'uPortrait', 'uLight', 'uEnergy', 'uRadius', 'uMouse', 'uLens', 'uMask'].forEach(n => { uniforms[n] = gl.getUniformLocation(program, n); });
+      const vao = gl.createVertexArray(), quad = gl.createBuffer();
+      gl.bindVertexArray(vao); gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+      gl.enableVertexAttribArray(0); gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      const maskTex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, maskTex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      const maskCanvas = document.createElement('canvas');
+      const s = state = {
+        canvas, gl, program, uniforms, vao, quad, maskTex, maskCanvas, maskCtx: maskCanvas.getContext('2d'),
+        directions: new Float32Array(21), energy: new Float32Array(21), radii: new Float32Array(7),
+        time: 0, day: progress(), dayOverride: null, quality: 1, last: 0, frames: [], warmup: 0,
+        mouse: [innerWidth / 2, innerHeight / 2], targetMouse: [innerWidth / 2, innerHeight / 2], lens: 0, pointerOn: false
+      };
+      document.body.prepend(canvas); wrapDates(); layout(s);
+      s.onMove = e => {
+        if (e.pointerType !== 'mouse') return;
+        if (!s.pointerOn) s.mouse = [e.clientX, e.clientY];
+        s.targetMouse = [e.clientX, e.clientY]; s.pointerOn = true;
+      };
+      s.onLeave = () => { s.pointerOn = false; };
+      s.onResize = () => layout(s);
+      s.onVisibility = () => {
+        cancelAnimationFrame(s.raf); s.last = 0; s.warmup = 0; s.frames.length = 0;
+        if (!document.hidden) s.raf = requestAnimationFrame(frame);
+      };
+      s.onMotion = e => { if (e.matches) fallback(); };
+      s.motion = matchMedia('(prefers-reduced-motion: reduce)');
+      s.onLost = e => { e.preventDefault(); fallback(); };
+      addEventListener('pointermove', s.onMove, { passive: true });
+      document.documentElement.addEventListener('pointerleave', s.onLeave);
+      addEventListener('blur', s.onLeave);
+      addEventListener('resize', s.onResize, { passive: true });
+      document.addEventListener('visibilitychange', s.onVisibility);
+      s.motion.addEventListener('change', s.onMotion);
+      canvas.addEventListener('webglcontextlost', s.onLost);
+      if (document.fonts) document.fonts.ready.then(() => { if (state === s) { s.rects = textRects(); s.maskDirty = true; } });
+      s.raf = requestAnimationFrame(frame);
+    } catch (error) {
+      console.warn('Live background unavailable:', error.message);
+      canvas.remove(); fallback();
+    }
   }
 
   function stop() {
     const s = state;
     if (!s) return;
-    cancelAnimationFrame(s.raf);
+    state = null; cancelAnimationFrame(s.raf);
     removeEventListener('pointermove', s.onMove);
-    removeEventListener('pointerdown', s.onMove);
-    document.removeEventListener('pointerleave', s.onLeave);
-    removeEventListener('resize', s.onResize);
-    document.removeEventListener('visibilitychange', s.onVisible);
-    const ext = s.gl.getExtension('WEBGL_lose_context');
-    if (ext) ext.loseContext();
+    document.documentElement.removeEventListener('pointerleave', s.onLeave);
+    removeEventListener('blur', s.onLeave); removeEventListener('resize', s.onResize);
+    document.removeEventListener('visibilitychange', s.onVisibility);
+    if (s.motion) s.motion.removeEventListener('change', s.onMotion);
+    s.canvas.removeEventListener('webglcontextlost', s.onLost);
+    s.gl.deleteBuffer(s.quad); s.gl.deleteVertexArray(s.vao);
+    s.gl.deleteTexture(s.maskTex); s.gl.deleteProgram(s.program);
+    const ext = s.gl.getExtension('WEBGL_lose_context'); if (ext) ext.loseContext();
     s.canvas.remove();
-    state = null;
   }
 
-  window.KaiwrenLive = { start, stop, state: () => state };
+  // Deterministic day/clock controls for inspecting framing and shadow motion.
+  window.KaiwrenLive = {
+    start, stop, state: () => state,
+    day: value => { if (state) state.dayOverride = value === null ? null : clamp(value); },
+    seek: seconds => { if (state) state.time = Math.max(0, seconds); }
+  };
 })();

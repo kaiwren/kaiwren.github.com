@@ -34,33 +34,15 @@
   --hr-bg-end: #2a2a2a;
 }
 
-/* Live theme: a solargraph. Umber-black film with the suns' light burned into it
-   (live.js); warm ivory type, colour kept scarce so it means something */
+/* Seven Suns: quiet planetary light, with warm ivory type above the scene. */
 :root[data-theme="live"] {
-  --bg-color: #15100c;
+  --bg-color: #0d1014;
   --text-color: #e9dfcf;
   --link-color: #e9dfcf;
   --border-color: rgba(233, 223, 207, 0.35);
   --hr-bg-start: rgba(233, 223, 207, 0);
   --hr-bg-mid: rgba(233, 223, 207, 0.45);
   --hr-bg-end: rgba(233, 223, 207, 0);
-}
-
-:root[data-theme="live"] body {
-  background-image: radial-gradient(ellipse 90% 70% at 50% 0%, #2a1d14, rgba(21, 16, 12, 0) 70%);
-  background-attachment: fixed;
-}
-
-/* film grain, faint */
-:root[data-theme="live"] body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.07;
-  mix-blend-mode: screen;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.9  0 0 0 0 0.85  0 0 0 0 0.78  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
 }
 
 :root[data-theme="live"] .kaiwren {
@@ -77,7 +59,7 @@
 /* a soft umber halo keeps type off the light that passes behind it */
 :root[data-theme="live"] .kaiwren a,
 :root[data-theme="live"] .kaiwren h1 {
-  text-shadow: 0 0 6px rgba(21, 16, 12, 0.9), 0 0 14px rgba(21, 16, 12, 0.6);
+  text-shadow: 0 0 6px rgba(9, 12, 16, 0.9), 0 0 14px rgba(9, 12, 16, 0.6);
 }
 
 /* dates recede by colour, not transparency, so they hold up over the light */
@@ -102,23 +84,11 @@
   background-color: rgba(233, 223, 207, 0.85);
 }
 
-.live-figure {
-  position: fixed;
-  z-index: 1;
-  pointer-events: none;
-}
-
-.live-figure svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
 .live-canvas {
   position: fixed;
   inset: 0;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   z-index: 0;
   pointer-events: none;
 }
@@ -242,8 +212,10 @@ Pallete #15
 .njd-green {
   color: #BFF073;
 }
-/* Dark mode toggle button */
+/* Theme toggle button */
 .theme-toggle {
+  border: 0;
+  padding: 0;
   position: fixed;
   top: 20px;
   right: 20px;
@@ -266,4 +238,9 @@ Pallete #15
 .theme-icon {
   font-size: 24px;
   color: var(--bg-color);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--text-color);
+  outline-offset: 4px;
 }
