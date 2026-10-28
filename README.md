@@ -84,6 +84,13 @@ Bhook only processes `.md` files — it does not copy images or other static ass
 
 Compress PNGs before committing: `pngquant --quality=65-80 --force --output file.png file.png`
 
+## Site Icon
+
+The website owns `favicon.svg`, the multi-size `favicon.ico`, and `apple-touch-icon.png`
+at the site root. The hand-authored homepage and bhook's default theme reference
+these root assets, so essays and wiki pages share the same icon at any URL depth.
+Bhook emits the links; it does not generate or copy the artwork.
+
 ## Testing with Chrome DevTools MCP
 
 Start a local server and use the chrome-devtools MCP to verify rendered pages, OG meta tags, layout, and links. (Replaces the old Playwright MCP workflow — Playwright MCP was removed in favour of chrome-devtools in April 2026.)
