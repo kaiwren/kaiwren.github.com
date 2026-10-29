@@ -427,8 +427,8 @@
   <meta property="og:title" content="Essays">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="sidu.in">
-    <meta property="og:description" content="After AI, There Is No Cheap Software Oct">
-  <meta name="twitter:description" content="After AI, There Is No Cheap Software Oct">
+    <meta property="og:description" content="2026 · 2022 · 2021 · 2020 · 2019 · 2018 · 2017 · 2016">
+  <meta name="twitter:description" content="2026 · 2022 · 2021 · 2020 · 2019 · 2018 · 2017 · 2016">
       <meta property="og:image" content="https://sidu.in/essays/images/thumbs/header-no-cheap-software.webp">
   <meta name="twitter:image" content="https://sidu.in/essays/images/thumbs/header-no-cheap-software.webp">
   <meta name="twitter:card" content="summary_large_image">
@@ -439,7 +439,10 @@
          is a list item: the title link with an _emphasised_ date, then an
          optional one-line description and an optional thumbnail:
 
-           ## 2026
+           [2026](#y2026) · [2025](#y2025)
+           {:.years}
+
+           ## 2026 {#y2026}
 
            - [Essay title](essay.md) _Oct_
 
@@ -454,7 +457,38 @@
           display: none;
       }
 
+      /* a jump bar under the title: a paragraph of links to the groups,
+         tagged {:.years} in the markdown */
+      .listing .years {
+          margin: -0.5rem 0 0;
+          font-size: 0.9rem;
+          line-height: 2;
+          color: var(--border-color-light);
+          text-align: left;
+          hyphens: manual;
+      }
+
+      .listing .years a {
+          color: var(--dateline-color);
+          text-decoration: none;
+          font-variant-numeric: tabular-nums;
+          letter-spacing: 0.04em;
+          white-space: nowrap;
+      }
+
+      .listing .years a:hover {
+          color: var(--link-color);
+          text-decoration: underline;
+          text-underline-offset: 3px;
+      }
+
+      /* group headings stick while their entries scroll, so the date gutter
+         always has its year; the next heading slides over the last */
       .listing h2 {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+          background: var(--bg-color);
           font-family: var(--content-font-family);
           font-style: normal;
           font-weight: 400;
@@ -462,8 +496,8 @@
           letter-spacing: 0.14em;
           text-transform: uppercase;
           color: var(--dateline-color);
-          margin: 3rem 0 0;
-          padding-bottom: 0.5rem;
+          margin: 2rem 0 0;
+          padding: 1rem 0 0.5rem;
           border-bottom: 1px solid var(--border-color);
       }
 
@@ -567,6 +601,14 @@
 
       /* narrow screens: the date moves above the title so the text gets the width */
       @media (max-width: 40em) {
+          /* the rule stops short of the theme toggle, which floats over the
+             top-right corner; the background still masks the full width */
+          .listing h2 {
+              border-bottom: 0;
+              background: linear-gradient(var(--border-color), var(--border-color))
+                  left bottom / calc(100% - 3rem) 1px no-repeat, var(--bg-color);
+          }
+
           .listing li {
               grid-template-columns: minmax(0, 1fr) auto;
               grid-template-rows: auto auto auto 1fr;
@@ -619,7 +661,9 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </div>
 
-<h2 id="section">2026<a href="#section" class="header-anchor"></a></h2>
+<p class="years"><a href="#y2026">2026</a> · <a href="#y2022">2022</a> · <a href="#y2021">2021</a> · <a href="#y2020">2020</a> · <a href="#y2019">2019</a> · <a href="#y2018">2018</a> · <a href="#y2017">2017</a> · <a href="#y2016">2016</a></p>
+
+<h2 id="y2026">2026<a href="#y2026" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -673,7 +717,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-1">2022<a href="#section-1" class="header-anchor"></a></h2>
+<h2 id="y2022">2022<a href="#y2022" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -683,7 +727,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-2">2021<a href="#section-2" class="header-anchor"></a></h2>
+<h2 id="y2021">2021<a href="#y2021" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -702,7 +746,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-3">2020<a href="#section-3" class="header-anchor"></a></h2>
+<h2 id="y2020">2020<a href="#y2020" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -730,7 +774,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-4">2019<a href="#section-4" class="header-anchor"></a></h2>
+<h2 id="y2019">2019<a href="#y2019" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -786,7 +830,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-5">2018<a href="#section-5" class="header-anchor"></a></h2>
+<h2 id="y2018">2018<a href="#y2018" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -861,7 +905,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-6">2017<a href="#section-6" class="header-anchor"></a></h2>
+<h2 id="y2017">2017<a href="#y2017" class="header-anchor"></a></h2>
 
 <ul>
   <li>
@@ -916,7 +960,7 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
   </li>
 </ul>
 
-<h2 id="section-7">2016<a href="#section-7" class="header-anchor"></a></h2>
+<h2 id="y2016">2016<a href="#y2016" class="header-anchor"></a></h2>
 
 <ul>
   <li>
