@@ -427,16 +427,190 @@
   <meta property="og:title" content="Essays">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="sidu.in">
-      <meta name="twitter:card" content="summary">
+    <meta property="og:description" content="After AI, There Is No Cheap Software Oct">
+  <meta name="twitter:description" content="After AI, There Is No Cheap Software Oct">
+      <meta property="og:image" content="https://sidu.in/essays/images/thumbs/header-no-cheap-software.webp">
+  <meta name="twitter:image" content="https://sidu.in/essays/images/thumbs/header-no-cheap-software.webp">
+  <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Essays">
   <meta name="twitter:site" content="@ponnappa">
+  <style>
+      /* Listing: an index of pages, grouped under h2s (years, say). Each entry
+         is a list item: the title link with an _emphasised_ date, then an
+         optional one-line description and an optional thumbnail:
+
+           ## 2026
+
+           - [Essay title](essay.md) _Oct_
+
+             What it argues, in a line.
+
+             ![](images/thumbs/essay.webp)
+
+         The date sits in a gutter, the thumbnail on the right; links off-site
+         get a ↗ so readers know they're leaving. */
+      /* share buttons are for a page's own content; an index has none */
+      .listing .after-h1 {
+          display: none;
+      }
+
+      .listing h2 {
+          font-family: var(--content-font-family);
+          font-style: normal;
+          font-weight: 400;
+          font-size: 0.8rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--dateline-color);
+          margin: 3rem 0 0;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid var(--border-color);
+      }
+
+      .listing ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+      }
+
+      .listing li {
+          display: grid;
+          grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+          /* title, description, and a filler row that takes up the thumbnail's extra height */
+          grid-template-rows: auto auto 1fr;
+          column-gap: 1rem;
+          align-items: baseline;
+          position: relative;
+          margin: 0;
+          padding: 1.1rem 0;
+      }
+
+      .listing li + li {
+          border-top: 1px solid var(--border-color);
+      }
+
+      .listing li > p {
+          grid-column: 2;
+          margin: 0;
+          text-align: left;
+          hyphens: manual;
+      }
+
+      /* the title line: its link and date become grid items of the entry */
+      .listing li > p:first-child {
+          display: contents;
+      }
+
+      .listing li > p:first-child > a {
+          grid-column: 2;
+          grid-row: 1;
+          font-size: 1.15rem;
+          line-height: 1.35;
+          color: var(--text-color);
+          text-decoration: none;
+      }
+
+      /* the whole entry, thumbnail included, is the title link's hit area */
+      .listing li > p:first-child > a::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+      }
+
+      .listing li:hover > p:first-child > a,
+      .listing li > p:first-child > a:focus-visible {
+          color: var(--link-color);
+          text-decoration: underline;
+          text-decoration-thickness: 1px;
+          text-underline-offset: 3px;
+      }
+
+      .listing li > p:first-child > a[href^="http"]::after {
+          content: "\00a0↗";
+          color: var(--dateline-color);
+          font-size: 0.8em;
+      }
+
+      .listing li > p:first-child > em {
+          grid-column: 1;
+          grid-row: 1;
+          font-style: normal;
+          font-size: 0.8rem;
+          letter-spacing: 0.04em;
+          font-variant-numeric: tabular-nums;
+          color: var(--dateline-color);
+      }
+
+      /* description */
+      .listing li > p:not(:first-child) {
+          margin-top: 0.35rem;
+          font-size: 0.95rem;
+          line-height: 1.45;
+          color: var(--dateline-color);
+      }
+
+      /* thumbnail */
+      .listing li > p:has(> img) {
+          grid-column: 3;
+          grid-row: 1 / -1;
+          align-self: start;
+          margin: 0;
+      }
+
+      .listing li img {
+          display: block;
+          width: 8.5rem;
+          aspect-ratio: 3 / 2;
+          object-fit: cover;
+          border-radius: 3px;
+      }
+
+      /* narrow screens: the date moves above the title so the text gets the width */
+      @media (max-width: 40em) {
+          .listing li {
+              grid-template-columns: minmax(0, 1fr) auto;
+              grid-template-rows: auto auto auto 1fr;
+              column-gap: 0.9rem;
+          }
+
+          .listing li > p,
+          .listing li > p:first-child > a {
+              grid-column: 1;
+          }
+
+          .listing li > p:first-child > em {
+              grid-row: 1;
+              margin-bottom: 0.2rem;
+              font-size: 0.75rem;
+              text-transform: uppercase;
+              letter-spacing: 0.1em;
+          }
+
+          .listing li > p:first-child > a {
+              grid-row: 2;
+              font-size: 1.05rem;
+          }
+
+          .listing li > p:has(> img) {
+              grid-column: 2;
+          }
+
+          .listing li > p:not(:first-child) {
+              font-size: 0.875rem;
+          }
+
+          .listing li img {
+              width: 5.5rem;
+          }
+      }
+  </style>
 </head>
 <body>
 <div class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">
   <span class="theme-icon">◐</span>
 </div>
 <div class="body">
-  <div class="content">
+  <div class="content listing">
     <h1 id="essays">Essays</h1>
 <div class="after-h1">
 <a class="twitter-share-button"
@@ -445,47 +619,178 @@ href="https://twitter.com/intent/tweet?text=Essays&via=ponnappa">Tweet</a>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </div>
 
-<ol>
-  <li><a href="after-ai-there-is-no-cheap-software.html">After AI, There Is No Cheap Software</a> (Oct 2026)</li>
-  <li><a href="after-ai-there-is-no-average.html">After AI, There Is No Average</a> (Oct 2026)</li>
-  <li><a href="ai-native-services-principles.html">When the Models Get Better, Your TAM Should Go Up</a> (Aug 2026)</li>
-  <li><a href="do-not-expect-to-understand.html">Do Not Expect to Understand</a> (Jul 2026)</li>
-  <li><a href="ai-transformation-patterns-playground-pattern.html">AI Transformation Patterns: The Playground</a> (Apr 2026)</li>
-  <li><a href="dont-go-ai-native.html">Don’t Go AI Native</a> (Mar 2026)</li>
-  <li><a href="after-ai-there-is-no-product.html">There is no Product</a> (Feb 2026)</li>
-  <li><a href="hiring-product-managers.html">Hiring Product Managers</a> (Feb 2022)</li>
-  <li><a href="https://medium.com/@ponnappa/7-things-i-wish-i-knew-when-i-first-played-legend-of-zelda-breath-of-the-wild-863cc12e48f2">7 things I wish I knew when I first played Legend of Zelda: Breath of the Wild</a> (Jul 2021, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/clarity-computers-e730128260d6">Clarity, Computers &amp; Startups</a> (Mar 2021, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/how-to-set-kras-twitterquestions-1ce925f0fd49">How to set KRAs? #TwitterQuestions</a> (Sep 2020, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/a-better-marketplace-for-talent-baf9783c19f5">A better marketplace for talent</a> (Jul 2020, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/hiring-programmers-in-india-7bc484affedb">Hiring programmers in India</a> (Jun 2020, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/principles-of-product-development-flow-12045fe9f08b">Principles of Product Development Flow</a> (Apr 2020, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/remote-work-after-the-pandemic-d2562e56f53b">Remote work after the pandemic</a> (Mar 2020, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/the-paradox-of-personal-growth-f6b19e33ae07">The Paradox of Personal Growth</a> (Nov 2019, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/good-dog-4ae391defeab">Good dog</a> (Oct 2019, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/superapp-strategies-f39b24cb2849">Superapp strategies</a> (Oct 2019, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/on-success-d4cc03e15198">On success</a> (Aug 2019, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/trading-happiness-a2a5d86d7e8b">Trading Happiness</a> (Jun 2019, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/on-long-hours-f7c9e2ba1bf6">On long hours</a> (Jun 2019, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/jds-killed-the-application-developer-f0404f8eecbf">Resumes killed the application developer</a> (Nov 2018, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/sep-11-1947-is-my-mums-birthday-13788ddb616b">Sep 11, 1947 is my mum’s birthday</a> (Sep 2018, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/the-conflict-between-right-and-wrong-is-a-disease-of-the-mind-seng-tsan-876b3dee4c1e">The conflict between right and wrong is a disease of the mind</a> (Jul 2018, Medium)</li>
-  <li><a href="https://medium.com/gojekengineering/programmers-discipline-57cc9ec89c91">Programmer’s discipline</a> (Jul 2018, Medium · Gojek Product + Tech)</li>
-  <li><a href="https://medium.com/@ponnappa/we-dont-care-about-tech-e604cabcecb7">We don’t care about Tech in India</a> (Jun 2018, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/self-assessments-in-perf-reviews-f13452fc68a4">Self assessments in perf reviews</a> (Jun 2018, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/the-infinite-observer-b88ad486d538">The infinite observer</a> (Apr 2018, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/the-genius-moron-thinking-tool-85a0809f1a99">The genius+moron thinking tool</a> (Oct 2017, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/the-medium-of-expression-matters-ae7769565d84">The medium of expression matters</a> (Sep 2017, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/software-is-not-the-solution-bd4f5a9876cb">Software is not the solution</a> (Sep 2017, Medium)</li>
-  <li><a href="https://medium.com/@ponnappa/modern-indian-careers-ce1c1df47ff0">Modern Indian Careers</a> (Jun 2017, Medium)</li>
-  <li><a href="https://medium.com/gojekengineering/my-go-jek-story-af5f1925bfe">My experience with hypergrowth</a> (Jul 2016, Medium · Gojek Product + Tech)</li>
-</ol>
+<h2 id="section">2026<a href="#section" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="after-ai-there-is-no-cheap-software.html">After AI, There Is No Cheap Software</a> <em>Oct</em></p>
+
+    <p>The era of good enough software is over.</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-no-cheap-software.webp" alt="" /></p>
+  </li>
+  <li>
+    <p><a href="after-ai-there-is-no-average.html">After AI, There Is No Average</a> <em>Oct</em></p>
+
+    <p>Nobody using AI remains merely average.</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-no-average.webp" alt="" /></p>
+  </li>
+  <li>
+    <p><a href="ai-native-services-principles.html">When the Models Get Better, Your TAM Should Go Up</a> <em>Aug</em></p>
+
+    <p>A distillation of conversations with founders contemplating an AI Native Services business.</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-ai-native-services-principles.webp" alt="" /></p>
+  </li>
+  <li>
+    <p><a href="do-not-expect-to-understand.html">Do Not Expect to Understand</a> <em>Jul</em></p>
+
+    <p>Fly to Mysuru. Bus to Kengeri. Walk in. Do not expect to understand.</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-bengaluru-darshana.webp" alt="" /></p>
+  </li>
+  <li>
+    <p><a href="ai-transformation-patterns-playground-pattern.html">AI Transformation Patterns: The Playground</a> <em>Apr</em></p>
+
+    <p>If you take current AI transformation advice at face value, the work looks done once the tools are bought.</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-playground-lab.webp" alt="" /></p>
+  </li>
+  <li>
+    <p><a href="dont-go-ai-native.html">Don’t Go AI Native</a> <em>Mar</em></p>
+
+    <p>New models ship every quarter and each one changes what’s possible.</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-soviet-coe.webp" alt="" /></p>
+  </li>
+  <li>
+    <p><a href="after-ai-there-is-no-product.html">There is no Product</a> <em>Feb</em></p>
+
+    <p>The question nobody’s asking is: is the economics of software as an asset dying?</p>
+
+    <p><img src="https://sidu.in/essays/images/thumbs/header-spoon.webp" alt="" /></p>
+  </li>
+</ul>
+
+<h2 id="section-1">2022<a href="#section-1" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="hiring-product-managers.html">Hiring Product Managers</a> <em>Feb</em></p>
+
+    <p>Hiring a Product Manager seems to be the de facto solution to 99% of startup problems. But is it really?</p>
+  </li>
+</ul>
+
+<h2 id="section-2">2021<a href="#section-2" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/7-things-i-wish-i-knew-when-i-first-played-legend-of-zelda-breath-of-the-wild-863cc12e48f2">7 things I wish I knew when I first played Legend of Zelda: Breath of the Wild</a> <em>Jul</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/clarity-computers-e730128260d6">Clarity, Computers &amp; Startups</a> <em>Mar</em></p>
+  </li>
+</ul>
+
+<h2 id="section-3">2020<a href="#section-3" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/how-to-set-kras-twitterquestions-1ce925f0fd49">How to set KRAs? #TwitterQuestions</a> <em>Sep</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/a-better-marketplace-for-talent-baf9783c19f5">A better marketplace for talent</a> <em>Jul</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/hiring-programmers-in-india-7bc484affedb">Hiring programmers in India</a> <em>Jun</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/principles-of-product-development-flow-12045fe9f08b">Principles of Product Development Flow</a> <em>Apr</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/remote-work-after-the-pandemic-d2562e56f53b">Remote work after the pandemic</a> <em>Mar</em></p>
+  </li>
+</ul>
+
+<h2 id="section-4">2019<a href="#section-4" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/the-paradox-of-personal-growth-f6b19e33ae07">The Paradox of Personal Growth</a> <em>Nov</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/good-dog-4ae391defeab">Good dog</a> <em>Oct</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/superapp-strategies-f39b24cb2849">Superapp strategies</a> <em>Oct</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/on-success-d4cc03e15198">On success</a> <em>Aug</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/trading-happiness-a2a5d86d7e8b">Trading Happiness</a> <em>Jun</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/on-long-hours-f7c9e2ba1bf6">On long hours</a> <em>Jun</em></p>
+  </li>
+</ul>
+
+<h2 id="section-5">2018<a href="#section-5" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/jds-killed-the-application-developer-f0404f8eecbf">Resumes killed the application developer</a> <em>Nov</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/sep-11-1947-is-my-mums-birthday-13788ddb616b">Sep 11, 1947 is my mum’s birthday</a> <em>Sep</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/the-conflict-between-right-and-wrong-is-a-disease-of-the-mind-seng-tsan-876b3dee4c1e">The conflict between right and wrong is a disease of the mind</a> <em>Jul</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/gojekengineering/programmers-discipline-57cc9ec89c91">Programmer’s discipline</a> <em>Jul</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/we-dont-care-about-tech-e604cabcecb7">We don’t care about Tech in India</a> <em>Jun</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/self-assessments-in-perf-reviews-f13452fc68a4">Self assessments in perf reviews</a> <em>Jun</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/the-infinite-observer-b88ad486d538">The infinite observer</a> <em>Apr</em></p>
+  </li>
+</ul>
+
+<h2 id="section-6">2017<a href="#section-6" class="header-anchor"></a></h2>
+
+<ul>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/the-genius-moron-thinking-tool-85a0809f1a99">The genius+moron thinking tool</a> <em>Oct</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/the-medium-of-expression-matters-ae7769565d84">The medium of expression matters</a> <em>Sep</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/software-is-not-the-solution-bd4f5a9876cb">Software is not the solution</a> <em>Sep</em></p>
+  </li>
+  <li>
+    <p><a href="https://medium.com/@ponnappa/modern-indian-careers-ce1c1df47ff0">Modern Indian Careers</a> <em>Jun</em></p>
+  </li>
+</ul>
+
+<h2 id="section-7">2016<a href="#section-7" class="header-anchor"></a></h2>
+
+<ul>
+  <li><a href="https://medium.com/gojekengineering/my-go-jek-story-af5f1925bfe">My experience with hypergrowth</a> <em>Jul</em></li>
+</ul>
 
   </div>
   <div class="footer">
     <div>
-                    v. 0ac7e078,
-            2026-10-27 © <a href="https://sidu.in">Sidu Ponnappa</a>
+                    v. 9578fc8e,
+            2026-10-30 © <a href="https://sidu.in">Sidu Ponnappa</a>
     </div>
   </div>
   <div class="bhook-cta">
